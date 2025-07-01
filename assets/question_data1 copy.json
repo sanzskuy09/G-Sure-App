@@ -1,0 +1,464 @@
+[
+  {
+    "title": "Dealer",
+    "fields": [
+      { "type": "text", "label": "Nama" },
+      { "type": "text", "label": "Alamat" },
+      { "type": "text", "label": "Contact Person" },
+      { "type": "number", "label": "Mobile Phone Contact Person" }
+    ]
+  },
+  {
+    "title": "Data Kendaraan",
+    "fields": [
+      {
+        "type": "dropdown",
+        "label": "Kondisi",
+        "options": ["USED CAR", "NEW CAR"]
+      },
+      { "type": "text", "label": "Merk" },
+      { "type": "text", "label": "Type" },
+      { "type": "number", "label": "Tahun" },
+      { "type": "text", "label": "No. Polisi" }
+    ]
+  },
+  {
+    "title": "Profil Singkat Pembiayaan",
+    "fields": [
+      { "type": "numberDecimal", "label": "Harga Kendaraan" },
+      { "type": "numberDecimal", "label": "Total Uang Muka" },
+      { "type": "numberDecimal", "label": "Total Pokok Hutang" }
+    ]
+  },
+  {
+    "title": "Alamat Survey",
+    "fields": [
+      { "type": "text", "label": "Alamat" },
+      { "type": "number", "label": "RT" },
+      { "type": "number", "label": "RW" },
+      { "type": "number", "label": "Kode Pos" },
+      { "type": "text", "label": "Kelurahan/Desa" },
+      { "type": "text", "label": "Kecamatan" },
+      { "type": "text", "label": "Kota/Kabupaten" },
+      { "type": "text", "label": "Provinsi" }
+    ]
+  },
+  {
+    "title": "Data Pemohon",
+    "fields": [
+       {
+        "type": "dropdown",
+        "label": "Kategori Pemohon",
+        "options": ["PERORANGAN", "BADAN USAHA"]
+      },
+      {
+        "type": "dropdownWithAction",
+        "label": "Status Perkawinan",
+        "options": ["KAWIN", "BELUM KAWIN", "CERAI HIDUP", "CERAI MATI"]
+      },
+      { "type": "text", "label": "Nama Pemohon" },
+      { "type": "text", "label": "Agama" },
+      {
+        "type": "dropdown",
+        "label": "Jenis Kelamin",
+        "options": ["LAKI-LAKI", "PEREMPUAN"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Pendidikan",
+        "options": ["SD", "SMP", "SMA","D1","D2", "D3", "S1", "S2", "S3", "LAINNYA"]
+      },
+      {
+        "type": "dropdownWithSection",
+        "label": "Pekerjaan",
+        "options": ["KARYAWAN", "WIRASWASTA", "KARYAWAN & WIRASWASTA", "TIDAK BEKERJA"],
+        "section": [
+          {
+            "show": ["KARYAWAN", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Pekerjaan",
+            "fields": [
+              { "type": "text", "label": "Nama Kantor" },
+              { "type": "text", "label": "Alamat Kantor" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Masa Kerja" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Slip Gaji",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              },
+              {
+                "type": "dropdown",
+                "label": "Penghasilan di Payroll",
+                "options": ["TERCERMIN", "TIDAK TERCERMIN"]
+              }
+            ]
+          },
+          {
+            "show": ["WIRASWASTA", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Usaha",
+            "fields": [
+              { "type": "text", "label": "Nama Usaha" },
+              { "type": "text", "label": "Alamat Usaha" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Bidang Usaha" },
+              { "type": "text", "label": "Lama Usaha" },
+              { "type": "text", "label": "Omzet Usaha/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Profit Usaha",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kewarganegaraan",
+        "options": ["WNI", "WNA"]
+      },
+      { "type": "number", "label": "No. Telepon" },
+      { "type": "number", "label": "No. Whatsapp" },
+      { "type": "text", "label": "Email" },
+      { "type": "number", "label": "NPWP (Nomor)" },
+      { "type": "text", "label": "Nama Gadis Ibu Kandung" },
+      {
+        "type": "dropdown",
+        "label": "Status Kepemilikan Tempat Tinggal",
+        "options": ["MILIK SENDIRI", "MILIK KELUARGA (ORTU)", "MILIK KELUARGA (BUKAN ORTU)","DINAS", "SEWA"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kategori Tempat Tinggal",
+        "options": ["RUMAH 1 LANTAI", "RUMAH > 1 LANTAI", "APARTEMEN", "KOS", "RUMAH PETAK"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Bukti Kepemilikan Tempat Tinggal",
+        "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Lama Tinggal",
+        "options": ["< 6 BULAN", "6 BULAN - 1 TAHUN", "> 1 - 2 TAHUN", "> 2 TAHUN"]
+      }
+    ]
+  },
+  {
+    "title": "Data Pasangan",
+    "showIf": {
+      "Status Perkawinan": ["KAWIN"]
+    },
+    "fields": [
+     { "type": "text", "label": "Nama" },
+      { "type": "text", "label": "Agama" },
+      {
+        "type": "dropdownWithSection",
+        "label": "Pekerjaan",
+        "options": ["KARYAWAN", "WIRASWASTA", "KARYAWAN & WIRASWASTA", "TIDAK BEKERJA"],
+        "section": [
+          {
+            "show": ["KARYAWAN", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Pekerjaan",
+            "fields": [
+              { "type": "text", "label": "Nama Kantor" },
+              { "type": "text", "label": "Alamat Kantor" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Masa Kerja" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Slip Gaji",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              },
+              {
+                "type": "dropdown",
+                "label": "Penghasilan di Payroll",
+                "options": ["TERCERMIN", "TIDAK TERCERMIN"]
+              }
+            ]
+          },
+          {
+            "show": ["WIRASWASTA", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Usaha",
+            "fields": [
+              { "type": "text", "label": "Nama Usaha" },
+              { "type": "text", "label": "Alamat Usaha" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Bidang Usaha" },
+              { "type": "text", "label": "Lama Usaha" },
+              { "type": "text", "label": "Omzet Usaha/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Profit Usaha",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kewarganegaraan",
+        "options": ["WNI", "WNA"]
+      },
+      { "type": "number", "label": "No. Telepon" },
+      { "type": "number", "label": "No. Whatsapp" }
+    ]
+  },
+  {
+    "title": "Penjamin",
+    "fields": [
+      {
+        "type": "radio",
+        "label": "Apakah Ada Penjamin ?",
+        "options": ["Ya", "Tidak"]
+      }
+    ]
+  },
+  {
+    "title": "Data Penjamin",
+    "showIf": {
+      "Apakah Ada Penjamin ?": ["Ya"]
+    },
+    "fields": [
+       {
+        "type": "dropdown",
+        "label": "Kategori Penjamin",
+        "options": ["PERORANGAN", "BADAN USAHA"]
+      },
+      {
+        "type": "dropdownWithAction",
+        "label": "Status Perkawinan Penjamin",
+        "options": ["KAWIN", "BELUM KAWIN", "CERAI HIDUP", "CERAI MATI"]
+      },
+      { "type": "text", "label": "Nama Penjamin" },
+      { "type": "text", "label": "Agama" },
+      {
+        "type": "dropdownWithSection",
+        "label": "Pekerjaan",
+        "options": ["KARYAWAN", "WIRASWASTA", "KARYAWAN & WIRASWASTA","TIDAK BEKERJA"],
+        "section": [
+          {
+            "show": ["KARYAWAN", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Pekerjaan",
+            "fields": [
+              { "type": "text", "label": "Nama Kantor" },
+              { "type": "text", "label": "Alamat Kantor" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Masa Kerja" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Slip Gaji",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              },
+              {
+                "type": "dropdown",
+                "label": "Penghasilan di Payroll",
+                "options": ["TERCERMIN", "TIDAK TERCERMIN"]
+              }
+            ]
+          },
+          {
+            "show": ["WIRASWASTA", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Usaha",
+            "fields": [
+              { "type": "text", "label": "Nama Usaha" },
+              { "type": "text", "label": "Alamat Usaha" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Bidang Usaha" },
+              { "type": "text", "label": "Lama Usaha" },
+              { "type": "text", "label": "Omzet Usaha/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Profit Usaha",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kewarganegaraan",
+        "options": ["WNI", "WNA"]
+      },
+      { "type": "number", "label": "No. Telepon" },
+      { "type": "number", "label": "No. Whatsapp" },
+      { "type": "number", "label": "NPWP (Nomor)" },
+      { "type": "text", "label": "Nama Gadis Ibu Kandung" },
+       {
+        "type": "dropdown",
+        "label": "Status Kepemilikan Tempat Tinggal",
+        "options": ["MILIK SENDIRI", "MILIK KELUARGA (ORTU)", "MILIK KELUARGA (BUKAN ORTU)","DINAS", "SEWA"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kategori Tempat Tinggal",
+        "options": ["RUMAH 1 LANTAI", "RUMAH > 1 LANTAI", "APARTEMEN", "KOS", "RUMAH PETAK"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Bukti Kepemilikan Tempat Tinggal",
+        "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
+      },
+      {
+        "type": "dropdown",
+        "label": "Lama Tinggal",
+        "options": ["< 6 BULAN", "6 BULAN - 1 TAHUN", "> 1 - 2 TAHUN", "> 2 TAHUN"]
+      }
+    ]
+  },
+  {
+    "title": "Data Pasangan Penjamin",
+    "showIf": {
+      "Status Perkawinan Penjamin": ["KAWIN"],
+      "Apakah Ada Penjamin ?": ["Ya"]
+    },
+    "fields": [
+     { "type": "text", "label": "Nama" },
+      { "type": "text", "label": "Agama" },
+      {
+        "type": "dropdownWithSection",
+        "label": "Pekerjaan",
+        "options": ["KARYAWAN", "WIRASWASTA", "KARYAWAN & WIRASWASTA", "TIDAK BEKERJA"],
+        "section": [
+          {
+            "show": ["KARYAWAN", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Pekerjaan",
+            "fields": [
+              { "type": "text", "label": "Nama Kantor" },
+              { "type": "text", "label": "Alamat Kantor" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Masa Kerja" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Slip Gaji",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              },
+              {
+                "type": "dropdown",
+                "label": "Penghasilan di Payroll",
+                "options": ["TERCERMIN", "TIDAK TERCERMIN"]
+              }
+            ]
+          },
+          {
+            "show": ["WIRASWASTA", "KARYAWAN & WIRASWASTA"],
+            "title": "Data Usaha",
+            "fields": [
+              { "type": "text", "label": "Nama Usaha" },
+              { "type": "text", "label": "Alamat Usaha" },
+              { "type": "text", "label": "No. Telepon Kantor" },
+              { "type": "text", "label": "Bidang Usaha" },
+              { "type": "text", "label": "Lama Usaha" },
+              { "type": "text", "label": "Omzet Usaha/bulan" },
+              {
+                "type": "dropdown",
+                "label": "Profit Usaha",
+                "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "type": "dropdown",
+        "label": "Kewarganegaraan",
+        "options": ["WNI", "WNA"]
+      },
+      { "type": "number", "label": "No. Telepon" },
+      { "type": "number", "label": "No. Whatsapp" }
+    ]
+  },
+  {
+    "title": "Foto Kendaraan",
+    "fields": [
+      { "type": "numberDecimal", "label": "Odometer (Kilometer)" },
+      { "type": "file", "label": "Foto Unit Depan (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Belakang (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Interior Depan" },
+      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" },
+      { "type": "file", "label": "Foto Mesin" },
+      { "type": "file", "label": "Foto Unit Selfie CMO" },
+      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)" },
+      { "type": "cameraAndUpload", "label": "Foto Hasil Gesekan Noka Nosin" },
+      { "type": "cameraAndUpload", "label": "Foto STNK" },
+      { "type": "cameraAndUpload", "label": "Foto Notice Pajak" },
+      { "type": "cameraAndUpload", "label": "Foto BPKB 1" },
+      { "type": "cameraAndUpload", "label": "Foto BPKB 2" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Legalitas",
+    "fields": [
+      { "type": "file", "label": "Foto KTP Asli Pemohon" },
+      { "type": "cameraAndUpload", "label": "Foto KTP Pasangan" },
+      { "type": "file", "label": "Foto Kartu Keluarga" },
+      { "type": "cameraAndUpload", "label": "Foto SIM-A Pemohon / Pasangan" },
+      { "type": "cameraAndUpload", "label": "Foto NPWP Pemohon / Pasangan" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tempat Tinggal",
+    "fields": [
+      { "type": "file", "label": "Foto Rumah" },
+      { "type": "file", "label": "Foto Rumah Selfie CMO" },
+      { "type": "file", "label": "Foto Cek Lingkungan Selfie CMO" },
+      { "type": "file", "label": "Foto Bukti Kepemilikan Tempat Tinggal" },
+      { "type": "file", "label": "Foto Close-Up Pemohon" },
+      { "type": "file", "label": "Foto Pemohon TTD FPP" },
+      { "type": "file", "label": "Foto FPP Tampak Depan" },
+      { "type": "file", "label": "Foto FPP Tampak Belakang" }
+    ]
+  },
+   {
+    "title": "Foto & Dokumen Pekerjaan / Usaha",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Simulasi Perhitungan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 4" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tambahan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" }
+    ]
+  },
+  {
+    "title": "Data Emergency Contact",
+    "fields": [
+      { "type": "text", "label": "Nama" },
+      { "type": "text", "label": "Hubungan dengan Pemohon" },
+      { "type": "text", "label": "Nomor Telepon" },
+      { "type": "text", "label": "Alamat Lengkap" }
+    ]
+  },
+  {
+    "title": "Hasil Cek Linkungan",
+    "fields": [
+      { "type": "text", "label": "Bertemu Dengan? (Nama)" },
+      {
+        "type": "dropdown",
+        "label": "Hubungan",
+        "options": ["TETANGGA", "RT", "SECURITY", "LAINNYA"]
+      },
+      { "type": "text", "label": "Informasi" }
+    ]
+  }  
+]

@@ -1,0 +1,329 @@
+[
+  {
+    "title": "Asset CF",
+    "fields": [
+      { "type": "text", "label": "Odometer (Kilometer)" },
+      { "type": "file", "label": "Foto Unit Depan (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Belakang (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Interior Depan" },
+      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" },
+      { "type": "file", "label": "Foto Unir Selfie CRO" },
+      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)" },
+      { "type": "file", "label": "Foto Hasil Gesekan Noka Nosin" },
+      { "type": "file", "label": "Foto STNK" },
+      { "type": "file", "label": "Foto BPKB" }
+    ]
+  },
+  {
+    "title": "Order CF",
+    "fields": [
+      { "type": "text", "label": "Kota" }
+    ]
+  },
+  {
+    "title": "Cabang",
+    "fields": [
+      { "type": "text", "label": "Cabang Tujuan Order" }
+    ]
+  },
+  {
+    "title": "Source Of Application",
+    "fields": [
+      { "type": "text", "label": "Source Of Application" }
+    ]
+  },
+  {
+    "title": "Supplier",
+    "fields": [
+      { "type": "text", "label": "Supplier Name" },
+      { "type": "text", "label": "Supplier Address" },
+      { "type": "text", "label": "Contact Person Supplier (Name)" },
+      { "type": "text", "label": "Contact Person Supplier (Mobile Phone No.)" }
+    ]
+  },
+  {
+    "title": "Asset Info",
+    "fields": [
+      { "type": "text", "label": "Asset Condition" },
+      { "type": "text", "label": "Merk Asset" },
+      { "type": "text", "label": "Tipe Asset" },
+      { "type": "text", "label": "Tahun Asset" },
+      { "type": "text", "label": "No. Polisi" }
+    ]
+  },
+  {
+    "title": "Financing Profile",
+    "fields": [
+      { "type": "text", "label": "OTR" },
+      { "type": "text", "label": "TDP" },
+      { "type": "text", "label": "PH Total" }
+    ]
+  },
+  {
+    "title": "Alamat Survey",
+    "fields": [
+      { "type": "text", "label": "Alamat Survey Debitur" },
+      { "type": "text", "label": "Kelurahan" },
+      { "type": "text", "label": "Kecamatan" },
+      { "type": "text", "label": "Kota/Kabupaten" },
+      { "type": "text", "label": "Lokasi Survey Unit" }
+    ]
+  },
+  {
+    "title": "Personal Info",
+    "fields": [
+      { "type": "text", "label": "Customer Model (Perorangan)" },
+      { "type": "text", "label": "Marital Status" },
+      { "type": "text", "label": "Alamat Usaha Calon Debitur" }
+    ]
+  },
+  {
+    "title": "Spouse Data",
+    "fields": [
+      { "type": "text", "label": "Nomor Telepon Pasangan" },
+      { "type": "text", "label": "Join Income" },
+      { "type": "text", "label": "Profession Name" },
+      { "type": "text", "label": "Job Position" },
+      { "type": "text", "label": "Job Title Name" },
+      { "type": "text", "label": "Nama Perushaan/Usaha" },
+      { "type": "text", "label": "Sektor Ekonomi/Industri" },
+      { "type": "text", "label": "Usaha Berdiri Sejak (Bulan)" },
+      { "type": "text", "label": "Usaha Berdiri Sejak (Tahun)" },
+      { "type": "text", "label": "Job Address (Alamat Lengkap)" }
+    ]
+  },
+  {
+    "title": "Data Penjamin",
+    "fields": [
+      { "type": "text", "label": "Apakah Ada Penjamin ?" }
+    ]
+  },
+  {
+    "title": "Foto Unit",
+    "fields": [
+      { "type": "text", "label": "Apakah Mau Dilakukan Survey Unit ?" }
+    ]
+  },
+  {
+    "title": "Foto Tambahan",
+    "fields": [
+      { "type": "text", "label": "Kota" }
+    ]
+  },
+  {
+    "title": "Customer Checking",
+    "fields": [
+      { "type": "text", "label": "Duplicate Checking" },
+      { "type": "text", "label": "Negative Check" },
+      { "type": "text", "label": "APPI Check" },
+      { "type": "text", "label": "APPI Notes" },
+      { "type": "text", "label": "Customer Type" },
+      { "type": "text", "label": "Asset Condition" },
+      { "type": "text", "label": "Notes" }
+    ]
+  },
+  {
+    "title": "Pertanyaan Urutan Survey",
+    "fields": [
+      { "type": "text", "label": "Apakah yang akan anda survey ?" }
+    ]
+  },
+  {
+    "title": "Asset CF",
+    "fields": [
+      { "type": "text", "label": "Odometer (Kilometer)" },
+      { "type": "file", "label": "Foto Unit Depan (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Belakang (Diagonal)" },
+      { "type": "file", "label": "Foto Unit Interior Depan" },
+      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" },
+      { "type": "file", "label": "Foto Unir Selfie CRO" },
+      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)" },
+      { "type": "file", "label": "Foto Hasil Gesekan Noka Nosin" },
+      { "type": "file", "label": "Foto STNK" },
+      { "type": "file", "label": "Foto BPKB" }
+    ]
+  },
+  {
+    "title": "Nomor Telepon Debitur",
+    "fields": [
+      { "type": "text", "label": "Nomor Telepon Debitur" },
+      { "type": "text", "label": "Nomor Telepon Debitur 2" }
+    ]
+  },
+  {
+    "title": "Pilih Customer Type",
+    "fields": [
+      {
+        "type": "dropdown",
+        "label": "Pilih Type Customer",
+        "options": ["Personal", "Company"]
+      },
+      { "type": "text", "label": "Nama Lengkap Debitur ( Tanpan Singkatan )" }
+    ]
+  },
+  {
+    "title": "Dokumen CF",
+    "fields": [
+      { "type": "file", "label": "Tools Manual Bagian Simulasi" },
+      { "type": "file", "label": "Tools Manual Detail Perhitungan 1" },
+      { "type": "file", "label": "Tools Manual Detail Perhitungan 2" },
+      { "type": "file", "label": "Foto Dokumen KTP Asli Debitur" },
+      { "type": "file", "label": "Foto Dokumen KTP Pasangan" },
+      { "type": "file", "label": "Foto NPWP Debitur / Pasangan" },
+      { "type": "file", "label": "Foto SIM A Debitur / Pasangan" }
+    ]
+  },
+  {
+    "title": "Pertanyaan Penjamin",
+    "fields": [
+      { "type": "text", "label": "Apakah Ada Penjamin ?", "options": ["No", "Yes"] }
+    ]
+  },
+  {
+    "title": "Pengecekan E-KTP Reader",
+    "fields": [
+      { "type": "text", "label": "Tipe KTP Reader" },
+      { "type": "text", "label": "E-KTP Terbaca Oleh Alat" },
+      { "type": "file", "label": "Foto Close Up Debitur" },
+      { "type": "file", "label": "Foto alat Saat gagal Scan Jari" },
+      { "type": "file", "label": "Foto Debitur Scan Jari" },
+      { "type": "file", "label": "Foto Sales Scan Jari" },
+      { "type": "file", "label": "Foto Close Up Pasangan" }
+    ]
+  },
+  {
+    "title": "Survey Tempat Tinggal",
+    "fields": [
+      { "type": "file", "label": "Foto Rumah" },
+      { "type": "file", "label": "Foto Rumah Selfie CRO" },
+      { "type": "text", "label": "Bukti Kepemilikan Rumah Yang Dilampirkan" }
+    ]
+  },
+  {
+    "title": "Survey Pekerjaan",
+    "fields": [
+      {
+        "type": "dropdown",
+        "label": "Apakah Customer Seorangan Wirausaha",
+        "options": ["No", "Yes"]
+      }
+    ]
+  },
+  {
+    "title": "Foto Tambahan",
+    "fields": [
+      { "type": "file", "label": "Image 1" },
+      { "type": "file", "label": "Image Note 1" },
+      { "type": "file", "label": "Image 2" },
+      { "type": "file", "label": "Image Note 2" },
+      { "type": "file", "label": "Image 3" },
+      { "type": "file", "label": "Image Note 3" },
+      { "type": "file", "label": "Image 4" },
+      { "type": "file", "label": "Image Note 4" }
+    ]
+  },
+  {
+    "title": "Analisa Kredit Oleh CRO",
+    "fields": [
+      { "type": "text", "label": "Status Kepemilikan Kantor (Jika Calon Debitur Memiliki Kantor)" },
+      { "type": "text", "label": "Informasi Bukti Kepemilikan Kantor Yang Dilampirkan" },
+      { "type": "text", "label": "Penjelasan Hasil Pengecekan SLIK (KHusus Untuk Kol 2 - Kol 5 (Penyebabnya))" },
+      { "type": "file", "label": "Foto Cek Lingkungan" },
+      { "type": "text", "label": "Hasil Cek Lingkungan Oleh CRO" },
+      { "type": "text", "label": "Jarak Domisili Debitur ke Kantor" },
+      { "type": "text", "label": "Waktu Temput Domisili Debitur ke Kantor" },
+      { "type": "text", "label": "Informasi Lain / Keterangan Tambahan Terkait Calon Debitur" },
+      { "type": "text", "label": "Tujuan Penggunaan Dana (Jika Aplikasi Pembiayaan Multiguna Fasilitas Dana)" },
+      { 
+        "type": "text", 
+        "label": "Apakah Calon Debitur Merupakan Orang Yang Popular Secara Politis (Politically Exposed Person {PEP})", 
+        "options": ["No", "Yes"]
+      }
+    ]
+  },
+  {
+    "title": "Data Customer (Confins)",
+    "fields": [
+      { "type": "text", "label": "Customer Model (Perorangan)" },
+      { "type": "text", "label": "NPWP (Perorangan)" },
+      { "type": "text", "label": "Mother Maiden Name" },
+      { "type": "text", "label": "Building Location Class" },
+      { "type": "text", "label": "Building Ownership" },
+      { "type": "text", "label": "Building Stay Length (Berapa Lama Tinggal) Dalam Setahun" },
+      { "type": "text", "label": "Building Location Class (Residence)" },
+      { "type": "text", "label": "Email Debitur" }
+    ]
+  },
+  {
+    "title": "Customer ( Job Data - If Employee )",
+    "fields": [
+      { "type": "text", "label": "Profession Name" },
+      { "type": "text", "label": "Job Position" },
+      { "type": "text", "label": "Job Title Name" },
+      { "type": "text", "label": "Job Status" },
+      { "type": "text", "label": "Nama Perushaan/Usaha" },
+      { "type": "text", "label": "Sektor Ekonomi/Industri" },
+      { "type": "text", "label": "Bekerja Sejak (Bulan)" },
+      { "type": "text", "label": "Bekerja Sejak (Tahun)" },
+      { "type": "text", "label": "Job Address (Alamat Lengkap)" }
+    ]
+  },
+  {
+    "title": "Profile Main Debitur Bank Account",
+    "fields": [
+      { "type": "text", "label": "Nama Bank" },
+      { "type": "text", "label": "Cabang Bank" },
+      { "type": "text", "label": "Nama Pemilik Rekening" },
+      { "type": "text", "label": "No. Rekening" },
+      { "type": "text", "label": "Total Debit" },
+      { "type": "text", "label": "Total Kredit" },
+      { "type": "text", "label": "Balance" },
+      { "type": "text", "label": "Average Saldo" }
+    ]
+  },
+  {
+    "title": "Customer ( Main Data )",
+    "fields": [
+      { "type": "text", "label": "Nationality" },
+      { "type": "text", "label": "Education" },
+      { "type": "text", "label": "Agama" }
+    ]
+  },
+  {
+    "title": "Customer ( Emergency Contact Data )",
+    "fields": [
+      { "type": "text", "label": "Nama Emergency Contact" },
+      { "type": "text", "label": "Hubungan dengan Emergency Contact" },
+      { "type": "text", "label": "Nomor Telp Emergency Contact" },
+      { "type": "text", "label": "Alamat Emergency Contact (Alamat Lengkap)" },
+      { "type": "text", "label": "Nama Emergency Contact 2" },
+      { "type": "text", "label": "Hubungan dengan Emergency Contact 2" },
+      { "type": "text", "label": "Nomor Telp Emergency Contact 2" },
+      { "type": "text", "label": "Alamat Emergency Contact 2 (Alamat Lengkap)" }
+    ]
+  },
+  {
+    "title": "Customer ( Financial Data )",
+    "fields": [
+      { "type": "number", "label": "Fixed Income (Per Bulan)" },
+      { "type": "number", "label": "Spouse Income (Per Bulan)" }
+    ]
+  },
+  {
+    "title": "Data Aplikasi ( Confins )",
+    "fields": [
+      { "type": "text", "label": "Way of Payment" },
+      { "type": "text", "label": "Cust Notif By" },
+      { "type": "text", "label": "Mailing Address" },
+      { "type": "text", "label": "Pengguna Unit" },
+      { "type": "text", "label": "Maskapai Asuransi" }
+    ]
+  },
+  {
+    "title": "Hasil Survey Menurut CRO",
+    "fields": [
+      { "type": "text", "label": "Kota" }
+    ]
+  }
+  
+]
