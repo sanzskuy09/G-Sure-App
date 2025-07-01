@@ -22,14 +22,12 @@ class FieldBuilder extends StatelessWidget {
     required this.field,
     required this.index,
     this.setState,
-    // this.onChanged,
     this.formAnswers,
     this.onValueChanged,
   });
 
   @override
   Widget build(BuildContext context) {
-    // Helper method untuk dekorasi input
     InputDecoration baseDecoration({
       Widget? suffixIcon,
       double leftPadding = 14,

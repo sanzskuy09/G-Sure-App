@@ -1,7 +1,6 @@
 // import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
 import 'package:gsure/ui/pages/not_found_page.dart';
-import 'package:gsure/ui/widgets/accordion.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});

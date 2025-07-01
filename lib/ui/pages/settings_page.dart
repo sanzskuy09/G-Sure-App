@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:gsure/shared/theme.dart';
+import 'package:hive/hive.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   void _resetDataHiveTEmp() async {
     // await Hive.deleteBoxFromDisk('konsumen');
+    await Hive.deleteFromDisk();
   }
 
   @override

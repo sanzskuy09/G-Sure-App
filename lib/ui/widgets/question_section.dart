@@ -25,7 +25,6 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _fields = List<FieldModel>.from(widget.item.fields);
   }

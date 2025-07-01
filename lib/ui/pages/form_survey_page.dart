@@ -4,6 +4,7 @@ import 'package:accordion/accordion.dart';
 import 'package:accordion/controllers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gsure/models/order_model.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/buttons.dart';
@@ -11,7 +12,8 @@ import 'package:gsure/ui/widgets/form_field_builder.dart';
 import 'package:gsure/ui/widgets/question_section.dart';
 
 class FormSurveyPage extends StatefulWidget {
-  const FormSurveyPage({super.key});
+  final OrderModel order;
+  const FormSurveyPage({super.key, required this.order});
 
   @override
   State<FormSurveyPage> createState() => _FormSurveyPageState();
@@ -29,9 +31,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
   void _showNextSection() {
     final nextCount = visibleSectionCount + 1;
-
     final totalVisible = _question.length;
-
     if (nextCount <= totalVisible) {
       setState(() {
         visibleSectionCount = nextCount;
@@ -42,9 +42,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   Future<List<QuestionSection>> loadQuestionData() async {
     final String jsonStr =
         await rootBundle.loadString('assets/question_data1.json');
-
     final List<dynamic> jsonData = json.decode(jsonStr);
-
     return jsonData.map((e) => QuestionSection.fromJson(e)).toList();
   }
 
@@ -53,23 +51,16 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
     for (int i = 0; i < _question.length; i++) {
       final item = _question[i];
-
-      // 🔍 Cek kondisi showIf (jika ada)
-
       if (item.showIf != null) {
         bool shouldShow = true;
-
         item.showIf!.forEach((key, allowedValues) {
           final currentValue = formAnswers[key]?.toString();
-
           if (!allowedValues.contains(currentValue)) {
             shouldShow = false;
           }
         });
-
         if (!shouldShow) continue;
       }
-
       result.add(i);
     }
 
@@ -79,13 +70,9 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   @override
   void initState() {
     super.initState();
-
-    // _question = questionData; // gunakan data dari file terpisah
-
     loadQuestionData().then((data) {
       setState(() {
         _question = data;
-
         openStates =
             List.generate(data.length, (i) => i == 0); // buka yang pertama
       });
@@ -109,14 +96,10 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     if (_question.isEmpty) {
       return const Center(child: CircularProgressIndicator());
     }
-
     return Scaffold(
       appBar: AppBar(
-        title: Text('FORM SURVEY'),
+        title: Text('FORM SURVEY ${widget.order.id}'),
       ),
-
-      // body: AccordionPage(),
-
       body: Accordion(
         headerBackgroundColor: secondaryColor,
         headerBorderColor: secondaryColor,
@@ -133,11 +116,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         sectionClosingHapticFeedback: SectionHapticFeedback.light,
         children: List.generate(visibleSectionIndexes.length, (index) {
           final actualIndex = visibleSectionIndexes[index];
-
           final item = _question[actualIndex];
-
-          // return Column();
-
           return AccordionSection(
             isOpen: index == visibleSectionIndexes.length - 1,
             contentVerticalPadding: 10,
@@ -160,7 +139,6 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
           );
         }),
       ),
-
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 18),

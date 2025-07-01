@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/home_page.dart';
 import 'package:gsure/ui/pages/settings_page.dart';
@@ -19,6 +21,7 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _selectedIndex = 0;
+  bool _isSurveyList = false;
 
   final List<Widget> _pages = const [
     HomePage(),
@@ -28,6 +31,14 @@ class _MainPageState extends State<MainPage> {
   ];
 
   void _onTabTapped(int index) {
+    if (_isSurveyList == false && index == 1) {
+      context.read<SurveyBloc>().add(GetDataSurveyFromOrder());
+
+      setState(() {
+        _isSurveyList = true;
+      });
+    }
+
     setState(() {
       _selectedIndex = index;
     });
