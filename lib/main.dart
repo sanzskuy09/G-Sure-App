@@ -2,8 +2,10 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/order_model.dart';
+import 'package:gsure/models/survey_data.dart';
 import 'package:gsure/services/survey_service.dart';
 import 'package:gsure/shared/theme.dart';
+import 'package:gsure/ui/pages/contoh_survey_list_page.dart';
 import 'package:gsure/ui/pages/form_survey_page.dart';
 import 'package:gsure/ui/pages/home_page.dart';
 import 'package:gsure/ui/pages/log_detail.dart';
@@ -35,8 +37,10 @@ void main() async {
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
   Hive.registerAdapter(OrderModelAdapter());
+  Hive.registerAdapter(SurveyDataAdapter());
 
   await Hive.openBox<OrderModel>('orders');
+  await Hive.openBox<SurveyData>('surveys');
 
   runApp(const MyApp());
 }
@@ -83,6 +87,7 @@ class MyApp extends StatelessWidget {
           // '/progress': (context) => const ProgressPage(),
           // detail setting pages
           '/profile': (context) => const ProfilePage(),
+          '/list-sruvey': (context) => const ContohSurveyListPage(),
           '/about': (context) => const AboutPage(),
           '/log': (context) => const LogPage(),
           '/log-detail': (context) => const LogDetailPage(),

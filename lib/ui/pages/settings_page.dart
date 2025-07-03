@@ -78,6 +78,13 @@ class SettingsPage extends StatelessWidget {
                       Navigator.pushNamed(context, '/profile');
                     },
                   ),
+                  // listButton(
+                  //   icon: Icons.person_outline,
+                  //   label: 'Contoh List',
+                  //   onTap: () {
+                  //     Navigator.pushNamed(context, '/list-sruvey');
+                  //   },
+                  // ),
                   listButton(
                     icon: Icons.history,
                     label: 'Log',

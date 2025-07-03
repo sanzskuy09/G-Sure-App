@@ -7,6 +7,7 @@ class FieldModel {
   final List<Map<String, dynamic>>? section;
   late TextEditingController controller;
   dynamic value;
+  String? key;
   DateTime? timestamp;
   double? latitude;
   double? longitude;
@@ -14,6 +15,7 @@ class FieldModel {
   FieldModel({
     required this.type,
     required this.label,
+    this.key,
     this.options,
     this.section,
     this.value,
@@ -28,9 +30,11 @@ class FieldModel {
     return FieldModel(
       type: json['type'],
       label: json['label'],
+      key: json['key'],
       timestamp: json['timestamp'],
       latitude: json['latitude'],
       longitude: json['longitude'],
+      value: json['value'],
       options: (json['options'] as List?)?.cast<String>(),
       section: (json['section'] as List?)?.cast<Map<String, dynamic>>(),
     );
@@ -45,6 +49,7 @@ class FieldModel {
         'options': options,
         'section': section,
         'value': value,
+        'key': key,
       };
 }
 

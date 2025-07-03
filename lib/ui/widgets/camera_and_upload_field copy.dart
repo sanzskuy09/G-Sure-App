@@ -13,15 +13,23 @@ import 'package:url_launcher/url_launcher.dart';
 class CameraAndUploadFieldForm extends StatefulWidget {
   final int index;
   final String label;
-  final dynamic value; // Ini akan menerima Map dari formAnswers
+  final TextEditingController controller;
+  final dynamic value;
+  final DateTime? timestamp;
+  final double? latitude;
+  final double? longitude;
   final Function(dynamic, DateTime, Position?) onFilePicked;
 
   const CameraAndUploadFieldForm({
     super.key,
     required this.index,
     required this.label,
+    required this.controller,
     required this.value,
     required this.onFilePicked,
+    this.timestamp,
+    this.latitude,
+    this.longitude,
   });
 
   @override
@@ -30,18 +38,16 @@ class CameraAndUploadFieldForm extends StatefulWidget {
 }
 
 class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
-  late final TextEditingController _displayController;
+  dynamic _localValue;
+  bool _isMockLocation = false;
+  bool _isFilePicked = false;
 
-  // State lokal untuk menyimpan data yang sudah diproses
-  dynamic _fileData; // Bisa berupa String path atau Uint8List
   DateTime? _dateTime;
   Position? _photoPosition;
-
-  bool _isMockLocation = false;
-  bool _isFileFromPicker = false;
+  double? latitude = 0.0, longitude = 0.0;
 
   bool get isImage {
-    final name = _displayController.text.toLowerCase();
+    final name = widget.controller.text.toLowerCase();
     return name.endsWith('.jpg') ||
         name.endsWith('.jpeg') ||
         name.endsWith('.png');
@@ -50,11 +56,10 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi controller lokal
-    _displayController = TextEditingController();
-
-    // 3. Logika utama: Proses 'widget.value' saat pertama kali widget dibuat
-    _processInitialValue();
+    _localValue = widget.value;
+    _dateTime = widget.timestamp;
+    // latitude = widget.latitude;
+    // longitude = widget.longitude;
     _checkFakeGPS();
   }
 
@@ -120,56 +125,10 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     );
   }
 
-  void _processInitialValue() {
-    // Jika value dari parent adalah Map (sesuai desain kita)
-    if (widget.value != null && widget.value is Map) {
-      final initialData = widget.value as Map;
-      final file = initialData['file'];
-
-      if (file != null) {
-        if (file is File) {
-          _fileData = file.path;
-          _displayController.text = file.path.split('/').last;
-        } else if (file is String) {
-          _fileData = file;
-          _displayController.text = file.split('/').last;
-        }
-      }
-
-      _dateTime = initialData['timestamp'];
-      final lat = initialData['latitude'] as double?;
-      final lon = initialData['longitude'] as double?;
-      if (lat != null && lon != null) {
-        _photoPosition = Position(
-            latitude: lat,
-            longitude: lon,
-            timestamp: DateTime.now(),
-            accuracy: 0,
-            altitude: 0,
-            altitudeAccuracy: 0,
-            heading: 0,
-            headingAccuracy: 0,
-            speed: 0,
-            speedAccuracy: 0);
-      }
-    }
-    // Fallback jika value hanya String
-    else if (widget.value != null) {
-      _fileData = widget.value;
-      _displayController.text = widget.value.toString().split('/').last;
-    }
-  }
-
-  @override
-  void dispose() {
-    // 4. Jangan lupa dispose controller lokal
-    _displayController.dispose();
-    super.dispose();
-  }
-
   Future<void> _pickFile() async {
-    // final now = DateTime.now();
-    // _isFilePicked = true;
+    _isFilePicked = true;
+
+    final now = DateTime.now();
 
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -179,20 +138,18 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
 
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.first;
-      final pickedFileData = File(file.path!); // Kita butuh object File
-
+      final fileData = kIsWeb ? file.bytes : file.path;
       setState(() {
-        _fileData = pickedFileData.path; // Simpan path untuk preview
-        _displayController.text = file.name; // Update controller LOKAL
-        _isFileFromPicker = true;
+        _localValue = fileData;
+        widget.controller.text = file.name;
+        // _photoPosition = position;
       });
-      // Panggil callback ke parent dengan object File
-      widget.onFilePicked(pickedFileData, DateTime.now(), null);
+      widget.onFilePicked(fileData, now, null); // Kirim balik ke parent
     }
   }
 
   void _captureImage() async {
-    // _isFilePicked = false;
+    _isFilePicked = false;
     if (_isMockLocation) return;
 
     _showLoadingDialog(); // ⏳ Tampilkan loading SEBELUM buka kamera
@@ -221,21 +178,19 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       currentPosition = null;
     }
 
-    // final fileData = kIsWeb ? await pickedFile.readAsBytes() : pickedFile.path;
-    final capturedFile = File(pickedFile.path);
+    final fileData = kIsWeb ? await pickedFile.readAsBytes() : pickedFile.path;
 
     if (!mounted) return;
 
     setState(() {
-      _fileData =
-          capturedFile.path; // State lokal tetap simpan path untuk preview
+      _localValue = fileData;
       _dateTime = now;
       _photoPosition = currentPosition;
-      _displayController.text =
+      widget.controller.text =
           '${widget.label}_${now.year}${now.month}${now.day}_${now.hour}${now.minute}${now.second}.jpg';
     });
 
-    widget.onFilePicked(capturedFile, now, currentPosition);
+    widget.onFilePicked(fileData, now, currentPosition);
 
     if (mounted) Navigator.of(context).pop(); // ✅ Tutup loading
   }
@@ -255,8 +210,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
   @override
   Widget build(BuildContext context) {
     Widget? preview;
-
-    if (_fileData != null) {
+    if (_localValue != null) {
       preview = Padding(
         padding: const EdgeInsets.only(top: 12),
         child: Column(
@@ -264,16 +218,16 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
           children: [
             kIsWeb
                 ? Image.memory(
-                    _fileData as Uint8List,
+                    _localValue as Uint8List,
                     height: 160,
                     fit: BoxFit.cover,
                   )
                 : Image.file(
-                    File(_fileData),
+                    File(_localValue),
                     height: 160,
                     fit: BoxFit.cover,
                   ),
-            !_isFileFromPicker
+            !_isFilePicked
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -319,37 +273,37 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                             ),
                           ],
                         ),
-                      // if (widget.latitude != null && widget.longitude != null)
-                      //   Row(
-                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                      //     children: [
-                      //       Expanded(
-                      //         child: Text(
-                      //           'Lokasi : ${widget.latitude!.toStringAsFixed(6)}, ${widget.longitude!.toStringAsFixed(6)}',
-                      //           style: const TextStyle(
-                      //               fontSize: 12, color: Colors.grey),
-                      //           overflow: TextOverflow.ellipsis,
-                      //         ),
-                      //       ),
-                      //       TextButton.icon(
-                      //         onPressed: () => _openMap(
-                      //           widget.latitude!,
-                      //           widget.longitude!,
-                      //         ),
-                      //         icon: const Icon(Icons.map, size: 14),
-                      //         label: const Text(
-                      //           "Lihat Maps",
-                      //           style: TextStyle(fontSize: 12),
-                      //         ),
-                      //         style: TextButton.styleFrom(
-                      //           padding: const EdgeInsets.only(
-                      //               left: 4), // rapatkan ke kiri
-                      //           minimumSize: Size.zero,
-                      //           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
+                      if (widget.latitude != null && widget.longitude != null)
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                'Lokasi : ${widget.latitude!.toStringAsFixed(6)}, ${widget.longitude!.toStringAsFixed(6)}',
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            TextButton.icon(
+                              onPressed: () => _openMap(
+                                widget.latitude!,
+                                widget.longitude!,
+                              ),
+                              icon: const Icon(Icons.map, size: 14),
+                              label: const Text(
+                                "Lihat Maps",
+                                style: TextStyle(fontSize: 12),
+                              ),
+                              style: TextButton.styleFrom(
+                                padding: const EdgeInsets.only(
+                                    left: 4), // rapatkan ke kiri
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   )
                 : const SizedBox.shrink(),
@@ -392,7 +346,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
             TextField(
               // textCapitalization: TextCapitalization.characters,
               enabled: false,
-              controller: _displayController,
+              controller: widget.controller,
               readOnly: true,
               decoration: InputDecoration(
                 hintText: 'Upload or Take a photo...',
@@ -416,7 +370,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                     constraints:
                         const BoxConstraints(minWidth: 32, minHeight: 32),
                     icon: const Icon(Icons.attach_file),
-                    onPressed: _fileData == null ? _pickFile : null,
+                    onPressed: _localValue == null ? _pickFile : null,
                   ),
                   IconButton(
                     padding: EdgeInsets.zero,
@@ -424,7 +378,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                     constraints:
                         const BoxConstraints(minWidth: 32, minHeight: 32),
                     icon: const Icon(Icons.camera_alt_rounded),
-                    onPressed: _fileData == null && !_isMockLocation
+                    onPressed: _localValue == null && !_isMockLocation
                         ? _captureImage
                         : null,
                   ),

@@ -7,13 +7,17 @@ class SectionFieldContent extends StatefulWidget {
   final QuestionSection item;
   final Map<String, dynamic> formAnswers;
   final VoidCallback? onFieldChanged;
+  final Map<String, TextEditingController> controllers;
+  final void Function(String, dynamic) onUpdateAnswer; // <-- TERIMA DI SINI
   // final void Function(void Function())? onFieldChanged;
 
   const SectionFieldContent({
     super.key,
     required this.item,
     required this.formAnswers,
+    required this.controllers,
     this.onFieldChanged,
+    required this.onUpdateAnswer,
   });
 
   @override
@@ -56,31 +60,25 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                         child: FieldBuilder(
                           field: rtField,
                           index: fIdx + 1,
-                          formAnswers: widget.formAnswers,
-                          setState: setState,
-                          onValueChanged: (newValue) {
-                            setState(() {
-                              rtField.value = newValue;
-                              widget.formAnswers[rtField.label] = newValue;
-                              widget.onFieldChanged?.call();
-                            });
-                          },
+                          controller: widget
+                              .controllers[rtField.key], // Untuk field teks
+                          value: widget
+                              .formAnswers[rtField.key], // Untuk field non-teks
+                          onUpdateAnswer:
+                              widget.onUpdateAnswer, // ✅ Callback tunggal
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: FieldBuilder(
                           field: rwField,
-                          index: fIdx + 2,
-                          formAnswers: widget.formAnswers,
-                          setState: setState,
-                          onValueChanged: (newValue) {
-                            setState(() {
-                              rwField.value = newValue;
-                              widget.formAnswers[rwField.label] = newValue;
-                              widget.onFieldChanged?.call();
-                            });
-                          },
+                          index: fIdx + 1,
+                          controller: widget
+                              .controllers[rwField.key], // Untuk field teks
+                          value: widget
+                              .formAnswers[rwField.key], // Untuk field non-teks
+                          onUpdateAnswer:
+                              widget.onUpdateAnswer, // ✅ Callback tunggal
                         ),
                       ),
                     ],
@@ -106,15 +104,9 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                 child: FieldBuilder(
                   field: field,
                   index: fIdx + 1,
-                  formAnswers: widget.formAnswers,
-                  setState: setState,
-                  onValueChanged: (newValue) {
-                    setState(() {
-                      field.value = newValue;
-                      widget.formAnswers[field.label] = newValue;
-                      widget.onFieldChanged?.call();
-                    });
-                  },
+                  controller: widget.controllers[field.key], // Untuk field teks
+                  value: widget.formAnswers[field.key], // Untuk field non-teks
+                  onUpdateAnswer: widget.onUpdateAnswer, // ✅ Callback tunggal
                 ),
               ),
               if (field.section != null && field.value != null)
@@ -130,6 +122,10 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                     MyNestedAccordion(
                       title: sub['title'],
                       fields: subFields,
+                      // V-- KIRIM DATA & CALLBACK DARI PARENT --V
+                      controllers: widget.controllers,
+                      formAnswers: widget.formAnswers,
+                      onUpdateAnswer: widget.onUpdateAnswer,
                     ),
                   ];
                 }),
@@ -137,7 +133,6 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
           );
         }),
 
-        // ✅ Langkah 4: Perbaiki logika "Tambah Dokumen"
         if (widget.item.title == "Foto & Dokumen Pekerjaan / Usaha" ||
             widget.item.title == "Foto & Dokumen Simulasi Perhitungan" ||
             widget.item.title == "Foto & Dokumen Tambahan")
@@ -150,10 +145,13 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                   final count =
                       _fields.where((f) => f.type == "cameraAndUpload").length;
 
-                  _fields.add(FieldModel(
-                    type: "cameraAndUpload",
-                    label: "Foto & Dokumen ${count + 1}",
-                  ));
+                  _fields.add(
+                    FieldModel(
+                      type: "cameraAndUpload",
+                      label: "Foto & Dokumen ${count + 1}",
+                      key: "dokumen${count + 1}",
+                    ),
+                  );
                 });
               },
               child: Row(
