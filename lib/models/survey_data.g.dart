@@ -8,7 +8,7 @@ part of 'survey_data.dart';
 
 class SurveyDataAdapter extends TypeAdapter<SurveyData> {
   @override
-  final int typeId = 2;
+  final int typeId = 2222;
 
   @override
   SurveyData read(BinaryReader reader) {

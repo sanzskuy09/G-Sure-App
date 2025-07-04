@@ -1,7 +1,21 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
+import 'package:gsure/models/data_alamat_survey_model.dart';
+import 'package:gsure/models/data_dealer_model.dart';
+import 'package:gsure/models/data_kendaraan_model.dart';
+import 'package:gsure/models/data_kontak_darurat_model.dart';
+import 'package:gsure/models/data_pasangan_model.dart';
+import 'package:gsure/models/data_pasangan_penjamin_model.dart';
+import 'package:gsure/models/data_pekerjaan_model.dart';
+import 'package:gsure/models/data_pekerjaan_penjamin_model.dart';
+import 'package:gsure/models/data_pemohon_model.dart';
+import 'package:gsure/models/data_penjamin_model.dart';
+import 'package:gsure/models/foto_kendaraan_model.dart';
+import 'package:gsure/models/foto_legalitas_model.dart';
+import 'package:gsure/models/foto_tempat_tinggal_model.dart';
 import 'package:gsure/models/order_model.dart';
+import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/models/survey_data.dart';
 import 'package:gsure/services/survey_service.dart';
 import 'package:gsure/shared/theme.dart';
@@ -41,6 +55,28 @@ void main() async {
 
   await Hive.openBox<OrderModel>('orders');
   await Hive.openBox<SurveyData>('surveys');
+
+  // Main Hive Model
+  Hive.registerAdapter(AplikasiSurveyAdapter());
+  // Hive Model Survey
+  Hive.registerAdapter(DataDealerAdapter());
+  Hive.registerAdapter(DataKendaraanAdapter());
+  Hive.registerAdapter(DataAlamatSurveyAdapter());
+  Hive.registerAdapter(DataPemohonAdapter());
+  Hive.registerAdapter(DataPekerjaanAdapter());
+  Hive.registerAdapter(DataPasanganAdapter());
+  Hive.registerAdapter(DataKontakDaruratAdapter());
+  Hive.registerAdapter(DataPenjaminAdapter());
+  Hive.registerAdapter(DataPekerjaanPenjaminAdapter());
+  Hive.registerAdapter(DataPasanganPenjaminAdapter());
+
+  // Foto
+  Hive.registerAdapter(FotoKendaraanAdapter());
+  Hive.registerAdapter(FotoLegalitasAdapter());
+  Hive.registerAdapter(FotoTempatTinggalAdapter());
+
+  await Hive.openBox<AplikasiSurvey>('survey_apps');
+  await Hive.openBox<DataDealer>('data_dealers');
 
   runApp(const MyApp());
 }

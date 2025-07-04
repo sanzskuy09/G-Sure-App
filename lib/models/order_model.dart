@@ -3,7 +3,7 @@ import 'dart:typed_data';
 
 part 'order_model.g.dart';
 
-@HiveType(typeId: 1)
+@HiveType(typeId: 555)
 class OrderModel extends HiveObject {
   @HiveField(0)
   final int? id;

@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 // Jalankan 'flutter packages pub run build_runner build' setelah membuat file ini
 part 'survey_data.g.dart';
 
-@HiveType(typeId: 2) // typeId harus unik untuk setiap model
+@HiveType(typeId: 2222) // typeId harus unik untuk setiap model
 class SurveyData extends HiveObject {
   @HiveField(0)
   String? kddealer;

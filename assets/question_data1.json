@@ -138,7 +138,7 @@
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapemohon"  },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapemohon"  },
-              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetusahapemohon"  },
+              { "type": "numberDecimal", "label": "Omzet Usaha/bulan", "key": "omzetusahapemohon"  },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
@@ -183,7 +183,7 @@
       {
         "type": "dropdown",
         "label": "Bukti Kepemilikan Tempat Tinggal",
-        "key": "buktimilihrumahpemohon",
+        "key": "buktimilikrumahpemohon",
         "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
       },
       {
@@ -437,7 +437,7 @@
       {
         "type": "dropdown",
         "label": "Bukti Kepemilikan Tempat Tinggal",
-        "key": "buktimilihrumahpenjamin",
+        "key": "buktimilikrumahpenjamin",
         "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
       },
       {
@@ -479,18 +479,18 @@
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
               { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
 
-              { "type": "text", "label": "Masa Kerja", "key": "masaKerjaPasanganPenjamin" },
-              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajiPasanganPenjamin"  },
+              { "type": "text", "label": "Masa Kerja", "key": "masakerjapasanganpenjamin" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipasanganpenjamin"  },
               {
                 "type": "dropdown",
                 "label": "Slip Gaji", 
-                "key": "slipGajiPasanganPenjamin" ,
+                "key": "slipgajipasanganpenjamin" ,
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               },
               {
                 "type": "dropdown",
                 "label": "Penghasilan di Payroll",
-                 "key": "payrollPasanganPenjamin",
+                 "key": "payrollpasanganpenjamin",
                 "options": ["TERCERMIN", "TIDAK TERCERMIN"]
               }
             ]
@@ -511,13 +511,13 @@
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
               { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
 
-              { "type": "text", "label": "Bidang Usaha", "key": "bidahUsahaPasanganPenjamin" },
-              { "type": "text", "label": "Lama Usaha", "key": "lamaUsahaPasanganPenjamin" },
-              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetUsahaPasanganPenjamin" },
+              { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapasanganpenjamin" },
+              { "type": "text", "label": "Lama Usaha", "key": "lamausahapasanganpenjamin" },
+              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetusahapasanganpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
-                "key": "profitUsahaPasanganPenjamin",
+                "key": "profitusahapasanganpenjamin",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               }
             ]
@@ -603,19 +603,6 @@
       { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doktambahan1" },
       { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doktambahan2" },
       { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doktambahan3" }
-    ]
-  },
-  {
-    "title": "Hasil Cek Linkungan",
-    "fields": [
-      { "type": "text", "label": "Bertemu Dengan? (Nama)", "key": "namalingkungan" },
-      {
-        "type": "dropdown",
-        "label": "Hubungan",
-        "key": "hublinkungan",
-        "options": ["TETANGGA", "RT", "SECURITY", "LAINNYA"]
-      },
-      { "type": "text", "label": "Informasi", "key": "infolingkungan" }
     ]
   }
 ]
