@@ -50,6 +50,9 @@ void main() async {
   // WAJIB: Inisialisasi Hive
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
+
+  // await Hive.deleteFromDisk();
+
   Hive.registerAdapter(OrderModelAdapter());
   Hive.registerAdapter(SurveyDataAdapter());
 

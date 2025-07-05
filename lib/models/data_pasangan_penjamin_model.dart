@@ -21,35 +21,35 @@ class DataPasanganPenjamin extends HiveObject {
   // DataPekerjaan? dataPekerjaan;
 
   //pekerjaan pasangan
-  @HiveField(7)
+  @HiveField(5)
   String? pekerjaanpasanganpenjamin;
-  @HiveField(8)
+  @HiveField(6)
   String? namaperusahaanpasanganpenjamin;
-  @HiveField(9)
+  @HiveField(7)
   String? jabatanpasanganpenjamin;
-  @HiveField(10)
+  @HiveField(8)
   String? ketjabatanpasanganpenjamin;
-  @HiveField(11)
+  @HiveField(9)
   String? alamatperusahaanpasanganpenjamin;
-  @HiveField(12)
+  @HiveField(10)
   String? kodeposperusahaanpasanganpenjamin;
-  @HiveField(13)
+  @HiveField(11)
   String? noteleponusahapasanganpenjamin;
-  @HiveField(14)
+  @HiveField(12)
   String? masakerjapasanganpenjamin;
-  @HiveField(15)
+  @HiveField(13)
   Double? gajipasanganpenjamin;
-  @HiveField(16)
+  @HiveField(14)
   String? slipgajipasanganpenjamin;
-  @HiveField(17)
+  @HiveField(15)
   String? payrollpasanganpenjamin;
-  @HiveField(18)
+  @HiveField(16)
   String? bidangusahapasanganpenjamin;
-  @HiveField(19)
+  @HiveField(17)
   String? lamausahapasanganpenjamin;
-  @HiveField(20)
+  @HiveField(18)
   Double? omzetusahapasanganpenjamin;
-  @HiveField(21)
+  @HiveField(19)
   String? profitusahapasanganpenjamin;
 
   DataPasanganPenjamin({

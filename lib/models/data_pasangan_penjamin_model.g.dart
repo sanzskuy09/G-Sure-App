@@ -22,21 +22,21 @@ class DataPasanganPenjaminAdapter extends TypeAdapter<DataPasanganPenjamin> {
       warganegarapasanganpenjamin: fields[2] as String?,
       notelponpasanganpenjamin: fields[3] as String?,
       nowapasanganpenjamin: fields[4] as String?,
-      pekerjaanpasanganpenjamin: fields[7] as String?,
-      namaperusahaanpasanganpenjamin: fields[8] as String?,
-      jabatanpasanganpenjamin: fields[9] as String?,
-      ketjabatanpasanganpenjamin: fields[10] as String?,
-      alamatperusahaanpasanganpenjamin: fields[11] as String?,
-      kodeposperusahaanpasanganpenjamin: fields[12] as String?,
-      noteleponusahapasanganpenjamin: fields[13] as String?,
-      masakerjapasanganpenjamin: fields[14] as String?,
-      gajipasanganpenjamin: fields[15] as Double?,
-      slipgajipasanganpenjamin: fields[16] as String?,
-      payrollpasanganpenjamin: fields[17] as String?,
-      bidangusahapasanganpenjamin: fields[18] as String?,
-      lamausahapasanganpenjamin: fields[19] as String?,
-      omzetusahapasanganpenjamin: fields[20] as Double?,
-      profitusahapasanganpenjamin: fields[21] as String?,
+      pekerjaanpasanganpenjamin: fields[5] as String?,
+      namaperusahaanpasanganpenjamin: fields[6] as String?,
+      jabatanpasanganpenjamin: fields[7] as String?,
+      ketjabatanpasanganpenjamin: fields[8] as String?,
+      alamatperusahaanpasanganpenjamin: fields[9] as String?,
+      kodeposperusahaanpasanganpenjamin: fields[10] as String?,
+      noteleponusahapasanganpenjamin: fields[11] as String?,
+      masakerjapasanganpenjamin: fields[12] as String?,
+      gajipasanganpenjamin: fields[13] as Double?,
+      slipgajipasanganpenjamin: fields[14] as String?,
+      payrollpasanganpenjamin: fields[15] as String?,
+      bidangusahapasanganpenjamin: fields[16] as String?,
+      lamausahapasanganpenjamin: fields[17] as String?,
+      omzetusahapasanganpenjamin: fields[18] as Double?,
+      profitusahapasanganpenjamin: fields[19] as String?,
     );
   }
 
@@ -54,35 +54,35 @@ class DataPasanganPenjaminAdapter extends TypeAdapter<DataPasanganPenjamin> {
       ..write(obj.notelponpasanganpenjamin)
       ..writeByte(4)
       ..write(obj.nowapasanganpenjamin)
-      ..writeByte(7)
+      ..writeByte(5)
       ..write(obj.pekerjaanpasanganpenjamin)
-      ..writeByte(8)
+      ..writeByte(6)
       ..write(obj.namaperusahaanpasanganpenjamin)
-      ..writeByte(9)
+      ..writeByte(7)
       ..write(obj.jabatanpasanganpenjamin)
-      ..writeByte(10)
+      ..writeByte(8)
       ..write(obj.ketjabatanpasanganpenjamin)
-      ..writeByte(11)
+      ..writeByte(9)
       ..write(obj.alamatperusahaanpasanganpenjamin)
-      ..writeByte(12)
+      ..writeByte(10)
       ..write(obj.kodeposperusahaanpasanganpenjamin)
-      ..writeByte(13)
+      ..writeByte(11)
       ..write(obj.noteleponusahapasanganpenjamin)
-      ..writeByte(14)
+      ..writeByte(12)
       ..write(obj.masakerjapasanganpenjamin)
-      ..writeByte(15)
+      ..writeByte(13)
       ..write(obj.gajipasanganpenjamin)
-      ..writeByte(16)
+      ..writeByte(14)
       ..write(obj.slipgajipasanganpenjamin)
-      ..writeByte(17)
+      ..writeByte(15)
       ..write(obj.payrollpasanganpenjamin)
-      ..writeByte(18)
+      ..writeByte(16)
       ..write(obj.bidangusahapasanganpenjamin)
-      ..writeByte(19)
+      ..writeByte(17)
       ..write(obj.lamausahapasanganpenjamin)
-      ..writeByte(20)
+      ..writeByte(18)
       ..write(obj.omzetusahapasanganpenjamin)
-      ..writeByte(21)
+      ..writeByte(19)
       ..write(obj.profitusahapasanganpenjamin);
   }
 

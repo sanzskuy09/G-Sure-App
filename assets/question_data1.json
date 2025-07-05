@@ -197,7 +197,7 @@
   {
     "title": "Data Pasangan",
     "showIf": {
-      "Status Pernikahan": ["MENIKAH"]
+      "statuspernikahan": ["MENIKAH"]
     },
     "fields": [
      { "type": "text", "label": "Nama", "key": "namapasangan" },
@@ -316,7 +316,6 @@
   {
     "title": "Data Penjamin",
     "showIf": {
-      "Apakah Ada Penjamin ?": ["Ya"],
       "isPenjaminExist": ["Ya"]
     },
     "fields": [
@@ -451,8 +450,7 @@
   {
     "title": "Data Pasangan Penjamin",
     "showIf": {
-      "Apakah Ada Penjamin ?": ["Ya"],
-      "Status Pernikahan Penjamin": ["MENIKAH"]
+      "statuspernikahanpenjamin": ["MENIKAH"]
     },
     "fields": [
       { "type": "text", "label": "Nama", "key": "namapasanganpenjamin" },

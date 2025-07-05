@@ -41,6 +41,26 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   DateTime? selectedDate;
   int visibleSectionCount = 1; // hanya tampilkan satu section di awal
 
+  // List<int> _calculateAllPossibleVisibleIndexes() {
+  //   List<int> result = [];
+
+  //   for (int i = 0; i < _question.length; i++) {
+  //     final item = _question[i];
+  //     if (item.showIf != null) {
+  //       bool shouldShow = true;
+  //       item.showIf!.forEach((key, allowedValues) {
+  //         final currentValue = formAnswers[key]?.toString();
+  //         if (!allowedValues.contains(currentValue)) {
+  //           shouldShow = false;
+  //         }
+  //       });
+  //       if (!shouldShow) continue;
+  //     }
+  //     result.add(i);
+  //   }
+  //   return result;
+  // }
+
   List<int> _calculateAllPossibleVisibleIndexes() {
     List<int> result = [];
 
@@ -50,12 +70,25 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         bool shouldShow = true;
         item.showIf!.forEach((key, allowedValues) {
           final currentValue = formAnswers[key]?.toString();
+
+          // TAMBAHKAN INI UNTUK DEBUGGING
+          print('Checking visibility for: "${item.title}"');
+          print('--> Condition key: "$key"');
+          print('--> Current value in formAnswers: "$currentValue"');
+          print('--> Allowed values: $allowedValues');
+          print('--> Does it contain? ${allowedValues.contains(currentValue)}');
+          // AKHIR DARI KODE DEBUGGING
+
           if (!allowedValues.contains(currentValue)) {
             shouldShow = false;
           }
         });
-        if (!shouldShow) continue;
+        if (!shouldShow) {
+          print('Result: "${item.title}" will be HIDDEN.\n'); // Tambahan
+          continue;
+        }
       }
+      print('Result: Item at index $i will be SHOWN.\n'); // Tambahan
       result.add(i);
     }
     return result;
@@ -267,15 +300,6 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     }
   }
 
-  Future<List<QuestionSection>> loadQuestionData() async {
-    // final String jsonStr =
-    //     await rootBundle.loadString('assets/question_data1.json');
-    final String jsonStr =
-        await rootBundle.loadString('assets/survey_form.json');
-    final List<dynamic> jsonData = json.decode(jsonStr);
-    return jsonData.map((e) => QuestionSection.fromJson(e)).toList();
-  }
-
   // List<int> get visibleSectionIndexes {
   //   List<int> result = [];
 
@@ -342,45 +366,129 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     );
   }
 
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   loadQuestionData().then((data) {
+  //     setState(() {
+  //       _question = data;
+  //       openStates =
+  //           List.generate(data.length, (i) => i == 0); // buka yang pertama
+
+  //       // ✅ TAMBAHKAN LOGIKA INI
+  //       // Loop semua section dan field untuk membuat controller
+  //       for (var section in _question) {
+  //         for (var field in section.fields) {
+  //           // Hanya buat controller untuk field tipe teks
+  //           if (field.type == 'text' ||
+  //               field.type == 'email' ||
+  //               field.type == 'password' ||
+  //               field.type == 'textNoSpace' || // <-- TAMBAHKAN
+  //               field.type == 'number' || // <-- TAMBAHKAN
+  //               field.type == 'numberDecimal' || // <-- TAMBAHKAN
+  //               field.type == 'date') {
+  //             final controller = TextEditingController();
+
+  //             // Tambahkan listener untuk memperbarui 'formAnswers' secara otomatis
+  //             if (field.type != 'date') {
+  //               controller.addListener(() {
+  //                 formAnswers[field.key!] = controller.text;
+
+  //                 // Panggil setState jika Anda perlu rebuild UI berdasarkan input
+  //                 // Contoh: untuk menampilkan/menyembunyikan section lain
+  //                 // setState(() {});
+  //               });
+  //             }
+  //             _controllers[field.key!] = controller;
+  //           }
+  //         }
+  //       }
+  //     });
+  //   });
+  // }
+
+  Future<List<QuestionSection>> loadQuestionData() async {
+    final String jsonStr =
+        await rootBundle.loadString('assets/question_data1.json');
+    // final String jsonStr =
+    //     await rootBundle.loadString('assets/survey_form.json');
+    final List<dynamic> jsonData = json.decode(jsonStr);
+    return jsonData.map((e) => QuestionSection.fromJson(e)).toList();
+  }
+
   @override
   void initState() {
     super.initState();
-    loadQuestionData().then((data) {
-      setState(() {
-        _question = data;
-        openStates =
-            List.generate(data.length, (i) => i == 0); // buka yang pertama
+    // Panggil fungsi untuk memuat data dan menginisialisasi form
+    _loadAndInitializeForm();
+  }
 
-        // ✅ TAMBAHKAN LOGIKA INI
-        // Loop semua section dan field untuk membuat controller
-        for (var section in _question) {
-          for (var field in section.fields) {
-            // Hanya buat controller untuk field tipe teks
-            if (field.type == 'text' ||
-                field.type == 'email' ||
-                field.type == 'password' ||
-                field.type == 'textNoSpace' || // <-- TAMBAHKAN
-                field.type == 'number' || // <-- TAMBAHKAN
-                field.type == 'numberDecimal' || // <-- TAMBAHKAN
-                field.type == 'date') {
-              final controller = TextEditingController();
+// 1. Fungsi utama yang menggabungkan pemuatan data dan inisialisasi
+  Future<void> _loadAndInitializeForm() async {
+    // Muat data dari JSON
+    final sections = await loadQuestionData();
 
-              // Tambahkan listener untuk memperbarui 'formAnswers' secara otomatis
-              if (field.type != 'date') {
-                controller.addListener(() {
-                  formAnswers[field.key!] = controller.text;
+    // Setelah data siap, panggil fungsi untuk membuat semua controller
+    _initializeAllControllers(sections);
 
-                  // Panggil setState jika Anda perlu rebuild UI berdasarkan input
-                  // Contoh: untuk menampilkan/menyembunyikan section lain
-                  // setState(() {});
-                });
-              }
-              _controllers[field.key!] = controller;
-            }
-          }
-        }
-      });
+    // Terakhir, update state untuk membangun UI
+    setState(() {
+      _question = sections;
+      openStates = List.generate(sections.length, (i) => i == 0);
     });
+  }
+
+// 2. Fungsi untuk menginisialisasi SEMUA controller, termasuk yang nested
+  void _initializeAllControllers(List<QuestionSection> sections) {
+    for (var section in sections) {
+      // Panggil helper rekursif untuk memproses semua field di section ini
+      _processFields(section.fields);
+    }
+  }
+
+// 3. Helper rekursif yang bisa "menyelam" ke dalam nested fields
+  void _processFields(List<FieldModel> fields) {
+    for (var field in fields) {
+      // A. Buat controller untuk tipe field yang relevan
+      if (field.type == 'text' ||
+          field.type == 'email' ||
+          field.type == 'password' ||
+          field.type == 'textNoSpace' ||
+          field.type == 'number' ||
+          field.type == 'numberDecimal' ||
+          field.type == 'date' ||
+          field.type == 'textarea') {
+        // Mungkin Anda punya tipe ini juga
+
+        // Hindari membuat ulang jika sudah ada
+        if (!_controllers.containsKey(field.key)) {
+          final controller = TextEditingController();
+          if (field.type != 'date') {
+            controller.addListener(() {
+              formAnswers[field.key!] = controller.text;
+              // Update map jawaban. Panggil setState HANYA jika diperlukan.
+              // if (formAnswers[field.key!] != controller.text) {
+              //   setState(() {
+              //     formAnswers[field.key!] = controller.text;
+              //   });
+              // }
+            });
+          }
+          _controllers[field.key!] = controller;
+        }
+      }
+
+      // B. Jika field ini punya section bersarang, panggil fungsi ini lagi (rekursi)
+      if (field.section != null && field.section!.isNotEmpty) {
+        for (var subSection in field.section!) {
+          // Asumsi subSection adalah Map dan punya 'fields'
+          final List<dynamic> subFieldsData = subSection['fields'] ?? [];
+          final List<FieldModel> subFields =
+              subFieldsData.map((f) => FieldModel.fromJson(f)).toList();
+          _processFields(subFields); // <- PANGGILAN REKURSIF
+        }
+      }
+    }
   }
 
   @override
@@ -428,30 +536,20 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
           print('index: $index, actualIndex: $actualIndex');
 
           return AccordionSection(
-            // isOpen: index == visibleSectionIndexes.length - 1,
-            // 1. Tetap BACA status dari state 'openStates'
             isOpen: openStates[actualIndex],
-
-            // 2. Saat section DIBUKA, update state
             onOpenSection: () {
               setState(() {
-                // Logika agar hanya satu section yang terbuka:
-                // Tutup semua section terlebih dahulu
                 for (int i = 0; i < openStates.length; i++) {
                   openStates[i] = false;
                 }
-                // Kemudian, buka hanya section yang baru saja di-klik
                 openStates[actualIndex] = true;
               });
             },
-
-            // 3. Saat section DITUTUP, update state
             onCloseSection: () {
               setState(() {
                 openStates[actualIndex] = false;
               });
             },
-
             contentVerticalPadding: 10,
             leftIcon: const Icon(
               Icons.question_answer_outlined,
@@ -584,8 +682,8 @@ class MyNestedAccordion extends StatelessWidget //__
                       field: sf,
                       index: fields.indexOf(sf) + 1,
                       // V-- TERUSKAN DATA & CALLBACK KE FIELD BUILDER --V
-                      controller: controllers[sf.label],
-                      value: formAnswers[sf.label],
+                      controller: controllers[sf.key],
+                      value: formAnswers[sf.key],
                       onUpdateAnswer: onUpdateAnswer,
                     ),
                   ),

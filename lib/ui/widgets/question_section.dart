@@ -95,6 +95,8 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
             return const SizedBox.shrink(); // kosongkan
           }
 
+          final currentValue = widget.formAnswers[field.key];
+
           // Default rendering untuk field lain
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,10 +111,12 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                   onUpdateAnswer: widget.onUpdateAnswer, // ✅ Callback tunggal
                 ),
               ),
-              if (field.section != null && field.value != null)
+
+              // Ambil nilai saat ini dari formAnswers
+              if (field.section != null && currentValue != null)
                 ...field.section!
                     .where((sub) =>
-                        (sub['show'] as List).contains(field.value.toString()))
+                        (sub['show'] as List).contains(currentValue.toString()))
                     .expand((sub) {
                   final subFields = (sub['fields'] as List)
                       .map((f) => FieldModel.fromJson(f))
