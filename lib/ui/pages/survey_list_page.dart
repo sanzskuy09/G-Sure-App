@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/form/form_bloc.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/order_model.dart';
 import 'package:gsure/shared/theme.dart';
@@ -144,11 +145,23 @@ class SurveyListPage extends StatelessWidget {
                             ),
                             IconButton(
                               onPressed: () {
+                                // Navigator.push(
+                                //   context,
+                                //   MaterialPageRoute(
+                                //     builder: (context) =>
+                                //         FormSurveyPage(order: order),
+                                //   ),
+                                // );
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        FormSurveyPage(order: order),
+                                    builder: (context) {
+                                      // BENAR: Bungkus halaman Anda dengan BlocProvider di sini
+                                      return BlocProvider(
+                                        create: (context) => FormBloc(),
+                                        child: FormSurveyPage(order: order),
+                                      );
+                                    },
                                   ),
                                 );
                               },

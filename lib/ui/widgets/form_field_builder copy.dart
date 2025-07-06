@@ -12,9 +12,9 @@ import 'package:intl/intl.dart';
 class FieldBuilder extends StatelessWidget {
   final FieldModel field;
   final int index;
-  final TextEditingController? controller; // Dari parent state
-  final dynamic value; // Dari formAnswers
-  final void Function(String, dynamic) onUpdateAnswer; // Callback tunggal
+  final TextEditingController? controller;
+  final dynamic value;
+  final void Function(String, dynamic) onUpdateAnswer;
   final bool isReadOnly;
 
   const FieldBuilder({
@@ -95,7 +95,6 @@ class FieldBuilder extends StatelessWidget {
             obscureText: field.type == 'password',
             style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
             decoration: baseDecoration(),
-            onChanged: (value) => onUpdateAnswer(field.key!, value),
           ),
         );
 
@@ -118,7 +117,6 @@ class FieldBuilder extends StatelessWidget {
             ],
             style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
             decoration: baseDecoration(),
-            onChanged: (value) => onUpdateAnswer(field.key!, value),
           ),
         );
 
