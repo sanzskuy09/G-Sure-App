@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/shared/theme.dart';
@@ -487,27 +488,28 @@ class ProgressDetailPage extends StatelessWidget {
               title: 'Foto Kendaraan',
               icon: Icons.image,
               children: [
-                _buildDetailRow('Odometer', survey.fotoKendaraan?.odometer),
                 _buildDetailRow(
+                    'Odometer', '${survey.fotoKendaraan?.odometer} KM'),
+                _buildPhotoItem(
                     'Foto Unit Depan', survey.fotoKendaraan?.fotounitdepan),
-                _buildDetailRow('Foto Unit Belakang',
+                _buildPhotoItem('Foto Unit Belakang',
                     survey.fotoKendaraan?.fotounitbelakang),
-                _buildDetailRow('Foto Unit Interior Depan',
+                _buildPhotoItem('Foto Unit Interior Depan',
                     survey.fotoKendaraan?.fotounitinteriordepan),
-                _buildDetailRow('Foto Unit Mesin & Plat Nomor',
+                _buildPhotoItem('Foto Unit Mesin & Plat Nomor',
                     survey.fotoKendaraan?.fotounitmesinplat),
-                _buildDetailRow('Foto Mesin', survey.fotoKendaraan?.fotomesin),
-                _buildDetailRow('Foto Unit Selfie CMO',
+                _buildPhotoItem('Foto Mesin', survey.fotoKendaraan?.fotomesin),
+                _buildPhotoItem('Foto Unit Selfie CMO',
                     survey.fotoKendaraan?.fotounitselfiecmo),
-                _buildDetailRow(
+                _buildPhotoItem(
                     'Foto Speedometer', survey.fotoKendaraan?.fotospeedometer),
-                _buildDetailRow('Foto Hasil Gesekan Noka Nosin',
+                _buildPhotoItem('Foto Hasil Gesekan Noka Nosin',
                     survey.fotoKendaraan?.fotogesekannoka),
-                _buildDetailRow('Foto STNK', survey.fotoKendaraan?.fotostnk),
-                _buildDetailRow(
+                _buildPhotoItem('Foto STNK', survey.fotoKendaraan?.fotostnk),
+                _buildPhotoItem(
                     'Foto Notice Pajak', survey.fotoKendaraan?.fotonoticepajak),
-                _buildDetailRow('Foto BPKB 1', survey.fotoKendaraan?.fotobpkb1),
-                _buildDetailRow('Foto BPKB 2', survey.fotoKendaraan?.fotobpkb2),
+                _buildPhotoItem('Foto BPKB 1', survey.fotoKendaraan?.fotobpkb1),
+                _buildPhotoItem('Foto BPKB 2', survey.fotoKendaraan?.fotobpkb2),
               ],
             ),
 
@@ -516,15 +518,15 @@ class ProgressDetailPage extends StatelessWidget {
               title: 'Foto & Dokumen Legalitas',
               icon: Icons.image,
               children: [
-                _buildDetailRow('Foto KTP Asli Pemohon',
+                _buildPhotoItem('Foto KTP Asli Pemohon',
                     survey.fotoLegalitas?.fotoktppemohon),
-                _buildDetailRow(
+                _buildPhotoItem(
                     'Foto KTP Pasangan', survey.fotoLegalitas?.fotoktppasangan),
-                _buildDetailRow(
+                _buildPhotoItem(
                     'Foto Kartu Keluarga', survey.fotoLegalitas?.fotokk),
-                _buildDetailRow('Foto SIM-A Pemohon / Pasangan',
+                _buildPhotoItem('Foto SIM-A Pemohon / Pasangan',
                     survey.fotoLegalitas?.fotosima),
-                _buildDetailRow('Foto NPWP Pemohon / Pasangan',
+                _buildPhotoItem('Foto NPWP Pemohon / Pasangan',
                     survey.fotoLegalitas?.fotonpwp),
               ],
             ),
@@ -534,21 +536,21 @@ class ProgressDetailPage extends StatelessWidget {
               title: 'Foto & Dokumen Tempat Tinggal',
               icon: Icons.image,
               children: [
-                _buildDetailRow(
+                _buildPhotoItem(
                     'Foto Rumah', survey.fotoTempatTinggal?.fotorumah),
-                _buildDetailRow('Foto Rumah Selfie CMO',
+                _buildPhotoItem('Foto Rumah Selfie CMO',
                     survey.fotoTempatTinggal?.fotorumahselfiecmo),
-                _buildDetailRow('Foto Cek Lingkungan Selfie CMO',
+                _buildPhotoItem('Foto Cek Lingkungan Selfie CMO',
                     survey.fotoTempatTinggal?.fotolingkunganselfiecmo),
-                _buildDetailRow('Foto Bukti Kepemilikan Tempat Tinggal',
+                _buildPhotoItem('Foto Bukti Kepemilikan Tempat Tinggal',
                     survey.fotoTempatTinggal?.fotobuktimilikrumah),
-                _buildDetailRow('Foto Close-Up Pemohon',
+                _buildPhotoItem('Foto Close-Up Pemohon',
                     survey.fotoTempatTinggal?.fotocloseuppemohon),
-                _buildDetailRow('Foto Pemohon TTD FPP',
+                _buildPhotoItem('Foto Pemohon TTD FPP',
                     survey.fotoTempatTinggal?.fotopemohonttdfpp),
-                _buildDetailRow('Foto FPP Tampak Depan',
+                _buildPhotoItem('Foto FPP Tampak Depan',
                     survey.fotoTempatTinggal?.fotofppdepan),
-                _buildDetailRow('Foto FPP Tampak Belakang',
+                _buildPhotoItem('Foto FPP Tampak Belakang',
                     survey.fotoTempatTinggal?.fotofppbelakang),
               ],
             ),
@@ -655,6 +657,51 @@ class ProgressDetailPage extends StatelessWidget {
           // Masukkan semua baris detail ke sini
           ...children,
           const SizedBox(height: 8),
+        ],
+      ),
+    );
+  }
+
+  /// Helper widget baru untuk menampilkan satu item foto
+  Widget _buildPhotoItem(String label, String? path) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+          ),
+          const SizedBox(height: 8),
+          // Cek apakah path ada dan tidak kosong
+          (path != null && path.isNotEmpty)
+              ? ClipRRect(
+                  borderRadius: BorderRadius.circular(0.0),
+                  child: Image.file(
+                    File(path),
+                    width: double.infinity,
+                    height: 150,
+                    fit: BoxFit.contain,
+                    // alignment: Alignment.centerLeft,
+                    // Tambahkan error builder untuk menangani jika file tidak ditemukan
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(child: Text('Gagal memuat gambar'));
+                    },
+                  ),
+                )
+              : Container(
+                  height: 50,
+                  width: double.infinity,
+                  color: Colors.grey.shade200,
+                  child: const Center(
+                    child: Text(
+                      'Tidak ada foto',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  ),
+                ),
         ],
       ),
     );

@@ -279,37 +279,6 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
                       ),
                     ],
                   ),
-                // if (widget.latitude != null && widget.longitude != null)
-                //   Row(
-                //     crossAxisAlignment: CrossAxisAlignment.center,
-                //     children: [
-                //       Expanded(
-                //         child: Text(
-                //           'Lokasi : ${widget.latitude!.toStringAsFixed(6)}, ${widget.longitude!.toStringAsFixed(6)}',
-                //           style:
-                //               const TextStyle(fontSize: 12, color: Colors.grey),
-                //           overflow: TextOverflow.ellipsis,
-                //         ),
-                //       ),
-                //       TextButton.icon(
-                //         onPressed: () => _openMap(
-                //           widget.latitude!,
-                //           widget.longitude!,
-                //         ),
-                //         icon: const Icon(Icons.map, size: 14),
-                //         label: const Text(
-                //           "Lihat Maps",
-                //           style: TextStyle(fontSize: 12),
-                //         ),
-                //         style: TextButton.styleFrom(
-                //           padding: const EdgeInsets.only(
-                //               left: 4), // rapatkan ke kiri
-                //           minimumSize: Size.zero,
-                //           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                //         ),
-                //       ),
-                //     ],
-                //   ),
               ],
             ),
           ],
