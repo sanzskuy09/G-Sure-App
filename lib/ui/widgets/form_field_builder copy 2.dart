@@ -12,38 +12,23 @@ import 'package:intl/intl.dart';
 class FieldBuilder extends StatelessWidget {
   final FieldModel field;
   final int index;
-  final void Function(void Function())? setState;
-  // final void Function(void Function())? onChanged;
-  final ValueChanged<dynamic>? onValueChanged;
-  final Map<String, dynamic>? formAnswers;
+  final TextEditingController? controller; // Dari parent state
+  final dynamic value; // Dari formAnswers
+  final void Function(String, dynamic) onUpdateAnswer; // Callback tunggal
+  final bool isReadOnly;
 
   const FieldBuilder({
     super.key,
     required this.field,
     required this.index,
-    this.setState,
-    // this.onChanged,
-    this.formAnswers,
-    this.onValueChanged,
+    required this.onUpdateAnswer,
+    this.controller,
+    this.value,
+    this.isReadOnly = false,
   });
 
   @override
   Widget build(BuildContext context) {
-    // ✅ TAMBAHKAN BLOK INI
-    // Ambil nilai terbaru dari `formAnswers`
-    final dynamic storedValue = formAnswers?[field.key];
-
-    // Sinkronisasi nilai untuk Dropdown, Radio, dll.
-    field.value = storedValue;
-
-    // Sinkronisasi nilai untuk TextField via controller.
-    // Cek `if` untuk mencegah cursor melompat saat sedang mengetik.
-    if (storedValue != null &&
-        field.controller.text != storedValue.toString()) {
-      field.controller.text = storedValue.toString();
-    }
-
-    // Helper method untuk dekorasi input
     InputDecoration baseDecoration({
       Widget? suffixIcon,
       double leftPadding = 14,
@@ -106,59 +91,34 @@ class FieldBuilder extends StatelessWidget {
           label: field.label,
           child: TextField(
             textCapitalization: TextCapitalization.characters,
-            controller: field.controller,
+            controller: controller, // ✅ GUNAKAN CONTROLLER DARI SINI
             obscureText: field.type == 'password',
             style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
             decoration: baseDecoration(),
-            onChanged: (value) => formAnswers?[field.key!] = value,
+            onChanged: (value) => onUpdateAnswer(field.key!, value),
           ),
         );
 
       case 'textNoSpace':
-        return labeledField(
-          label: field.label,
-          child: TextField(
-            textCapitalization: TextCapitalization.characters,
-            controller: field.controller,
-            style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
-            decoration: baseDecoration(),
-            inputFormatters: [
-              FilteringTextInputFormatter.deny(RegExp(r'\s')), // Tolak spasi
-            ],
-            onChanged: (value) => formAnswers?[field.key!] = value,
-          ),
-        );
-
       case 'numberDecimal':
-        return labeledField(
-          label: field.label,
-          child: TextField(
-            textCapitalization: TextCapitalization.characters,
-            controller: field.controller,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
-              NumberFormated(),
-            ],
-            style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
-            decoration: baseDecoration(),
-            onChanged: (value) => formAnswers?[field.key!] = value,
-          ),
-        );
-
       case 'number':
         return labeledField(
           label: field.label,
           child: TextField(
-            textCapitalization: TextCapitalization.characters,
-            controller: field.controller,
-            keyboardType: TextInputType.number,
+            keyboardType:
+                field.type.startsWith('number') ? TextInputType.number : null,
+            controller: controller,
             inputFormatters: [
-              FilteringTextInputFormatter.digitsOnly,
+              if (field.type == 'textNoSpace')
+                FilteringTextInputFormatter.deny(RegExp(r'\s')),
+              if (field.type == 'number' || field.type == 'numberDecimal')
+                FilteringTextInputFormatter.digitsOnly,
+              if (field.type == 'numberDecimal')
+                NumberFormated(), // Asumsi ini adalah formatter Anda
             ],
             style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
             decoration: baseDecoration(),
-            onChanged: (value) => formAnswers?[field.key!] = value,
+            onChanged: (value) => onUpdateAnswer(field.key!, value),
           ),
         );
 
@@ -174,24 +134,22 @@ class FieldBuilder extends StatelessWidget {
                 lastDate: DateTime(2100),
               );
               if (picked != null) {
-                field.value = picked;
-                field.controller.text = DateFormat('yyyy-MM-dd').format(picked);
+                onUpdateAnswer(field.key!, picked);
               }
             },
             child: AbsorbPointer(
               child: TextField(
-                textCapitalization: TextCapitalization.characters,
-                controller: field.controller,
+                controller: controller, // ✅ Gunakan controller dari parent
                 decoration: baseDecoration(
                   suffixIcon: const Icon(Icons.date_range),
                   topPadding: 0,
                   bottomPadding: 0,
                 ),
-                style:
-                    blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
-                textAlignVertical:
-                    TextAlignVertical.center, // ⬅️ Tambahan penting!
-                onChanged: (value) => formAnswers?[field.key!] = value,
+                style: blackTextStyle.copyWith(
+                  fontSize: 16,
+                  fontWeight: semiBold,
+                ),
+                textAlignVertical: TextAlignVertical.center,
               ),
             ),
           ),
@@ -200,50 +158,35 @@ class FieldBuilder extends StatelessWidget {
       case 'radio':
         return labeledField(
           label: field.label,
-          child: StatefulBuilder(
-            builder: (context, setInnerState) {
-              return Wrap(
-                spacing: 16, // jarak antar radio item
-                runSpacing: 8,
-                children: field.options!.map<Widget>((option) {
-                  return Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Radio<String>(
-                        value: option,
-                        groupValue: field.value,
-                        onChanged: (val) {
-                          setInnerState(() {
-                            field.value = val;
-                            field.controller.text = val!;
-                            formAnswers?[field.key!] = val;
-                          });
-                          // PENTING: update UI utama
-                          // setState?.call(() {});
-                          onValueChanged?.call(val);
-                        },
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      ),
-                      Text(
-                        option,
-                        style: blackTextStyle.copyWith(fontSize: 14),
-                      ),
-                    ],
-                  );
-                }).toList(),
+          child: Wrap(
+            children: field.options!.map<Widget>((option) {
+              return Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Radio<String>(
+                    value: option,
+                    groupValue: value, // ✅ Ambil nilai dari parent
+                    onChanged: (val) {
+                      // ✅ Update nilai di parent
+                      onUpdateAnswer(field.key!, val);
+                    },
+                  ),
+                  Text(option),
+                ],
               );
-            },
+            }).toList(),
           ),
         );
 
       case 'dropdown':
+        // berlaku juga untuk 'dropdownWithAction' dan 'dropdownWithSection'
         return labeledField(
           label: field.label,
           child: DropdownButtonFormField2<String>(
             decoration: baseDecoration(
               leftPadding: 0,
             ),
-            value: field.value,
+            value: value, // ✅ Ambil nilai dari parent
             dropdownStyleData: DropdownStyleData(
               padding: EdgeInsets.zero,
               offset: Offset(0, 0),
@@ -272,10 +215,8 @@ class FieldBuilder extends StatelessWidget {
                 )
                 .toList(),
             onChanged: (val) {
-              field.value = val;
-              formAnswers?[field.key!] = val;
-              // onChanged?.call(() {});
-              // setState?.call(() {}); // 🟢 trigger rebuild agar sub-section muncul
+              // ✅ Update nilai di parent
+              onUpdateAnswer(field.key!, val);
             },
           ),
         );
@@ -287,7 +228,7 @@ class FieldBuilder extends StatelessWidget {
             decoration: baseDecoration(
               leftPadding: 0,
             ),
-            value: field.value,
+            value: value, // ✅ Ambil nilai dari parent
             dropdownStyleData: DropdownStyleData(
               padding: EdgeInsets.zero,
               offset: Offset(0, 0),
@@ -316,14 +257,8 @@ class FieldBuilder extends StatelessWidget {
                 )
                 .toList(),
             onChanged: (val) {
-              field.value = val;
-              formAnswers?[field.key!] = val;
-              onValueChanged?.call(val);
-              // onChanged?.call(() {});
-              // ini akan trigger rebuild di SectionFieldContent (state lokal)
-              // jika kamu pakai onValueChanged juga, bisa panggil di sini
-              // onValueChanged?.call(val);
-              // setState?.call(() {}); // 🟢 trigger rebuild agar sub-section muncul
+              // ✅ Update nilai di parent
+              onUpdateAnswer(field.key!, val);
             },
           ),
         );
@@ -335,7 +270,7 @@ class FieldBuilder extends StatelessWidget {
             decoration: baseDecoration(
               leftPadding: 0,
             ),
-            value: field.value,
+            value: value, // ✅ Ambil nilai dari parent
             dropdownStyleData: DropdownStyleData(
               padding: EdgeInsets.zero,
               offset: Offset(0, 0),
@@ -364,12 +299,8 @@ class FieldBuilder extends StatelessWidget {
                 )
                 .toList(),
             onChanged: (val) {
-              field.value = val;
-              formAnswers?[field.key!] = val;
-              // onChanged?.call(() {});
-              setState
-                  ?.call(() {}); // 🟢 trigger rebuild agar sub-section muncul
-              // onValueChanged?.call(val);
+              // ✅ Update nilai di parent
+              onUpdateAnswer(field.key!, val);
             },
           ),
         );
@@ -378,43 +309,53 @@ class FieldBuilder extends StatelessWidget {
       //   return CameraAndUploadFieldForm(
       //     index: index,
       //     label: field.label,
-      //     controller: field.controller,
-      //     value: field.value, // penting agar tetap muncul saat rebuild
-      //     onFilePicked: (val, ts, pos) {
-      //       field.value = val; // Simpan ke parent state
-      //       field.timestamp = ts; // Simpan ke parent state
-      //       field.latitude = pos?.latitude;
-      //       field.longitude = pos?.longitude;
+      //     value: value, // Cukup berikan 'value' yang bisa berupa Map
+      //     onFilePicked: (file, timestamp, position) {
+      //       // Logika ini sudah benar, teruskan Map ke atas
+      //       final fileData = {
+      //         'file': file,
+      //         'timestamp': timestamp,
+      //         'latitude': position?.latitude,
+      //         'longitude': position?.longitude,
+      //       };
+      //       onUpdateAnswer(field.key!, fileData);
       //     },
-      //     timestamp: field.timestamp,
-      //     latitude: field.latitude,
-      //     longitude: field.longitude,
       //   );
 
-      case 'cameraAndUpload':
-        return CameraAndUploadFieldForm(
-          index: index,
-          label: field.label,
-          value: field.value,
-          onFilePicked: (val, ts, pos) {
-            // 1. Update state lokal field (ini sudah benar)
-            field.value = val;
-            field.timestamp = ts;
-            field.latitude = pos?.latitude;
-            field.longitude = pos?.longitude;
+      // // case 'cameraAndUpload':
+      // //   return CameraAndUploadFieldForm(
+      // //     index: index,
+      // //     label: field.label,
+      // //     controller: field.controller,
+      // //     value: field.value, // penting agar tetap muncul saat rebuild
+      // //     onFilePicked: (val, ts, pos) {
+      // //       field.value = val; // Simpan ke parent state
+      // //       field.timestamp = ts; // Simpan ke parent state
+      // //       field.latitude = pos?.latitude;
+      // //       field.longitude = pos?.longitude;
+      // //     },
+      // //     timestamp: field.timestamp,
+      // //     latitude: field.latitude,
+      // //     longitude: field.longitude,
+      // //   );
 
-            // 2. ✅ TAMBAHKAN INI: Simpan Map lengkap ke formAnswers
-            formAnswers?[field.key!] = {
-              'file': val,
-              'timestamp': ts,
-              'latitude': pos?.latitude,
-              'longitude': pos?.longitude,
-            };
-
-            // 3. Panggil onValueChanged agar parent tahu ada perubahan
-            onValueChanged?.call(formAnswers?[field.key!]);
-          },
-        );
+      // case 'camera':
+      // case 'file':
+      //   return CameraFieldForm(
+      //     index: index,
+      //     label: field.label,
+      //     value: value, // Cukup berikan 'value' yang bisa berupa Map
+      //     onFilePicked: (file, timestamp, position) {
+      //       // Logika ini sudah benar, teruskan Map ke atas
+      //       final fileData = {
+      //         'file': file,
+      //         'timestamp': timestamp,
+      //         'latitude': position?.latitude,
+      //         'longitude': position?.longitude,
+      //       };
+      //       onUpdateAnswer(field.key!, fileData);
+      //     },
+      //   );
 
       case 'fileUpload':
         return FileFieldWidget(
@@ -425,30 +366,6 @@ class FieldBuilder extends StatelessWidget {
           value: field.value, // penting agar tetap muncul saat rebuild
           onFilePicked: (val) {
             field.value = val; // Simpan ke parent state
-          },
-        );
-      case 'file':
-        return CameraFieldForm(
-          index: index,
-          label: field.label,
-          value: field.value, // penting agar tetap muncul saat rebuild
-          onFilePicked: (val, ts, pos) {
-            // 1. Update state lokal field (ini sudah benar)
-            field.value = val;
-            field.timestamp = ts;
-            field.latitude = pos?.latitude;
-            field.longitude = pos?.longitude;
-
-            // 2. ✅ TAMBAHKAN INI: Simpan Map lengkap ke formAnswers
-            formAnswers?[field.key!] = {
-              'file': val,
-              'timestamp': ts,
-              'latitude': pos?.latitude,
-              'longitude': pos?.longitude,
-            };
-
-            // 3. Panggil onValueChanged agar parent tahu ada perubahan
-            onValueChanged?.call(formAnswers?[field.key!]);
           },
         );
 

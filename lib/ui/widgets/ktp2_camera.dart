@@ -56,19 +56,19 @@ class _Ktp2CameraState extends State<Ktp2Camera> {
     }
   }
 
-  Future<void> _pickFromGallery() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      final image = File(pickedFile.path);
-      final croppedImage = await cropImageToFrame(
-        image,
-        MediaQuery.of(context).size,
-      );
-      if (!mounted) return;
-      Navigator.pop(context, croppedImage);
-    }
-  }
+  // Future<void> _pickFromGallery() async {
+  //   final pickedFile =
+  //       await ImagePicker().pickImage(source: ImageSource.gallery);
+  //   if (pickedFile != null) {
+  //     final image = File(pickedFile.path);
+  //     final croppedImage = await cropImageToFrame(
+  //       image,
+  //       MediaQuery.of(context).size,
+  //     );
+  //     if (!mounted) return;
+  //     Navigator.pop(context, croppedImage);
+  //   }
+  // }
 
   Future<File?> _pickFromGalleryAndCrop() async {
     final picker = ImagePicker();
@@ -267,7 +267,7 @@ class _Ktp2CameraState extends State<Ktp2Camera> {
           }
 
           final previewSize = _controller!.value.previewSize!;
-          final cameraAspectRatio = previewSize.height / previewSize.width;
+          // final cameraAspectRatio = previewSize.height / previewSize.width;
 
           return Stack(
             children: [

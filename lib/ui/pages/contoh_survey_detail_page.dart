@@ -208,8 +208,8 @@ class _SurveyDetailPageState extends State<SurveyDetailPage> {
                       item: item,
                       // Karena read-only, kita bisa kirim data dummy/kosong
                       formAnswers: {},
-                      controllers: _controllers,
-                      onUpdateAnswer: (key, value) {}, // Callback kosong
+                      // controllers: _controllers,
+                      // onUpdateAnswer: (key, value) {}, // Callback kosong
                     ),
                   );
                 },

@@ -303,69 +303,69 @@ class FieldBuilder extends StatelessWidget {
           ),
         );
 
-      case 'cameraAndUpload':
-        return CameraAndUploadFieldForm(
-          index: index,
-          label: field.label,
-          value: value, // Cukup berikan 'value' yang bisa berupa Map
-          onFilePicked: (file, timestamp, position) {
-            // Logika ini sudah benar, teruskan Map ke atas
-            final fileData = {
-              'file': file,
-              'timestamp': timestamp,
-              'latitude': position?.latitude,
-              'longitude': position?.longitude,
-            };
-            onUpdateAnswer(field.key!, fileData);
-          },
-        );
-
       // case 'cameraAndUpload':
       //   return CameraAndUploadFieldForm(
       //     index: index,
       //     label: field.label,
-      //     controller: field.controller,
-      //     value: field.value, // penting agar tetap muncul saat rebuild
-      //     onFilePicked: (val, ts, pos) {
-      //       field.value = val; // Simpan ke parent state
-      //       field.timestamp = ts; // Simpan ke parent state
-      //       field.latitude = pos?.latitude;
-      //       field.longitude = pos?.longitude;
+      //     value: value, // Cukup berikan 'value' yang bisa berupa Map
+      //     onFilePicked: (file, timestamp, position) {
+      //       // Logika ini sudah benar, teruskan Map ke atas
+      //       final fileData = {
+      //         'file': file,
+      //         'timestamp': timestamp,
+      //         'latitude': position?.latitude,
+      //         'longitude': position?.longitude,
+      //       };
+      //       onUpdateAnswer(field.key!, fileData);
       //     },
-      //     timestamp: field.timestamp,
-      //     latitude: field.latitude,
-      //     longitude: field.longitude,
       //   );
 
-      case 'camera':
-      case 'file':
-        return CameraFieldForm(
-          index: index,
-          label: field.label,
-          value: value, // Cukup berikan 'value' yang bisa berupa Map
-          onFilePicked: (file, timestamp, position) {
-            // Logika ini sudah benar, teruskan Map ke atas
-            final fileData = {
-              'file': file,
-              'timestamp': timestamp,
-              'latitude': position?.latitude,
-              'longitude': position?.longitude,
-            };
-            onUpdateAnswer(field.key!, fileData);
-          },
-        );
+      // // case 'cameraAndUpload':
+      // //   return CameraAndUploadFieldForm(
+      // //     index: index,
+      // //     label: field.label,
+      // //     controller: field.controller,
+      // //     value: field.value, // penting agar tetap muncul saat rebuild
+      // //     onFilePicked: (val, ts, pos) {
+      // //       field.value = val; // Simpan ke parent state
+      // //       field.timestamp = ts; // Simpan ke parent state
+      // //       field.latitude = pos?.latitude;
+      // //       field.longitude = pos?.longitude;
+      // //     },
+      // //     timestamp: field.timestamp,
+      // //     latitude: field.latitude,
+      // //     longitude: field.longitude,
+      // //   );
 
-      case 'fileUpload':
-        return FileFieldWidget(
-          enabled: field.value != null ? false : true,
-          index: index,
-          label: field.label,
-          controller: field.controller,
-          value: field.value, // penting agar tetap muncul saat rebuild
-          onFilePicked: (val) {
-            field.value = val; // Simpan ke parent state
-          },
-        );
+      // case 'camera':
+      // case 'file':
+      //   return CameraFieldForm(
+      //     index: index,
+      //     label: field.label,
+      //     value: value, // Cukup berikan 'value' yang bisa berupa Map
+      //     onFilePicked: (file, timestamp, position) {
+      //       // Logika ini sudah benar, teruskan Map ke atas
+      //       final fileData = {
+      //         'file': file,
+      //         'timestamp': timestamp,
+      //         'latitude': position?.latitude,
+      //         'longitude': position?.longitude,
+      //       };
+      //       onUpdateAnswer(field.key!, fileData);
+      //     },
+      //   );
+
+      // case 'fileUpload':
+      //   return FileFieldWidget(
+      //     enabled: field.value != null ? false : true,
+      //     index: index,
+      //     label: field.label,
+      //     controller: field.controller,
+      //     value: field.value, // penting agar tetap muncul saat rebuild
+      //     onFilePicked: (val) {
+      //       field.value = val; // Simpan ke parent state
+      //     },
+      //   );
 
       default:
         return const SizedBox.shrink();

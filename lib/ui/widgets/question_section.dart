@@ -1,23 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:gsure/models/question_model.dart';
-import 'package:gsure/ui/pages/form_survey_page.dart';
+// import 'package:gsure/ui/pages/form_survey_page.dart';
 import 'package:gsure/ui/widgets/form_field_builder.dart';
+import 'package:gsure/ui/widgets/nested_accordion.dart';
 
 class SectionFieldContent extends StatefulWidget {
   final QuestionSection item;
   final Map<String, dynamic> formAnswers;
   final VoidCallback? onFieldChanged;
-  final Map<String, TextEditingController> controllers;
-  final void Function(String, dynamic) onUpdateAnswer; // <-- TERIMA DI SINI
   // final void Function(void Function())? onFieldChanged;
 
   const SectionFieldContent({
     super.key,
     required this.item,
     required this.formAnswers,
-    required this.controllers,
     this.onFieldChanged,
-    required this.onUpdateAnswer,
   });
 
   @override
@@ -26,9 +23,11 @@ class SectionFieldContent extends StatefulWidget {
 
 class _SectionFieldContentState extends State<SectionFieldContent> {
   late List<FieldModel> _fields;
+  final Map<String, List<FieldModel>> _nestedFieldsCache = {};
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
     _fields = List<FieldModel>.from(widget.item.fields);
   }
@@ -60,25 +59,31 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                         child: FieldBuilder(
                           field: rtField,
                           index: fIdx + 1,
-                          controller: widget
-                              .controllers[rtField.key], // Untuk field teks
-                          value: widget
-                              .formAnswers[rtField.key], // Untuk field non-teks
-                          onUpdateAnswer:
-                              widget.onUpdateAnswer, // ✅ Callback tunggal
+                          formAnswers: widget.formAnswers,
+                          setState: setState,
+                          onValueChanged: (newValue) {
+                            setState(() {
+                              rtField.value = newValue;
+                              widget.formAnswers[rtField.key!] = newValue;
+                              widget.onFieldChanged?.call();
+                            });
+                          },
                         ),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: FieldBuilder(
                           field: rwField,
-                          index: fIdx + 1,
-                          controller: widget
-                              .controllers[rwField.key], // Untuk field teks
-                          value: widget
-                              .formAnswers[rwField.key], // Untuk field non-teks
-                          onUpdateAnswer:
-                              widget.onUpdateAnswer, // ✅ Callback tunggal
+                          index: fIdx + 2,
+                          formAnswers: widget.formAnswers,
+                          setState: setState,
+                          onValueChanged: (newValue) {
+                            setState(() {
+                              rwField.value = newValue;
+                              widget.formAnswers[rwField.key!] = newValue;
+                              widget.onFieldChanged?.call();
+                            });
+                          },
                         ),
                       ),
                     ],
@@ -95,8 +100,6 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
             return const SizedBox.shrink(); // kosongkan
           }
 
-          final currentValue = widget.formAnswers[field.key];
-
           // Default rendering untuk field lain
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,30 +109,45 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                 child: FieldBuilder(
                   field: field,
                   index: fIdx + 1,
-                  controller: widget.controllers[field.key], // Untuk field teks
-                  value: widget.formAnswers[field.key], // Untuk field non-teks
-                  onUpdateAnswer: widget.onUpdateAnswer, // ✅ Callback tunggal
+                  formAnswers: widget.formAnswers,
+                  setState: setState,
+                  onValueChanged: (newValue) {
+                    setState(() {
+                      field.value = newValue;
+                      widget.formAnswers[field.key!] = newValue;
+                      widget.onFieldChanged?.call();
+                    });
+                  },
                 ),
               ),
-
-              // Ambil nilai saat ini dari formAnswers
-              if (field.section != null && currentValue != null)
+              if (field.section != null && field.value != null)
                 ...field.section!
                     .where((sub) =>
-                        (sub['show'] as List).contains(currentValue.toString()))
+                        (sub['show'] as List).contains(field.value.toString()))
                     .expand((sub) {
-                  final subFields = (sub['fields'] as List)
-                      .map((f) => FieldModel.fromJson(f))
-                      .toList();
+                  // Buat key unik untuk setiap sub-section
+                  final cacheKey = "${field.key}_${sub['title']}";
+
+                  // Ambil dari cache, atau buat baru jika belum ada
+                  final subFields =
+                      _nestedFieldsCache.putIfAbsent(cacheKey, () {
+                    // Kode ini hanya akan berjalan SEKALI untuk setiap sub-section
+                    return (sub['fields'] as List)
+                        .map((f) => FieldModel.fromJson(f))
+                        .toList();
+                  });
+
+                  // final subFields = (sub['fields'] as List)
+                  //     .map((f) => FieldModel.fromJson(f))
+                  //     .toList();
                   return [
                     const SizedBox(height: 8),
                     MyNestedAccordion(
                       title: sub['title'],
                       fields: subFields,
                       // V-- KIRIM DATA & CALLBACK DARI PARENT --V
-                      controllers: widget.controllers,
                       formAnswers: widget.formAnswers,
-                      onUpdateAnswer: widget.onUpdateAnswer,
+                      onFieldChanged: widget.onFieldChanged,
                     ),
                   ];
                 }),
@@ -137,6 +155,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
           );
         }),
 
+        // ✅ Langkah 4: Perbaiki logika "Tambah Dokumen"
         if (widget.item.title == "Foto & Dokumen Pekerjaan / Usaha" ||
             widget.item.title == "Foto & Dokumen Simulasi Perhitungan" ||
             widget.item.title == "Foto & Dokumen Tambahan")
@@ -149,13 +168,10 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                   final count =
                       _fields.where((f) => f.type == "cameraAndUpload").length;
 
-                  _fields.add(
-                    FieldModel(
-                      type: "cameraAndUpload",
-                      label: "Foto & Dokumen ${count + 1}",
-                      key: "dokumen${count + 1}",
-                    ),
-                  );
+                  _fields.add(FieldModel(
+                    type: "cameraAndUpload",
+                    label: "Foto & Dokumen ${count + 1}",
+                  ));
                 });
               },
               child: Row(
