@@ -7,7 +7,7 @@ part 'foto_kendaraan_model.g.dart';
 @HiveType(typeId: 9)
 class FotoKendaraan extends HiveObject {
   @HiveField(0)
-  Double? odometer;
+  String? odometer;
   @HiveField(1)
   String? fotounitdepan;
   @HiveField(2)

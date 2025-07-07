@@ -59,13 +59,13 @@ class AplikasiSurvey extends HiveObject {
   FotoTempatTinggal? fotoTempatTinggal;
 
   @HiveField(14)
-  List<String> fotoPekerjaanPaths;
+  List<String>? fotoPekerjaanPaths;
 
   @HiveField(15)
-  List<String> fotoSimulasiPaths;
+  List<String>? fotoSimulasiPaths;
 
   @HiveField(16)
-  List<String> fotoTambahanPaths;
+  List<String>? fotoTambahanPaths;
 
   AplikasiSurvey({
     this.id,
@@ -109,33 +109,44 @@ class AplikasiSurvey extends HiveObject {
 
   factory AplikasiSurvey.fromJson(Map<String, dynamic> json) => AplikasiSurvey(
         id: json['id'],
-        dataDealer: DataDealer.fromJson(json['dataDealer']),
-        dataKendaraan: DataKendaraan.fromJson(json['dataKendaraan']),
-        dataAlamatSurvey: DataAlamatSurvey.fromJson(json['dataAlamatSurvey']),
-        dataPemohon: DataPemohon.fromJson(json['dataPemohon']),
+        // dataDealer: DataDealer.fromJson(json),
+        dataDealer: json['dataDealer'] != null
+            ? DataDealer.fromJson(json['dataDealer'])
+            : null,
+        dataKendaraan: json['dataKendaraan'] != null
+            ? DataKendaraan.fromJson(json['dataKendaraan'])
+            : null,
+        dataAlamatSurvey: json['dataAlamatSurvey'] != null
+            ? DataAlamatSurvey.fromJson(json['dataAlamatSurvey'])
+            : null,
+        dataPemohon: json['dataPemohon'] != null
+            ? DataPemohon.fromJson(json['dataPemohon'])
+            : null,
         dataPasangan: json['dataPasangan'] != null
             ? DataPasangan.fromJson(json['dataPasangan'])
             : null,
-        dataKontakDarurat:
-            DataKontakDarurat.fromJson(json['dataKontakDarurat']),
-        isPenjaminExist: json['isPenjaminExist'],
+        dataKontakDarurat: json['dataKontakDarurat'] != null
+            ? DataKontakDarurat.fromJson(json['dataKontakDarurat'])
+            : null,
+        isPenjaminExist: json['isPenjaminExist'] ?? 'Tidak',
         dataPenjamin: json['dataPenjamin'] != null
             ? DataPenjamin.fromJson(json['dataPenjamin'])
             : null,
         dataPasanganPenjamin: json['dataPasanganPenjamin'] != null
             ? DataPasanganPenjamin.fromJson(json['dataPasanganPenjamin'])
             : null,
-        analisacmo: json['analisacmo'],
-        fotoKendaraan: FotoKendaraan.fromJson(json['fotoKendaraan']),
-        fotoLegalitas: FotoLegalitas.fromJson(json['fotoLegalitas']),
-        fotoTempatTinggal:
-            FotoTempatTinggal.fromJson(json['fotoTempatTinggal']),
+        analisacmo: json['analisacmo'] ?? '',
+        fotoKendaraan: json['fotoKendaraan'] != null
+            ? FotoKendaraan.fromJson(json['fotoKendaraan'])
+            : null,
+        fotoLegalitas: json['fotoLegalitas'] != null
+            ? FotoLegalitas.fromJson(json['fotoLegalitas'])
+            : null,
+        fotoTempatTinggal: json['fotoTempatTinggal'] != null
+            ? FotoTempatTinggal.fromJson(json['fotoTempatTinggal'])
+            : null,
         fotoPekerjaanPaths: json['fotoPekerjaanPaths'] ?? [],
         fotoSimulasiPaths: json['fotoSimulasiPaths'] ?? [],
         fotoTambahanPaths: json['fotoTambahanPaths'] ?? [],
-        // Hati-hati dengan data yang bisa null (misal jika belum menikah)
-        // dataPasangan: json['dataPasangan'] != null ? DataPasangan.fromJson(json['dataPasangan']) : null,
-        // isPenjaminExist: json['isPenjaminExist'],
-        // dataPenjamin: json['dataPenjamin'] != null ? DataPenjamin.fromJson(json['dataPenjamin']) : null,
       );
 }

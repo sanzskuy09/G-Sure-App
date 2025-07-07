@@ -31,9 +31,9 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       fotoKendaraan: fields[11] as FotoKendaraan?,
       fotoLegalitas: fields[12] as FotoLegalitas?,
       fotoTempatTinggal: fields[13] as FotoTempatTinggal?,
-      fotoPekerjaanPaths: (fields[14] as List).cast<String>(),
-      fotoSimulasiPaths: (fields[15] as List).cast<String>(),
-      fotoTambahanPaths: (fields[16] as List).cast<String>(),
+      fotoPekerjaanPaths: (fields[14] as List?)?.cast<String>(),
+      fotoSimulasiPaths: (fields[15] as List?)?.cast<String>(),
+      fotoTambahanPaths: (fields[16] as List?)?.cast<String>(),
     );
   }
 

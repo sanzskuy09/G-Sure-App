@@ -25,12 +25,12 @@ class DataPekerjaanPenjaminAdapter extends TypeAdapter<DataPekerjaanPenjamin> {
       kodeposperusahaanpenjamin: fields[5] as String?,
       noteleponusahapenjamin: fields[6] as String?,
       masakerjapenjamin: fields[7] as String?,
-      gajipenjamin: fields[8] as Double?,
+      gajipenjamin: fields[8] as String?,
       slipgajipenjamin: fields[9] as String?,
       payrollpenjamin: fields[10] as String?,
       bidangusahapenjamin: fields[11] as String?,
       lamausahapenjamin: fields[12] as String?,
-      omzetusahapenjamin: fields[13] as Double?,
+      omzetusahapenjamin: fields[13] as String?,
       profitusahapenjamin: fields[14] as String?,
     );
   }

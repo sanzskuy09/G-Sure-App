@@ -9,7 +9,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gsure/blocs/form/form_bloc.dart';
 import 'package:gsure/models/order_model.dart';
 import 'package:gsure/models/question_model.dart';
+import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/models/survey_data.dart';
+import 'package:gsure/services/form_processing_service.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/buttons.dart';
 import 'package:gsure/ui/widgets/form_field_builder.dart';
@@ -131,6 +133,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
             FilledButton(
               child: const Text("Kirim"),
               onPressed: () {
+                _saveAplikasiToHive();
                 // Navigator.of(context).pop(); // Tutup dialog
                 // _submitSurvey(jsonData,
                 //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
@@ -140,6 +143,42 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         );
       },
     );
+  }
+
+  void _saveAplikasiToHive() {
+    try {
+      final formService = FormProcessingService();
+
+      final Map<String, dynamic> finalForm =
+          formService.processFormToNestedMap(formAnswers);
+
+      // 1. Buka box yang benar untuk AplikasiKredit
+      final box = Hive.box<AplikasiSurvey>('survey_apps');
+
+      // === TAMBAHKAN PRINT DI SINI ===
+      print('--- Data yang akan disimpan ---');
+      print(finalForm);
+      // ================================
+
+      // 2. Buat objek AplikasiKredit dari formAnswers menggunakan factory yang baru dibuat
+      final aplikasi = AplikasiSurvey.fromJson(finalForm);
+
+      // 3. Simpan objek ke box menggunakan .put() dengan key unik
+      // Key unik penting untuk bisa mengedit/mengambil data spesifik nanti
+      final uniqueId = 'app_${DateTime.now().millisecondsSinceEpoch}';
+      box.put(uniqueId, aplikasi);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text('✅ Aplikasi berhasil disimpan secara lokal!')),
+      );
+      print(
+          'Data berhasil disimpan ke Hive dengan key: $uniqueId. Jumlah data: ${box.length}');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('❌ Gagal menyimpan data: $e')),
+      );
+    }
   }
 
   @override

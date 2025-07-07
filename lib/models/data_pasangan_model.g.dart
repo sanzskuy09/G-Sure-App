@@ -32,12 +32,12 @@ class DataPasanganAdapter extends TypeAdapter<DataPasangan> {
       kodeposperusahaanpasangan: fields[12] as String?,
       noteleponusahapasangan: fields[13] as String?,
       masakerjapasangan: fields[14] as String?,
-      gajipasangan: fields[15] as Double?,
+      gajipasangan: fields[15] as String?,
       slipgajipasangan: fields[16] as String?,
       payrollpasangan: fields[17] as String?,
       bidangusahapasangan: fields[18] as String?,
       lamausahapasangan: fields[19] as String?,
-      omzetusahapasangan: fields[20] as Double?,
+      omzetusahapasangan: fields[20] as String?,
       profitusahapasangan: fields[21] as String?,
     );
   }

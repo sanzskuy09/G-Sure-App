@@ -23,7 +23,7 @@ class DataPekerjaan extends HiveObject {
   @HiveField(7)
   String? masakerjapemohon;
   @HiveField(8)
-  Double? gajipemohon;
+  String? gajipemohon;
   @HiveField(9)
   String? slipgajipemohon;
   @HiveField(10)
@@ -33,7 +33,7 @@ class DataPekerjaan extends HiveObject {
   @HiveField(12)
   String? lamausahapemohon;
   @HiveField(13)
-  Double? omzetusahapemohon;
+  String? omzetusahapemohon;
   @HiveField(14)
   String? profitusahapemohon;
 

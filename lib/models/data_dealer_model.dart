@@ -69,12 +69,12 @@ class DataDealer extends HiveObject {
       };
 
   factory DataDealer.fromJson(Map<String, dynamic> json) => DataDealer(
-        kddealer: json['kddealer'],
+        kddealer: json['kddealer'] as String?,
         namadealer: json['namadealer'],
         alamatdealer: json['alamatdealer'],
-        rtdealer: json['rtdealer'],
-        rwdealer: json['rwdealer'],
-        kodeposdealer: json['kodeposdealer'],
+        rtdealer: json['rtdealer'] as String?,
+        rwdealer: json['rwdealer'] as String?,
+        kodeposdealer: json['kodeposdealer'] as String?,
         keldealer: json['keldealer'],
         kecdealer: json['kecdealer'],
         kotadealer: json['kotadealer'],

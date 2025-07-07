@@ -38,7 +38,7 @@ class DataPasanganPenjamin extends HiveObject {
   @HiveField(12)
   String? masakerjapasanganpenjamin;
   @HiveField(13)
-  Double? gajipasanganpenjamin;
+  String? gajipasanganpenjamin;
   @HiveField(14)
   String? slipgajipasanganpenjamin;
   @HiveField(15)
@@ -48,7 +48,7 @@ class DataPasanganPenjamin extends HiveObject {
   @HiveField(17)
   String? lamausahapasanganpenjamin;
   @HiveField(18)
-  Double? omzetusahapasanganpenjamin;
+  String? omzetusahapasanganpenjamin;
   @HiveField(19)
   String? profitusahapasanganpenjamin;
 

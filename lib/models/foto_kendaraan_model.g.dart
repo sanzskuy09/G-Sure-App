@@ -17,7 +17,7 @@ class FotoKendaraanAdapter extends TypeAdapter<FotoKendaraan> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FotoKendaraan(
-      odometer: fields[0] as Double?,
+      odometer: fields[0] as String?,
       fotounitdepan: fields[1] as String?,
       fotounitbelakang: fields[2] as String?,
       fotounitinteriordepan: fields[3] as String?,

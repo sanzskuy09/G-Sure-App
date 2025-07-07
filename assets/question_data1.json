@@ -389,7 +389,7 @@
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapenjamin" },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapenjamin" },
-              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetusahapenjamin" },
+              { "type": "numberDecimal", "label": "Omzet Usaha/bulan", "key": "omzetusahapenjamin" },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
@@ -409,11 +409,11 @@
       { "type": "number", "label": "No. Telepon", "key": "notelppenjamin" },
       { "type": "number", "label": "No. Whatsapp", "key": "nowapenjamin" },
       { "type": "number", "label": "KTP", "key": "ktppenjamin" },
-      { "type": "number", "label": "Tanggal KTP", "key": "tglktppenjamin" },
+      { "type": "text", "label": "Tanggal KTP", "key": "tglktppenjamin" },
       { "type": "number", "label": "SIM (Nomor)", "key": "simpenjamin" },
       { "type": "number", "label": "NPWP (Nomor)", "key": "npwppenjamin" },
-      { "type": "number", "label": "Alamat", "key": "alamatpenjamin" },
-      { "type": "number", "label": "kota", "key": "kotapenjamin" },
+      { "type": "text", "label": "Alamat", "key": "alamatpenjamin" },
+      { "type": "text", "label": "kota", "key": "kotapenjamin" },
       { "type": "text", "label": "Nama Ibu Kandung", "key": "namaibupenjamin" },
       {
         "type": "dropdown",

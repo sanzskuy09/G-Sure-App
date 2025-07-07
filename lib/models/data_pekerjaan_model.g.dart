@@ -25,12 +25,12 @@ class DataPekerjaanAdapter extends TypeAdapter<DataPekerjaan> {
       kodeposusaha: fields[5] as String?,
       noteleponusaha: fields[6] as String?,
       masakerjapemohon: fields[7] as String?,
-      gajipemohon: fields[8] as Double?,
+      gajipemohon: fields[8] as String?,
       slipgajipemohon: fields[9] as String?,
       payrollpemohon: fields[10] as String?,
       bidangusahapemohon: fields[11] as String?,
       lamausahapemohon: fields[12] as String?,
-      omzetusahapemohon: fields[13] as Double?,
+      omzetusahapemohon: fields[13] as String?,
       profitusahapemohon: fields[14] as String?,
     );
   }

@@ -30,12 +30,12 @@ class DataPasanganPenjaminAdapter extends TypeAdapter<DataPasanganPenjamin> {
       kodeposperusahaanpasanganpenjamin: fields[10] as String?,
       noteleponusahapasanganpenjamin: fields[11] as String?,
       masakerjapasanganpenjamin: fields[12] as String?,
-      gajipasanganpenjamin: fields[13] as Double?,
+      gajipasanganpenjamin: fields[13] as String?,
       slipgajipasanganpenjamin: fields[14] as String?,
       payrollpasanganpenjamin: fields[15] as String?,
       bidangusahapasanganpenjamin: fields[16] as String?,
       lamausahapasanganpenjamin: fields[17] as String?,
-      omzetusahapasanganpenjamin: fields[18] as Double?,
+      omzetusahapasanganpenjamin: fields[18] as String?,
       profitusahapasanganpenjamin: fields[19] as String?,
     );
   }
