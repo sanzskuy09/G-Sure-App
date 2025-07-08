@@ -53,13 +53,14 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       dealer: fields[31] as String?,
       catatan: fields[32] as String?,
       is_survey: fields[35] as int?,
+      isActived: fields[36] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderModel obj) {
     writer
-      ..writeByte(36)
+      ..writeByte(37)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -131,7 +132,9 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       ..writeByte(34)
       ..write(obj.kotapasangan)
       ..writeByte(35)
-      ..write(obj.is_survey);
+      ..write(obj.is_survey)
+      ..writeByte(36)
+      ..write(obj.isActived);
   }
 
   @override

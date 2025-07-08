@@ -31,9 +31,9 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       fotoKendaraan: fields[11] as FotoKendaraan?,
       fotoLegalitas: fields[12] as FotoLegalitas?,
       fotoTempatTinggal: fields[13] as FotoTempatTinggal?,
-      fotoPekerjaanPaths: (fields[14] as List?)?.cast<String>(),
-      fotoSimulasiPaths: (fields[15] as List?)?.cast<String>(),
-      fotoTambahanPaths: (fields[16] as List?)?.cast<String>(),
+      fotoPekerjaan: (fields[14] as List?)?.cast<PhotoData>(),
+      fotoSimulasi: (fields[15] as List?)?.cast<PhotoData>(),
+      fotoTambahan: (fields[16] as List?)?.cast<PhotoData>(),
     );
   }
 
@@ -70,11 +70,11 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       ..writeByte(13)
       ..write(obj.fotoTempatTinggal)
       ..writeByte(14)
-      ..write(obj.fotoPekerjaanPaths)
+      ..write(obj.fotoPekerjaan)
       ..writeByte(15)
-      ..write(obj.fotoSimulasiPaths)
+      ..write(obj.fotoSimulasi)
       ..writeByte(16)
-      ..write(obj.fotoTambahanPaths);
+      ..write(obj.fotoTambahan);
   }
 
   @override

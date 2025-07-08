@@ -17,7 +17,7 @@ class SurveyListPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('SURVEY LIST'),
+        title: const Text('LIST SURVEY'),
         automaticallyImplyLeading: false,
         actions: [
           // Tambahkan tombol refresh untuk memicu sinkronisasi manual
@@ -134,6 +134,8 @@ class SurveyListPage extends StatelessWidget {
                                         fontSize: 16),
                                   ),
                                   const SizedBox(height: 4),
+                                  // Text(
+                                  //     'Active: ${order.isActived == true ? 'Yes' : 'No'}'),
                                   Text('NIK: ${order.nik ?? '-'}'),
                                   Text('Alamat: ${order.alamat ?? '-'}',
                                       maxLines: 1,

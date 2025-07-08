@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:hive/hive.dart';
 
 part 'foto_kendaraan_model.g.dart';
@@ -9,29 +10,29 @@ class FotoKendaraan extends HiveObject {
   @HiveField(0)
   String? odometer;
   @HiveField(1)
-  String? fotounitdepan;
+  PhotoData? fotounitdepan;
   @HiveField(2)
-  String? fotounitbelakang;
+  PhotoData? fotounitbelakang;
   @HiveField(3)
-  String? fotounitinteriordepan;
+  PhotoData? fotounitinteriordepan;
   @HiveField(4)
-  String? fotounitmesinplat;
+  PhotoData? fotounitmesinplat;
   @HiveField(5)
-  String? fotomesin;
+  PhotoData? fotomesin;
   @HiveField(6)
-  String? fotounitselfiecmo;
+  PhotoData? fotounitselfiecmo;
   @HiveField(7)
-  String? fotospeedometer;
+  PhotoData? fotospeedometer;
   @HiveField(8)
-  String? fotogesekannoka;
+  PhotoData? fotogesekannoka;
   @HiveField(9)
-  String? fotostnk;
+  PhotoData? fotostnk;
   @HiveField(10)
-  String? fotonoticepajak;
+  PhotoData? fotonoticepajak;
   @HiveField(11)
-  String? fotobpkb1;
+  PhotoData? fotobpkb1;
   @HiveField(12)
-  String? fotobpkb2;
+  PhotoData? fotobpkb2;
 
   FotoKendaraan({
     this.odometer,
@@ -66,19 +67,63 @@ class FotoKendaraan extends HiveObject {
         'fotobpkb2': fotobpkb2,
       };
 
-  factory FotoKendaraan.fromJson(Map<String, dynamic> json) => FotoKendaraan(
-        odometer: json['odometer'],
-        fotounitdepan: json['fotounitdepan'],
-        fotounitbelakang: json['fotounitbelakang'],
-        fotounitinteriordepan: json['fotounitinteriordepan'],
-        fotounitmesinplat: json['fotounitmesinplat'],
-        fotomesin: json['fotomesin'],
-        fotounitselfiecmo: json['fotounitselfiecmo'],
-        fotospeedometer: json['fotospeedometer'],
-        fotogesekannoka: json['fotogesekannoka'],
-        fotostnk: json['fotostnk'],
-        fotonoticepajak: json['fotonoticepajak'],
-        fotobpkb1: json['fotobpkb1'],
-        fotobpkb2: json['fotobpkb2'],
-      );
+  // factory FotoKendaraan.fromJson(Map<String, dynamic> json) => FotoKendaraan(
+  //       odometer: json['odometer'],
+  //       fotounitdepan: json['fotounitdepan'],
+  //       fotounitbelakang: json['fotounitbelakang'],
+  //       fotounitinteriordepan: json['fotounitinteriordepan'],
+  //       fotounitmesinplat: json['fotounitmesinplat'],
+  //       fotomesin: json['fotomesin'],
+  //       fotounitselfiecmo: json['fotounitselfiecmo'],
+  //       fotospeedometer: json['fotospeedometer'],
+  //       fotogesekannoka: json['fotogesekannoka'],
+  //       fotostnk: json['fotostnk'],
+  //       fotonoticepajak: json['fotonoticepajak'],
+  //       fotobpkb1: json['fotobpkb1'],
+  //       fotobpkb2: json['fotobpkb2'],
+  //     );
+
+  // Perbarui juga factory fromJson-nya
+  factory FotoKendaraan.fromJson(Map<String, dynamic> json) {
+    return FotoKendaraan(
+      odometer: json['odometer'],
+      fotounitdepan: json['fotounitdepan'] != null
+          ? PhotoData.fromJson(json['fotounitdepan'])
+          : null,
+      fotounitbelakang: json['fotounitbelakang'] != null
+          ? PhotoData.fromJson(json['fotounitbelakang'])
+          : null,
+      fotounitinteriordepan: json['fotounitinteriordepan'] != null
+          ? PhotoData.fromJson(json['fotounitinteriordepan'])
+          : null,
+      fotounitmesinplat: json['fotounitmesinplat'] != null
+          ? PhotoData.fromJson(json['fotounitmesinplat'])
+          : null,
+      fotomesin: json['fotomesin'] != null
+          ? PhotoData.fromJson(json['fotomesin'])
+          : null,
+      fotounitselfiecmo: json['fotounitselfiecmo'] != null
+          ? PhotoData.fromJson(json['fotounitselfiecmo'])
+          : null,
+      fotospeedometer: json['fotospeedometer'] != null
+          ? PhotoData.fromJson(json['fotospeedometer'])
+          : null,
+      fotogesekannoka: json['fotogesekannoka'] != null
+          ? PhotoData.fromJson(json['fotogesekannoka'])
+          : null,
+      fotostnk: json['fotostnk'] != null
+          ? PhotoData.fromJson(json['fotostnk'])
+          : null,
+      fotonoticepajak: json['fotonoticepajak'] != null
+          ? PhotoData.fromJson(json['fotonoticepajak'])
+          : null,
+      fotobpkb1: json['fotobpkb1'] != null
+          ? PhotoData.fromJson(json['fotobpkb1'])
+          : null,
+      fotobpkb2: json['fotobpkb2'] != null
+          ? PhotoData.fromJson(json['fotobpkb2'])
+          : null,
+      // ... dan seterusnya untuk semua field foto
+    );
+  }
 }

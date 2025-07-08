@@ -1,44 +1,41 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'foto_legalitas_model.dart';
+part of 'photo_data_model.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class FotoLegalitasAdapter extends TypeAdapter<FotoLegalitas> {
+class PhotoDataAdapter extends TypeAdapter<PhotoData> {
   @override
-  final int typeId = 10;
+  final int typeId = 12;
 
   @override
-  FotoLegalitas read(BinaryReader reader) {
+  PhotoData read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return FotoLegalitas(
-      fotoktppemohon: fields[0] as PhotoData?,
-      fotoktppasangan: fields[1] as PhotoData?,
-      fotokk: fields[2] as PhotoData?,
-      fotosima: fields[3] as PhotoData?,
-      fotonpwp: fields[4] as PhotoData?,
+    return PhotoData(
+      path: fields[0] as String?,
+      timestamp: fields[1] as DateTime?,
+      latitude: fields[2] as double?,
+      longitude: fields[3] as double?,
     );
   }
 
   @override
-  void write(BinaryWriter writer, FotoLegalitas obj) {
+  void write(BinaryWriter writer, PhotoData obj) {
     writer
-      ..writeByte(5)
-      ..writeByte(0)
-      ..write(obj.fotoktppemohon)
-      ..writeByte(1)
-      ..write(obj.fotoktppasangan)
-      ..writeByte(2)
-      ..write(obj.fotokk)
-      ..writeByte(3)
-      ..write(obj.fotosima)
       ..writeByte(4)
-      ..write(obj.fotonpwp);
+      ..writeByte(0)
+      ..write(obj.path)
+      ..writeByte(1)
+      ..write(obj.timestamp)
+      ..writeByte(2)
+      ..write(obj.latitude)
+      ..writeByte(3)
+      ..write(obj.longitude);
   }
 
   @override
@@ -47,7 +44,7 @@ class FotoLegalitasAdapter extends TypeAdapter<FotoLegalitas> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is FotoLegalitasAdapter &&
+      other is PhotoDataAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

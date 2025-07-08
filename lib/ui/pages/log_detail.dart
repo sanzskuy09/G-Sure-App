@@ -30,7 +30,7 @@ class _LogDetailPageState extends State<LogDetailPage> {
 
   Future<List<QuestionSection>> loadQuestionData() async {
     final String jsonStr =
-        await rootBundle.loadString('assets/question_data.json');
+        await rootBundle.loadString('assets/question_data1.json');
     final List<dynamic> jsonData = json.decode(jsonStr);
     return jsonData.map((e) => QuestionSection.fromJson(e)).toList();
   }

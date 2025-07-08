@@ -1,3 +1,4 @@
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:hive/hive.dart';
 
 part 'foto_tempat_tinggal_model.g.dart';
@@ -5,21 +6,21 @@ part 'foto_tempat_tinggal_model.g.dart';
 @HiveType(typeId: 11)
 class FotoTempatTinggal extends HiveObject {
   @HiveField(0)
-  String? fotorumah;
+  PhotoData? fotorumah;
   @HiveField(1)
-  String? fotorumahselfiecmo;
+  PhotoData? fotorumahselfiecmo;
   @HiveField(2)
-  String? fotolingkunganselfiecmo;
+  PhotoData? fotolingkunganselfiecmo;
   @HiveField(3)
-  String? fotobuktimilikrumah;
+  PhotoData? fotobuktimilikrumah;
   @HiveField(4)
-  String? fotocloseuppemohon;
+  PhotoData? fotocloseuppemohon;
   @HiveField(5)
-  String? fotopemohonttdfpp;
+  PhotoData? fotopemohonttdfpp;
   @HiveField(6)
-  String? fotofppdepan;
+  PhotoData? fotofppdepan;
   @HiveField(7)
-  String? fotofppbelakang;
+  PhotoData? fotofppbelakang;
 
   FotoTempatTinggal({
     this.fotorumah,
@@ -44,15 +45,45 @@ class FotoTempatTinggal extends HiveObject {
         'fotofppbelakang': fotofppbelakang,
       };
 
-  factory FotoTempatTinggal.fromJson(Map<String, dynamic> json) =>
-      FotoTempatTinggal(
-        fotorumah: json['fotorumah'],
-        fotorumahselfiecmo: json['fotorumahselfiecmo'],
-        fotolingkunganselfiecmo: json['fotolingkunganselfiecmo'],
-        fotobuktimilikrumah: json['fotobuktimilikrumah'],
-        fotocloseuppemohon: json['fotocloseuppemohon'],
-        fotopemohonttdfpp: json['fotopemohonttdfpp'],
-        fotofppdepan: json['fotofppdepan'],
-        fotofppbelakang: json['fotofppbelakang'],
-      );
+  // factory FotoTempatTinggal.fromJson(Map<String, dynamic> json) =>
+  //     FotoTempatTinggal(
+  //       fotorumah: json['fotorumah'],
+  //       fotorumahselfiecmo: json['fotorumahselfiecmo'],
+  //       fotolingkunganselfiecmo: json['fotolingkunganselfiecmo'],
+  //       fotobuktimilikrumah: json['fotobuktimilikrumah'],
+  //       fotocloseuppemohon: json['fotocloseuppemohon'],
+  //       fotopemohonttdfpp: json['fotopemohonttdfpp'],
+  //       fotofppdepan: json['fotofppdepan'],
+  //       fotofppbelakang: json['fotofppbelakang'],
+  //     );
+
+  // Perbarui juga factory fromJson-nya
+  factory FotoTempatTinggal.fromJson(Map<String, dynamic> json) {
+    return FotoTempatTinggal(
+      fotorumah: json['fotorumah'] != null
+          ? PhotoData.fromJson(json['fotorumah'])
+          : null,
+      fotorumahselfiecmo: json['fotorumahselfiecmo'] != null
+          ? PhotoData.fromJson(json['fotorumahselfiecmo'])
+          : null,
+      fotolingkunganselfiecmo: json['fotolingkunganselfiecmo'] != null
+          ? PhotoData.fromJson(json['fotolingkunganselfiecmo'])
+          : null,
+      fotobuktimilikrumah: json['fotobuktimilikrumah'] != null
+          ? PhotoData.fromJson(json['fotobuktimilikrumah'])
+          : null,
+      fotocloseuppemohon: json['fotocloseuppemohon'] != null
+          ? PhotoData.fromJson(json['fotocloseuppemohon'])
+          : null,
+      fotopemohonttdfpp: json['fotopemohonttdfpp'] != null
+          ? PhotoData.fromJson(json['fotopemohonttdfpp'])
+          : null,
+      fotofppdepan: json['fotofppdepan'] != null
+          ? PhotoData.fromJson(json['fotofppdepan'])
+          : null,
+      fotofppbelakang: json['fotofppbelakang'] != null
+          ? PhotoData.fromJson(json['fotofppbelakang'])
+          : null,
+    );
+  }
 }

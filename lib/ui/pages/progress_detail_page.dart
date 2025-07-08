@@ -1,8 +1,10 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:hive/hive.dart';
+import 'package:intl/intl.dart';
 
 class ProgressDetailPage extends StatelessWidget {
   /// Key dari data yang akan ditampilkan, didapat dari halaman list
@@ -489,7 +491,10 @@ class ProgressDetailPage extends StatelessWidget {
               icon: Icons.image,
               children: [
                 _buildDetailRow(
-                    'Odometer', '${survey.fotoKendaraan?.odometer} KM'),
+                    'Odometer',
+                    survey.fotoKendaraan?.odometer == null
+                        ? '-'
+                        : '${survey.fotoKendaraan?.odometer} KM'),
                 _buildPhotoItem(
                     'Foto Unit Depan', survey.fotoKendaraan?.fotounitdepan),
                 _buildPhotoItem('Foto Unit Belakang',
@@ -555,32 +560,36 @@ class ProgressDetailPage extends StatelessWidget {
               ],
             ),
 
+            _buildPhotoGallery(
+                'Foto & Dokumen Pekerjaan', survey.fotoPekerjaan!),
+            _buildPhotoGallery('Foto & Dokumen Simulasi', survey.fotoSimulasi!),
+            _buildPhotoGallery('Foto & Dokumen Tambahan', survey.fotoTambahan!),
+
+            const SizedBox(height: 50),
+
             // --- Bagian Foto & Dokumen Pekerjaan / Usaha ---
-            _buildSectionCard(
-              title: 'Foto & Dokumen Pekerjaan / Usaha',
-              icon: Icons.image,
-              children: [
-                _buildDetailRow('Foto & Dokumen 1', '-'),
-              ],
-            ),
-
+            // _buildSectionCard(
+            //   title: 'Foto & Dokumen Pekerjaan / Usaha',
+            //   icon: Icons.image,
+            //   children: [],
+            // ),
             // --- Bagian Foto & Dokumen Simulasi Perhitungan ---
-            _buildSectionCard(
-              title: 'Foto & Dokumen Simulasi Perhitungan',
-              icon: Icons.image,
-              children: [
-                _buildDetailRow('Foto & Dokumen 1', '-'),
-              ],
-            ),
+            // _buildSectionCard(
+            //   title: 'Foto & Dokumen Simulasi Perhitungan',
+            //   icon: Icons.image,
+            //   children: [
+            //     _buildDetailRow('Foto & Dokumen 1', '-'),
+            //   ],
+            // ),
 
-            // --- Bagian Foto & Dokumen Tambahan ---
-            _buildSectionCard(
-              title: 'Foto & Dokumen Tambahan',
-              icon: Icons.image,
-              children: [
-                _buildDetailRow('Foto & Dokumen 1', '-'),
-              ],
-            ),
+            // // --- Bagian Foto & Dokumen Tambahan ---
+            // _buildSectionCard(
+            //   title: 'Foto & Dokumen Tambahan',
+            //   icon: Icons.image,
+            //   children: [
+            //     _buildDetailRow('Foto & Dokumen 1', '-'),
+            //   ],
+            // ),
 
             // Anda bisa menambahkan Card lain untuk section lainnya dengan pola yang sama
           ],
@@ -662,13 +671,74 @@ class ProgressDetailPage extends StatelessWidget {
     );
   }
 
-  /// Helper widget baru untuk menampilkan satu item foto
-  Widget _buildPhotoItem(String label, String? path) {
+  /// Helper widget untuk membuat galeri foto horizontal
+  Widget _buildPhotoGallery(String title, List<PhotoData> photos) {
+    if (photos.isEmpty) {
+      return const SizedBox.shrink(); // Jangan tampilkan jika kosong
+    }
+
+    return _buildSectionCard(
+      title: title,
+      icon: Icons.collections,
+      children: [
+        Container(
+          height: 180, // Tinggi area galeri
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: photos.length,
+            itemBuilder: (context, index) {
+              final photo = photos[index];
+              final path = photo.path;
+
+              if (path == null || path.isEmpty) return const SizedBox.shrink();
+
+              return Container(
+                width: 150, // Lebar setiap foto
+                margin: const EdgeInsets.only(right: 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(8),
+                        child: Image.file(
+                          File(path),
+                          width: double.infinity,
+                          fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Center(child: Icon(Icons.error)),
+                        ),
+                      ),
+                    ),
+                    if (photo.timestamp != null)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4.0),
+                        child: Text(
+                          DateFormat('dd-MM-yy HH:mm').format(photo.timestamp!),
+                          style:
+                              const TextStyle(fontSize: 10, color: Colors.grey),
+                        ),
+                      ),
+                  ],
+                ),
+              );
+            },
+          ),
+        )
+      ],
+    );
+  }
+
+  // Ganti parameter dari String? path menjadi PhotoData? photo
+  Widget _buildPhotoItem(String label, PhotoData? photo) {
+    // Ambil path dari objek photo
+    final String? path = photo?.path;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Text(
             label,
@@ -702,6 +772,26 @@ class ProgressDetailPage extends StatelessWidget {
                     ),
                   ),
                 ),
+
+          // --- BAGIAN BARU: Tampilkan Waktu dan Lokasi ---
+          const SizedBox(height: 8),
+          if (photo?.timestamp != null)
+            Center(
+              child: Text(
+                'Waktu: ${DateFormat('dd MMM yyyy – HH:mm').format(photo!.timestamp!)}',
+                style: const TextStyle(
+                  fontSize: 12,
+                  color: Colors.grey,
+                ),
+              ),
+            ),
+          if (photo?.latitude != null && photo?.longitude != null)
+            Center(
+              child: Text(
+                'Lokasi: ${photo!.latitude!.toStringAsFixed(6)}, ${photo.longitude!.toStringAsFixed(6)}',
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ),
         ],
       ),
     );

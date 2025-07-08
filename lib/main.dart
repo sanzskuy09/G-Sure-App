@@ -15,6 +15,7 @@ import 'package:gsure/models/foto_kendaraan_model.dart';
 import 'package:gsure/models/foto_legalitas_model.dart';
 import 'package:gsure/models/foto_tempat_tinggal_model.dart';
 import 'package:gsure/models/order_model.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/models/survey_data.dart';
 import 'package:gsure/services/survey_service.dart';
@@ -77,6 +78,7 @@ void main() async {
   Hive.registerAdapter(FotoKendaraanAdapter());
   Hive.registerAdapter(FotoLegalitasAdapter());
   Hive.registerAdapter(FotoTempatTinggalAdapter());
+  Hive.registerAdapter(PhotoDataAdapter());
 
   await Hive.openBox<AplikasiSurvey>('survey_apps');
   await Hive.openBox<DataDealer>('data_dealers');
@@ -122,6 +124,7 @@ class MyApp extends StatelessWidget {
           '/survey': (context) => const SurveyListPage(),
           // '/survey-form': (context) => const FormSurveyPage(),
           '/daftar-order': (context) => const MainPage(selectedIndex: 1),
+          '/list-survey': (context) => const MainPage(selectedIndex: 2),
           // '/settings': (context) => const SettingsPage(),
           // '/progress': (context) => const ProgressPage(),
           // detail setting pages

@@ -113,6 +113,9 @@ class OrderModel extends HiveObject {
   @HiveField(35)
   int? is_survey;
 
+  @HiveField(36)
+  bool? isActived;
+
   OrderModel({
     this.id,
     this.cabang,
@@ -150,6 +153,7 @@ class OrderModel extends HiveObject {
     this.dealer,
     this.catatan,
     this.is_survey,
+    this.isActived,
   });
 
   // Method toJson yang lebih lengkap
@@ -186,6 +190,7 @@ class OrderModel extends HiveObject {
       'umur': umur,
       'jeniskelamin': jeniskelamin,
       'is_survey': is_survey,
+      'isActived': isActived,
       // Foto biasanya di-handle terpisah (misalnya di-upload sebagai multipart/form-data)
     };
   }
@@ -228,6 +233,7 @@ class OrderModel extends HiveObject {
       dealer: json['dealer'],
       catatan: json['catatan'],
       is_survey: json['is_survey'],
+      isActived: true,
     );
   }
 
@@ -272,6 +278,7 @@ class OrderModel extends HiveObject {
     String? kota,
     String? kotapasangan,
     int? is_survey,
+    bool? isActived,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -310,6 +317,7 @@ class OrderModel extends HiveObject {
       kota: kota ?? this.kota,
       kotapasangan: kotapasangan ?? this.kotapasangan,
       is_survey: is_survey ?? this.is_survey,
+      isActived: isActived ?? this.isActived,
     );
   }
 }

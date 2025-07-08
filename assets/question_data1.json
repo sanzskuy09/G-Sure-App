@@ -1,4 +1,12 @@
 [
+   {
+    "title": "Foto & Dokumen Pekerjaan / Usaha",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "dokpekerjaan1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "dokpekerjaan2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "dokpekerjaan3" }
+    ]
+  },
   {
     "title": "Dealer",
     "fields": [

@@ -18,18 +18,18 @@ class FotoKendaraanAdapter extends TypeAdapter<FotoKendaraan> {
     };
     return FotoKendaraan(
       odometer: fields[0] as String?,
-      fotounitdepan: fields[1] as String?,
-      fotounitbelakang: fields[2] as String?,
-      fotounitinteriordepan: fields[3] as String?,
-      fotounitmesinplat: fields[4] as String?,
-      fotomesin: fields[5] as String?,
-      fotounitselfiecmo: fields[6] as String?,
-      fotospeedometer: fields[7] as String?,
-      fotogesekannoka: fields[8] as String?,
-      fotostnk: fields[9] as String?,
-      fotonoticepajak: fields[10] as String?,
-      fotobpkb1: fields[11] as String?,
-      fotobpkb2: fields[12] as String?,
+      fotounitdepan: fields[1] as PhotoData?,
+      fotounitbelakang: fields[2] as PhotoData?,
+      fotounitinteriordepan: fields[3] as PhotoData?,
+      fotounitmesinplat: fields[4] as PhotoData?,
+      fotomesin: fields[5] as PhotoData?,
+      fotounitselfiecmo: fields[6] as PhotoData?,
+      fotospeedometer: fields[7] as PhotoData?,
+      fotogesekannoka: fields[8] as PhotoData?,
+      fotostnk: fields[9] as PhotoData?,
+      fotonoticepajak: fields[10] as PhotoData?,
+      fotobpkb1: fields[11] as PhotoData?,
+      fotobpkb2: fields[12] as PhotoData?,
     );
   }
 

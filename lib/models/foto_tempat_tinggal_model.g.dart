@@ -17,14 +17,14 @@ class FotoTempatTinggalAdapter extends TypeAdapter<FotoTempatTinggal> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return FotoTempatTinggal(
-      fotorumah: fields[0] as String?,
-      fotorumahselfiecmo: fields[1] as String?,
-      fotolingkunganselfiecmo: fields[2] as String?,
-      fotobuktimilikrumah: fields[3] as String?,
-      fotocloseuppemohon: fields[4] as String?,
-      fotopemohonttdfpp: fields[5] as String?,
-      fotofppdepan: fields[6] as String?,
-      fotofppbelakang: fields[7] as String?,
+      fotorumah: fields[0] as PhotoData?,
+      fotorumahselfiecmo: fields[1] as PhotoData?,
+      fotolingkunganselfiecmo: fields[2] as PhotoData?,
+      fotobuktimilikrumah: fields[3] as PhotoData?,
+      fotocloseuppemohon: fields[4] as PhotoData?,
+      fotopemohonttdfpp: fields[5] as PhotoData?,
+      fotofppdepan: fields[6] as PhotoData?,
+      fotofppbelakang: fields[7] as PhotoData?,
     );
   }
 

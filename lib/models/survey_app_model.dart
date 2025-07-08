@@ -9,6 +9,7 @@ import 'package:gsure/models/data_penjamin_model.dart';
 import 'package:gsure/models/foto_kendaraan_model.dart';
 import 'package:gsure/models/foto_legalitas_model.dart';
 import 'package:gsure/models/foto_tempat_tinggal_model.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:hive/hive.dart';
 
 part 'survey_app_model.g.dart';
@@ -59,13 +60,13 @@ class AplikasiSurvey extends HiveObject {
   FotoTempatTinggal? fotoTempatTinggal;
 
   @HiveField(14)
-  List<String>? fotoPekerjaanPaths;
+  List<PhotoData>? fotoPekerjaan;
 
   @HiveField(15)
-  List<String>? fotoSimulasiPaths;
+  List<PhotoData>? fotoSimulasi;
 
   @HiveField(16)
-  List<String>? fotoTambahanPaths;
+  List<PhotoData>? fotoTambahan;
 
   AplikasiSurvey({
     this.id,
@@ -82,9 +83,9 @@ class AplikasiSurvey extends HiveObject {
     this.fotoKendaraan,
     this.fotoLegalitas,
     this.fotoTempatTinggal,
-    this.fotoPekerjaanPaths = const [], // Inisialisasi dengan list kosong
-    this.fotoSimulasiPaths = const [],
-    this.fotoTambahanPaths = const [],
+    this.fotoPekerjaan = const [], // Inisialisasi dengan list kosong
+    this.fotoSimulasi = const [],
+    this.fotoTambahan = const [],
   });
 
   Map<String, dynamic> toJson() => {
@@ -102,9 +103,9 @@ class AplikasiSurvey extends HiveObject {
         'fotoKendaraan': fotoKendaraan?.toJson(),
         'fotoLegalitas': fotoLegalitas?.toJson(),
         'fotoTempatTinggal': fotoTempatTinggal?.toJson(),
-        'fotoPekerjaanPaths': fotoPekerjaanPaths,
-        'fotoSimulasiPaths': fotoSimulasiPaths,
-        'fotoTambahanPaths': fotoTambahanPaths
+        'fotoPekerjaan': fotoPekerjaan,
+        'fotoSimulasi': fotoSimulasi,
+        'fotoTambahan': fotoTambahan
       };
 
   factory AplikasiSurvey.fromJson(Map<String, dynamic> json) => AplikasiSurvey(
@@ -145,8 +146,27 @@ class AplikasiSurvey extends HiveObject {
         fotoTempatTinggal: json['fotoTempatTinggal'] != null
             ? FotoTempatTinggal.fromJson(json['fotoTempatTinggal'])
             : null,
-        fotoPekerjaanPaths: json['fotoPekerjaanPaths'] ?? [],
-        fotoSimulasiPaths: json['fotoSimulasiPaths'] ?? [],
-        fotoTambahanPaths: json['fotoTambahanPaths'] ?? [],
+
+        // Logika untuk mengubah list of map menjadi list of PhotoData object
+        fotoPekerjaan: (json['fotoPekerjaan'] as List<dynamic>?)
+                ?.map(
+                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
+                .toList() ??
+            [],
+
+        fotoSimulasi: (json['fotoSimulasi'] as List<dynamic>?)
+                ?.map(
+                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
+                .toList() ??
+            [],
+
+        fotoTambahan: (json['fotoTambahan'] as List<dynamic>?)
+                ?.map(
+                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
+                .toList() ??
+            [],
+        // fotoPekerjaanPaths: json['fotoPekerjaanPaths'] ?? [],
+        // fotoSimulasiPaths: json['fotoSimulasiPaths'] ?? [],
+        // fotoTambahanPaths: json['fotoTambahanPaths'] ?? [],
       );
 }

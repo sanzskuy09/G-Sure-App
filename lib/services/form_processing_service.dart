@@ -23,7 +23,24 @@ class FormProcessingService {
     final Map<String, dynamic> fotoLegalitasData = {};
     final Map<String, dynamic> fotoTempatTinggalData = {};
 
-    // 2. Kelompokkan data dari map datar ke dalam map bagian yang sesuai
+    // --- BAGIAN BARU: Logika untuk mengumpulkan foto dinamis ---
+    final List<Map<String, dynamic>> fotoPekerjaanList = [];
+    final List<Map<String, dynamic>> fotoSimulasiList = [];
+    final List<Map<String, dynamic>> fotoTambahanList = [];
+
+    // Lakukan iterasi pada semua entri di map datar
+    flatFormAnswers.forEach((key, value) {
+      // Cek jika key berawalan 'dokpekerjaan' dan valuenya adalah Map
+      if (key.startsWith('dokpekerjaan') && value is Map<String, dynamic>) {
+        fotoPekerjaanList.add(value);
+      } else if (key.startsWith('doksimulasi') &&
+          value is Map<String, dynamic>) {
+        fotoSimulasiList.add(value);
+      } else if (key.startsWith('doktambahan') &&
+          value is Map<String, dynamic>) {
+        fotoTambahanList.add(value);
+      }
+    });
 
     // Mengisi data untuk bagian Dealer
     dealerData['kddealer'] = flatFormAnswers['kddealer'];
@@ -257,26 +274,21 @@ class FormProcessingService {
 
     // Foto Kendaraan
     fotoKendaraanData['odometer'] = flatFormAnswers['odometer'];
-    fotoKendaraanData['fotounitdepan'] =
-        getFilePath(flatFormAnswers['fotounitdepan']);
-    fotoKendaraanData['fotounitbelakang'] =
-        getFilePath(flatFormAnswers['fotounitbelakang']);
+    fotoKendaraanData['fotounitdepan'] = flatFormAnswers['fotounitdepan'];
+    fotoKendaraanData['fotounitbelakang'] = flatFormAnswers['fotounitbelakang'];
     fotoKendaraanData['fotounitinteriordepan'] =
-        getFilePath(flatFormAnswers['fotounitinteriordepan']);
+        flatFormAnswers['fotounitinteriordepan'];
     fotoKendaraanData['fotounitmesinplat'] =
-        getFilePath(flatFormAnswers['fotounitmesinplat']);
-    fotoKendaraanData['fotomesin'] = getFilePath(flatFormAnswers['fotomesin']);
+        flatFormAnswers['fotounitmesinplat'];
+    fotoKendaraanData['fotomesin'] = flatFormAnswers['fotomesin'];
     fotoKendaraanData['fotounitselfiecmo'] =
-        getFilePath(flatFormAnswers['fotounitselfiecmo']);
-    fotoKendaraanData['fotospeedometer'] =
-        getFilePath(flatFormAnswers['fotospeedometer']);
-    fotoKendaraanData['fotogesekannoka'] =
-        getFilePath(flatFormAnswers['fotogesekannoka']);
-    fotoKendaraanData['fotostnk'] = getFilePath(flatFormAnswers['fotostnk']);
-    fotoKendaraanData['fotonoticepajak'] =
-        getFilePath(flatFormAnswers['fotonoticepajak']);
-    fotoKendaraanData['fotobpkb1'] = getFilePath(flatFormAnswers['fotobpkb1']);
-    fotoKendaraanData['fotobpkb2'] = getFilePath(flatFormAnswers['fotobpkb2']);
+        flatFormAnswers['fotounitselfiecmo'];
+    fotoKendaraanData['fotospeedometer'] = flatFormAnswers['fotospeedometer'];
+    fotoKendaraanData['fotogesekannoka'] = flatFormAnswers['fotogesekannoka'];
+    fotoKendaraanData['fotostnk'] = flatFormAnswers['fotostnk'];
+    fotoKendaraanData['fotonoticepajak'] = flatFormAnswers['fotonoticepajak'];
+    fotoKendaraanData['fotobpkb1'] = flatFormAnswers['fotobpkb1'];
+    fotoKendaraanData['fotobpkb2'] = flatFormAnswers['fotobpkb2'];
 
     // Foto Legalitas
     fotoLegalitasData['fotoktppemohon'] =
@@ -320,6 +332,9 @@ class FormProcessingService {
       'fotoTempatTinggal': fotoTempatTinggalData,
       'isPenjaminExist': flatFormAnswers['isPenjaminExist'],
       'analisacmo': flatFormAnswers['analisacmo'],
+      'fotoPekerjaan': fotoPekerjaanList,
+      'fotoSimulasi': fotoSimulasiList,
+      'fotoTambahan': fotoTambahanList,
       // Anda bisa menambahkan bagian lain seperti dataPasangan, dataPenjamin, dll. dengan pola yang sama
     };
 
