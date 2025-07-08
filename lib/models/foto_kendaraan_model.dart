@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:gsure/models/photo_data_model.dart';
 import 'package:hive/hive.dart';
 

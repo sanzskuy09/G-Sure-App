@@ -76,74 +76,74 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     return result.take(visibleSectionCount).toList();
   }
 
-  void _showConfirmationDialog() {
-    // 1. Lakukan pemisahan data di sini
-    final Map<String, dynamic> jsonData = {};
-    final Map<String, Map<String, dynamic>> fileData = {};
+  // void _showConfirmationDialog() {
+  //   // 1. Lakukan pemisahan data di sini
+  //   final Map<String, dynamic> jsonData = {};
+  //   final Map<String, Map<String, dynamic>> fileData = {};
 
-    for (final entry in formAnswers.entries) {
-      final key = entry.key;
-      final value = entry.value;
-      if (value is Map && value.containsKey('file')) {
-        fileData[key] = Map<String, dynamic>.from(value);
-      } else if (value != null) {
-        jsonData[key] = value;
-      }
-    }
+  //   for (final entry in formAnswers.entries) {
+  //     final key = entry.key;
+  //     final value = entry.value;
+  //     if (value is Map && value.containsKey('file')) {
+  //       fileData[key] = Map<String, dynamic>.from(value);
+  //     } else if (value != null) {
+  //       jsonData[key] = value;
+  //     }
+  //   }
 
-    // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
-    const encoder = JsonEncoder.withIndent('  ');
-    final String jsonString = encoder.convert(jsonData);
-    // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
-    final String fileString = encoder.convert(fileData.map((key, value) =>
-        MapEntry(
-            key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+  //   // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
+  //   const encoder = JsonEncoder.withIndent('  ');
+  //   final String jsonString = encoder.convert(jsonData);
+  //   // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
+  //   final String fileString = encoder.convert(fileData.map((key, value) =>
+  //       MapEntry(
+  //           key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
 
-    // 3. Tampilkan dialog
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Konfirmasi Pengiriman"),
-          content: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text("Data JSON yang akan dikirim:",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(jsonString,
-                    style:
-                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-                const SizedBox(height: 16),
-                const Text("File yang akan di-upload:",
-                    style: TextStyle(fontWeight: FontWeight.bold)),
-                const SizedBox(height: 8),
-                Text(fileString,
-                    style:
-                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              child: const Text("Batal"),
-              onPressed: () => Navigator.of(context).pop(),
-            ),
-            FilledButton(
-              child: const Text("Kirim"),
-              onPressed: () {
-                _saveAplikasiToHive();
-                // Navigator.of(context).pop(); // Tutup dialog
-                // _submitSurvey(jsonData,
-                //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
-              },
-            ),
-          ],
-        );
-      },
-    );
-  }
+  //   // 3. Tampilkan dialog
+  //   showDialog(
+  //     context: context,
+  //     builder: (context) {
+  //       return AlertDialog(
+  //         title: const Text("Konfirmasi Pengiriman"),
+  //         content: SingleChildScrollView(
+  //           child: Column(
+  //             crossAxisAlignment: CrossAxisAlignment.start,
+  //             children: [
+  //               const Text("Data JSON yang akan dikirim:",
+  //                   style: TextStyle(fontWeight: FontWeight.bold)),
+  //               const SizedBox(height: 8),
+  //               Text(jsonString,
+  //                   style:
+  //                       const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+  //               const SizedBox(height: 16),
+  //               const Text("File yang akan di-upload:",
+  //                   style: TextStyle(fontWeight: FontWeight.bold)),
+  //               const SizedBox(height: 8),
+  //               Text(fileString,
+  //                   style:
+  //                       const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+  //             ],
+  //           ),
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             child: const Text("Batal"),
+  //             onPressed: () => Navigator.of(context).pop(),
+  //           ),
+  //           FilledButton(
+  //             child: const Text("Kirim"),
+  //             onPressed: () {
+  //               _saveAplikasiToHive();
+  //               // Navigator.of(context).pop(); // Tutup dialog
+  //               // _submitSurvey(jsonData,
+  //               //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
+  //             },
+  //           ),
+  //         ],
+  //       );
+  //     },
+  //   );
+  // }
 
   void _saveAplikasiToHive() {
     try {
@@ -157,7 +157,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       final uniqueId = 'app_${DateTime.now().millisecondsSinceEpoch}';
       box.put(uniqueId, aplikasi);
 
-      print('Data survey berhasil disimpan ke Hive dengan key: $uniqueId.');
+      // print('Data survey berhasil disimpan ke Hive dengan key: $uniqueId.');
 
       // --- LOGIKA BARU UNTUK UPDATE ORDER ---
       // 2. Buka box tempat OrderModel disimpan
@@ -211,6 +211,20 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     return isConfirmed ?? false;
   }
 
+  // 3. Buat fungsi terpisah agar initState tetap rapi.
+  void _initializeFormAnswers() {
+    final order = widget.order;
+
+    formAnswers = {
+      'katpemohon': 'PERORANGAN', // Contoh nilai default
+      'namadealer': order.cabang,
+      'statuspernikahan': order.statusperkawinan,
+      'nama': order.nama,
+      'namapasangan': order.namapasangan,
+      'ktppasangan': order.nikpasangan,
+    };
+  }
+
   @override
   void initState() {
     super.initState();
@@ -221,6 +235,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
             List.generate(data.length, (i) => i == 0); // buka yang pertama
       });
     });
+    _initializeFormAnswers();
   }
 
   // @override

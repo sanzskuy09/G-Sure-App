@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:hive/hive.dart';
 
 part 'data_pekerjaan_penjamin_model.g.dart';
