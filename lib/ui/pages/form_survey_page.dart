@@ -222,6 +222,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       'nama': order.nama,
       'namapasangan': order.namapasangan,
       'ktppasangan': order.nikpasangan,
+      'isPenjaminExist': 'Tidak',
     };
   }
 

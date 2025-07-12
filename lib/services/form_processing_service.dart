@@ -291,31 +291,27 @@ class FormProcessingService {
     fotoKendaraanData['fotobpkb2'] = flatFormAnswers['fotobpkb2'];
 
     // Foto Legalitas
-    fotoLegalitasData['fotoktppemohon'] =
-        getFilePath(flatFormAnswers['fotoktppemohon']);
-    fotoLegalitasData['fotoktppasangan'] =
-        getFilePath(flatFormAnswers['fotoktppasangan']);
-    fotoLegalitasData['fotokk'] = getFilePath(flatFormAnswers['fotokk']);
-    fotoLegalitasData['fotosima'] = getFilePath(flatFormAnswers['fotosima']);
-    fotoLegalitasData['fotonpwp'] = getFilePath(flatFormAnswers['fotonpwp']);
+    fotoLegalitasData['fotoktppemohon'] = flatFormAnswers['fotoktppemohon'];
+    fotoLegalitasData['fotoktppasangan'] = flatFormAnswers['fotoktppasangan'];
+    fotoLegalitasData['fotokk'] = flatFormAnswers['fotokk'];
+    fotoLegalitasData['fotosima'] = flatFormAnswers['fotosima'];
+    fotoLegalitasData['fotonpwp'] = flatFormAnswers['fotonpwp'];
 
     // Foto Legalitas
-    fotoTempatTinggalData['fotorumah'] =
-        getFilePath(flatFormAnswers['fotorumah']);
+    fotoTempatTinggalData['fotorumah'] = flatFormAnswers['fotorumah'];
     fotoTempatTinggalData['fotorumahselfiecmo'] =
-        getFilePath(flatFormAnswers['fotorumahselfiecmo']);
+        flatFormAnswers['fotorumahselfiecmo'];
     fotoTempatTinggalData['fotolingkunganselfiecmo'] =
-        getFilePath(flatFormAnswers['fotolingkunganselfiecmo']);
+        flatFormAnswers['fotolingkunganselfiecmo'];
     fotoTempatTinggalData['fotobuktimilikrumah'] =
-        getFilePath(flatFormAnswers['fotobuktimilikrumah']);
+        flatFormAnswers['fotobuktimilikrumah'];
     fotoTempatTinggalData['fotocloseuppemohon'] =
-        getFilePath(flatFormAnswers['fotocloseuppemohon']);
+        flatFormAnswers['fotocloseuppemohon'];
     fotoTempatTinggalData['fotopemohonttdfpp'] =
-        getFilePath(flatFormAnswers['fotopemohonttdfpp']);
-    fotoTempatTinggalData['fotofppdepan'] =
-        getFilePath(flatFormAnswers['fotofppdepan']);
+        flatFormAnswers['fotopemohonttdfpp'];
+    fotoTempatTinggalData['fotofppdepan'] = flatFormAnswers['fotofppdepan'];
     fotoTempatTinggalData['fotofppbelakang'] =
-        getFilePath(flatFormAnswers['fotofppbelakang']);
+        flatFormAnswers['fotofppbelakang'];
 
     // 3. Gabungkan semua map bagian menjadi satu map akhir yang bertingkat
     final Map<String, dynamic> nestedData = {

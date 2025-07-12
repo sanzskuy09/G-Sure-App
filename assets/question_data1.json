@@ -17,9 +17,9 @@
       { "type": "text", "label": "Kecamatan", "key": "kecdealer" },
       { "type": "text", "label": "Kota/Kabupaten", "key": "kotadealer" },
       { "type": "text", "label": "Provinsi", "key": "provinsidealer" },
-      { "type": "text", "label": "No. Telepon", "key": "telpondealer" },
+      { "type": "number", "label": "No. Telepon", "key": "telpondealer" },
       { "type": "text", "label": "Nama Pemilik Dealer", "key": "namapemilikdealer" },
-      { "type": "text", "label": "No. HP Pemilik Dealer", "key": "nohppemilik" },
+      { "type": "number", "label": "No. HP Pemilik Dealer", "key": "nohppemilik" },
       { "type": "text", "label": "Nama PIC Dealer", "key": "picdealer" }
     ]
   },
@@ -102,7 +102,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatan" },
               { "type": "text", "label": "Alamat Perusahaan" , "key": "alamatusaha"},
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposusaha" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
 
               { "type": "text", "label": "Masa Kerja" , "key": "masakerjapemohon"},
               { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipemohon" },
@@ -134,7 +134,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatan" },
               { "type": "text", "label": "Alamat Perusahaan" , "key": "alamatusaha"},
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposusaha" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapemohon"  },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapemohon"  },
@@ -224,7 +224,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasangan" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapasangan" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasangan" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
 
               { "type": "text", "label": "Masa Kerja", "key": "masakerjapasangan" },
               { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipasangan" },
@@ -256,7 +256,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasangan" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapasangan" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasangan" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapasangan" },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapasangan" },
@@ -353,7 +353,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpenjamin" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapenjamin" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpenjamin" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
 
               { "type": "text", "label": "Masa Kerja", "key": "masakerjapenjamin" },
               { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipenjamin" },
@@ -385,7 +385,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpenjamin" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapenjamin" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpenjamin" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapenjamin" },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapenjamin" },
@@ -475,7 +475,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasanganpenjamin" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatperusahaanpasanganpenjamin" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
 
               { "type": "text", "label": "Masa Kerja", "key": "masakerjapasanganpenjamin" },
               { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipasanganpenjamin"  },
@@ -507,7 +507,7 @@
               { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasanganpenjamin" },
               { "type": "text", "label": "Alamat Perusahaan", "key": "alamatperusahaanpasanganpenjamin" },
               { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
-              { "type": "text", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
 
               { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapasanganpenjamin" },
               { "type": "text", "label": "Lama Usaha", "key": "lamausahapasanganpenjamin" },
