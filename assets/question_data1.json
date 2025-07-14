@@ -39,6 +39,71 @@
     ]
   },
   {
+    "title": "Foto Kendaraan",
+    "fields": [
+      { "type": "numberDecimal", "label": "Odometer (Kilometer)", "key": "odometer" },
+      { "type": "file", "label": "Foto Unit Depan (Diagonal)" , "key": "fotounitdepan"},
+      { "type": "file", "label": "Foto Unit Belakang (Diagonal)", "key": "fotounitbelakang" },
+      { "type": "file", "label": "Foto Unit Interior Depan", "key": "fotounitinteriordepan" },
+      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" , "key": "fotounitmesinplat"},
+      { "type": "file", "label": "Foto Mesin" , "key": "fotomesin"},
+      { "type": "file", "label": "Foto Unit Selfie CMO" , "key": "fotounitselfiecmo"},
+      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)", "key": "fotospeedometer" },
+      { "type": "cameraAndUpload", "label": "Foto Hasil Gesekan Noka Nosin", "key": "fotogesekannoka" },
+      { "type": "cameraAndUpload", "label": "Foto STNK", "key": "fotostnk" },
+      { "type": "cameraAndUpload", "label": "Foto Notice Pajak" , "key": "fotonoticepajak"},
+      { "type": "cameraAndUpload", "label": "Foto BPKB 1", "key": "fotobpkb1" },
+      { "type": "cameraAndUpload", "label": "Foto BPKB 2", "key": "fotobpkb2" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Legalitas",
+    "fields": [
+      { "type": "file", "label": "Foto KTP Asli Pemohon", "key": "fotoktppemohon" },
+      { "type": "cameraAndUpload", "label": "Foto KTP Pasangan", "key": "fotoktppasangan" },
+      { "type": "cameraAndUpload", "label": "Foto Kartu Keluarga", "key": "fotokk" },
+      { "type": "cameraAndUpload", "label": "Foto SIM-A Pemohon / Pasangan", "key": "fotosima" },
+      { "type": "cameraAndUpload", "label": "Foto NPWP Pemohon / Pasangan", "key": "fotonpwp" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tempat Tinggal",
+    "fields": [
+      { "type": "file", "label": "Foto Rumah", "key": "fotorumah" },
+      { "type": "file", "label": "Foto Rumah Selfie CMO" , "key": "fotorumahselfiecmo"},
+      { "type": "file", "label": "Foto Cek Lingkungan Selfie CMO", "key": "fotolingkunganselfiecmo" },
+      { "type": "file", "label": "Foto Bukti Kepemilikan Tempat Tinggal", "key": "fotobuktimilikrumah" },
+      { "type": "file", "label": "Foto Close-Up Pemohon", "key": "fotocloseuppemohon" },
+      { "type": "file", "label": "Foto Pemohon TTD FPP", "key": "fotopemohonttdfpp" },
+      { "type": "file", "label": "Foto FPP Tampak Depan", "key": "fotofppdepan" },
+      { "type": "file", "label": "Foto FPP Tampak Belakang", "key": "fotofppbelakang" }
+    ]
+  },
+   {
+    "title": "Foto & Dokumen Pekerjaan / Usaha",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "dokpekerjaan1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "dokpekerjaan2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "dokpekerjaan3" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Simulasi Perhitungan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doksimulasi1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doksimulasi2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doksimulasi3" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tambahan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doktambahan1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doktambahan2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doktambahan3" }
+    ]
+  },
+  {
     "title": "Profil Singkat Pembiayaan",
     "fields": [
       { "type": "numberDecimal", "label": "Harga Kendaraan", "key": "hargakendaraan" },
@@ -86,7 +151,7 @@
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
         "key": "jenispekerjaan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
@@ -208,7 +273,7 @@
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
         "key": "pekerjaanpasangan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
@@ -337,7 +402,7 @@
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
         "key": "pekerjaanpenjamin",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
@@ -414,7 +479,6 @@
       { "type": "number", "label": "NPWP (Nomor)", "key": "npwppenjamin" },
       { "type": "text", "label": "Alamat", "key": "alamatpenjamin" },
       { "type": "text", "label": "kota", "key": "kotapenjamin" },
-      { "type": "text", "label": "Nama Ibu Kandung", "key": "namaibupenjamin" },
       {
         "type": "dropdown",
         "label": "Status Kepemilikan Tempat Tinggal",
@@ -459,7 +523,7 @@
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
         "key": "pekerjaanpasanganpenjamin",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
@@ -536,71 +600,6 @@
     "title": "Catatan Analisa CMO",
     "fields": [
       { "type": "text", "label": "Deskripsi", "key": "analisacmo" }
-    ]
-  },
-  {
-    "title": "Foto Kendaraan",
-    "fields": [
-      { "type": "numberDecimal", "label": "Odometer (Kilometer)", "key": "odometer" },
-      { "type": "file", "label": "Foto Unit Depan (Diagonal)" , "key": "fotounitdepan"},
-      { "type": "file", "label": "Foto Unit Belakang (Diagonal)", "key": "fotounitbelakang" },
-      { "type": "file", "label": "Foto Unit Interior Depan", "key": "fotounitinteriordepan" },
-      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" , "key": "fotounitmesinplat"},
-      { "type": "file", "label": "Foto Mesin" , "key": "fotomesin"},
-      { "type": "file", "label": "Foto Unit Selfie CMO" , "key": "fotounitselfiecmo"},
-      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)", "key": "fotospeedometer" },
-      { "type": "cameraAndUpload", "label": "Foto Hasil Gesekan Noka Nosin", "key": "fotogesekannoka" },
-      { "type": "cameraAndUpload", "label": "Foto STNK", "key": "fotostnk" },
-      { "type": "cameraAndUpload", "label": "Foto Notice Pajak" , "key": "fotonoticepajak"},
-      { "type": "cameraAndUpload", "label": "Foto BPKB 1", "key": "fotobpkb1" },
-      { "type": "cameraAndUpload", "label": "Foto BPKB 2", "key": "fotobpkb2" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Legalitas",
-    "fields": [
-      { "type": "file", "label": "Foto KTP Asli Pemohon", "key": "fotoktppemohon" },
-      { "type": "cameraAndUpload", "label": "Foto KTP Pasangan", "key": "fotoktppasangan" },
-      { "type": "file", "label": "Foto Kartu Keluarga", "key": "fotokk" },
-      { "type": "cameraAndUpload", "label": "Foto SIM-A Pemohon / Pasangan", "key": "fotosima" },
-      { "type": "cameraAndUpload", "label": "Foto NPWP Pemohon / Pasangan", "key": "fotonpwp" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Tempat Tinggal",
-    "fields": [
-      { "type": "file", "label": "Foto Rumah", "key": "fotorumah" },
-      { "type": "file", "label": "Foto Rumah Selfie CMO" , "key": "fotorumahselfiecmo"},
-      { "type": "file", "label": "Foto Cek Lingkungan Selfie CMO", "key": "fotolingkunganselfiecmo" },
-      { "type": "file", "label": "Foto Bukti Kepemilikan Tempat Tinggal", "key": "fotobuktimilikrumah" },
-      { "type": "file", "label": "Foto Close-Up Pemohon", "key": "fotocloseuppemohon" },
-      { "type": "file", "label": "Foto Pemohon TTD FPP", "key": "fotopemohonttdfpp" },
-      { "type": "file", "label": "Foto FPP Tampak Depan", "key": "fotofppdepan" },
-      { "type": "file", "label": "Foto FPP Tampak Belakang", "key": "fotofppbelakang" }
-    ]
-  },
-   {
-    "title": "Foto & Dokumen Pekerjaan / Usaha",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "dokpekerjaan1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "dokpekerjaan2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "dokpekerjaan3" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Simulasi Perhitungan",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doksimulasi1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doksimulasi2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doksimulasi3" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Tambahan",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doktambahan1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doktambahan2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doktambahan3" }
     ]
   }
 ]

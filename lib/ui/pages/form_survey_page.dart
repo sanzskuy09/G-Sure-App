@@ -14,6 +14,7 @@ import 'package:gsure/ui/widgets/buttons.dart';
 import 'package:gsure/ui/widgets/lottie_confirm_dialog.dart';
 import 'package:gsure/ui/widgets/question_section.dart';
 import 'package:hive/hive.dart';
+import 'package:logger/logger.dart';
 // import 'package:flutter_bloc/flutter_bloc.dart';
 // import 'package:gsure/blocs/form/form_bloc.dart';
 // import 'package:intl/intl.dart';
@@ -76,74 +77,106 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     return result.take(visibleSectionCount).toList();
   }
 
-  // void _showConfirmationDialog() {
-  //   // 1. Lakukan pemisahan data di sini
-  //   final Map<String, dynamic> jsonData = {};
-  //   final Map<String, Map<String, dynamic>> fileData = {};
+  void printPrettyJson(Map<String, dynamic> data) {
+    // const encoder = JsonEncoder.withIndent('');
+    // final prettyJson = encoder.convert(data);
+    // print(prettyJson);
+    // final compactJson = jsonEncode(data);
+    // print(compactJson);
+    final logger = Logger(
+      printer: PrettyPrinter(
+        methodCount: 0,
+        errorMethodCount: 0,
+        lineLength: 99999999, // supaya tidak wrap
+        colors: false,
+        printEmojis: false,
+        printTime: false,
+      ),
+    );
 
-  //   for (final entry in formAnswers.entries) {
-  //     final key = entry.key;
-  //     final value = entry.value;
-  //     if (value is Map && value.containsKey('file')) {
-  //       fileData[key] = Map<String, dynamic>.from(value);
-  //     } else if (value != null) {
-  //       jsonData[key] = value;
-  //     }
-  //   }
+    final compactJson = jsonEncode(data);
+    logger.i(compactJson);
+  }
 
-  //   // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
-  //   const encoder = JsonEncoder.withIndent('  ');
-  //   final String jsonString = encoder.convert(jsonData);
-  //   // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
-  //   final String fileString = encoder.convert(fileData.map((key, value) =>
-  //       MapEntry(
-  //           key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+  void _showConfirmationDialog() {
+    // 1. Lakukan pemisahan data di sini
+    final Map<String, dynamic> jsonData = {};
+    final Map<String, Map<String, dynamic>> fileData = {};
 
-  //   // 3. Tampilkan dialog
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Konfirmasi Pengiriman"),
-  //         content: SingleChildScrollView(
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               const Text("Data JSON yang akan dikirim:",
-  //                   style: TextStyle(fontWeight: FontWeight.bold)),
-  //               const SizedBox(height: 8),
-  //               Text(jsonString,
-  //                   style:
-  //                       const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-  //               const SizedBox(height: 16),
-  //               const Text("File yang akan di-upload:",
-  //                   style: TextStyle(fontWeight: FontWeight.bold)),
-  //               const SizedBox(height: 8),
-  //               Text(fileString,
-  //                   style:
-  //                       const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text("Batal"),
-  //             onPressed: () => Navigator.of(context).pop(),
-  //           ),
-  //           FilledButton(
-  //             child: const Text("Kirim"),
-  //             onPressed: () {
-  //               _saveAplikasiToHive();
-  //               // Navigator.of(context).pop(); // Tutup dialog
-  //               // _submitSurvey(jsonData,
-  //               //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+    final formService = FormProcessingServiceAPI();
+    final Map<String, dynamic> finalForm =
+        formService.processFormToAPI(formAnswers);
+
+    // printPrettyJson(finalForm);
+
+    finalForm.forEach((section, value) {
+      print('[$section]: ${jsonEncode(value)}');
+    });
+
+    for (final entry in formAnswers.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (value is Map && value.containsKey('file')) {
+        fileData[key] = Map<String, dynamic>.from(value);
+      } else if (value != null) {
+        jsonData[key] = value;
+      }
+    }
+
+    // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
+    const encoder = JsonEncoder.withIndent('  ');
+    // final String jsonString = encoder.convert(jsonData);
+    final String jsonString = encoder.convert(finalForm);
+    // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
+    final String fileString = encoder.convert(fileData.map((key, value) =>
+        MapEntry(
+            key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+
+    // 3. Tampilkan dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi Pengiriman"),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Data JSON yang akan dikirim:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(jsonString,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                const SizedBox(height: 16),
+                const Text("File yang akan di-upload:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(fileString,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Batal"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FilledButton(
+              child: const Text("Kirim"),
+              onPressed: () {
+                // _saveAplikasiToHive();
+                // Navigator.of(context).pop(); // Tutup dialog
+                // _submitSurvey(jsonData,
+                //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _saveAplikasiToHive() {
     try {
@@ -193,7 +226,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
     if (isConfirmed == true) {
       if (!context.mounted) return;
-      _saveAplikasiToHive();
+      // _saveAplikasiToHive();
     }
   }
 
@@ -218,11 +251,13 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     formAnswers = {
       'katpemohon': 'PERORANGAN', // Contoh nilai default
       'namadealer': order.cabang,
+      'application_id': order.id,
+      'nik': order.nik,
       'statuspernikahan': order.statusperkawinan,
       'nama': order.nama,
       'namapasangan': order.namapasangan,
       'ktppasangan': order.nikpasangan,
-      'isPenjaminExist': 'Tidak',
+      'isPenjaminExist': 'Ya',
     };
   }
 
@@ -339,8 +374,8 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
                 BuildButton(
                   iconData: Icons.send,
                   title: "Kirim",
-                  isDisabled: true,
-                  onPressed: () {},
+                  // isDisabled: true,
+                  onPressed: _showConfirmationDialog,
                 ),
                 BuildButton(
                   iconData: Icons.arrow_forward_ios,
