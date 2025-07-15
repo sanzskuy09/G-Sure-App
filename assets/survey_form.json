@@ -1,0 +1,86 @@
+[
+  {
+    "title": "Dealer",
+    "fields": [
+      {
+        "type": "dropdown",
+        "key": "kddealer",
+        "label": "Kode Dealer",
+        "options": ["001", "002"]
+      },
+       {
+        "type": "dropdownWithAction",
+        "key": "statuspernikahan",
+        "label": "Status Pernikahan",
+        "options": ["MENIKAH", "BELUM MENIKAH", "JANDA/DUDA"]
+      },
+      {
+        "type": "dropdownWithSection",
+        "key": "pekerjaan",
+        "label": "Pekerjaan",
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "section": [
+          {
+            "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
+            "title": "Data Pekerjaan",
+            "fields": [
+              { "type": "text", "key": "namaperusahaan", "label": "Nama Perusahaan" }
+            ]
+          },
+          {
+            "show": ["WIRASWASTA"],
+            "title": "Data Usaha",
+            "fields": [
+              { "type": "text","key": "namaperusahaan", "label": "Nama Perusahaan" }
+            ]
+          }
+        ]
+      },
+      { "type": "text","key": "nama", "label": "Nama" },
+      { "type": "numberDecimal","key": "hargakendaraan", "label": "Harga Kendaraan" },
+      { "type": "number","key": "rt", "label": "RT" },
+      { "type": "number","key": "rw", "label": "RW" },
+      { "type": "number", "key": "kodepos", "label": "Kode Pos" },
+      { "type": "numberDecimal","key": "odometer", "label": "Odometer (Kilometer)" },
+      { "type": "file","key": "fotounitdepan", "label": "Foto Unit Depan (Diagonal)" },
+      { "type": "cameraAndUpload","key": "fotostnk", "label": "Foto STNK" }
+    ]
+  },
+  {
+    "title": "Data Pasangan",
+    "showIf": {
+      "Status Pernikahan": ["MENIKAH"],
+      "statuspernikahan": ["MENIKAH"]
+    },
+    "fields": [
+     { "type": "text","key": "namapasangan","label": "Nama" }
+    ]
+  },
+  {
+    "title": "Penjamin",
+    "fields": [
+      {
+        "type": "radio",
+        "key": "isPenjamin",
+        "label": "Apakah Ada Penjamin ?",
+        "options": ["Ya", "Tidak"]
+      }
+    ]
+  },
+  {
+    "title": "Data Penjamin",
+    "showIf": {
+      "Apakah Ada Penjamin ?": ["Ya"],
+      "isPenjamin?": ["Ya"]
+    },
+    "fields": [
+      { "type": "number","key": "telppenjamin", "label": "No. Telepon" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Pekerjaan / Usaha",
+    "fields": [
+      { "type": "cameraAndUpload", "key": "dokumen1", "label": "Foto & Dokumen 1" }
+    ]
+  }
+]

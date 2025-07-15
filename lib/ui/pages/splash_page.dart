@@ -39,8 +39,8 @@ class _SplashPageState extends State<SplashPage>
 
     // Navigasi ke login setelah 3 detik
     Timer(Duration(seconds: 3), () {
-      Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
-      // Navigator.pushNamedAndRemoveUntil(context, '/survey-form', (_) => false);
+      // Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
+      Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
     });
   }
 

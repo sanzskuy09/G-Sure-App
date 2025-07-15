@@ -4,24 +4,23 @@
     "fields": [
       {
         "type": "dropdown",
+         "key": "kddealer",
         "label": "Kode Dealer",
         "options": ["001", "002"]
       },
-      { "type": "text", "label": "Nama" },
-      
-      { "type": "text", "label": "Alamat" },
-      { "type": "number", "label": "RT" },
-      { "type": "number", "label": "RW" },
-      { "type": "number", "label": "Kode Pos" },
-      { "type": "text", "label": "Kelurahan/Desa" },
-      { "type": "text", "label": "Kecamatan" },
-      { "type": "text", "label": "Kota/Kabupaten" },
-      { "type": "text", "label": "Provinsi" },
-      
-      { "type": "text", "label": "No. Telepon" },
-      { "type": "text", "label": "Nama Pemilik Dealer" },
-      { "type": "text", "label": "No. HP Pemilik Dealer" },
-      { "type": "text", "label": "Nama PIC Dealer" }
+      { "type": "text", "key": "namadealer", "label": "Nama" },
+      { "type": "text", "label": "Alamat", "key": "alamatdealer" },
+      { "type": "number", "label": "RT", "key": "rtdealer" },
+      { "type": "number", "label": "RW", "key": "rwdealer" },
+      { "type": "number", "label": "Kode Pos", "key": "kodeposdealer" },
+      { "type": "text", "label": "Kelurahan/Desa", "key": "keldealer" },
+      { "type": "text", "label": "Kecamatan", "key": "kecdealer" },
+      { "type": "text", "label": "Kota/Kabupaten", "key": "kotadealer" },
+      { "type": "text", "label": "Provinsi", "key": "provinsidealer" },
+      { "type": "number", "label": "No. Telepon", "key": "telpondealer" },
+      { "type": "text", "label": "Nama Pemilik Dealer", "key": "namapemilikdealer" },
+      { "type": "number", "label": "No. HP Pemilik Dealer", "key": "nohppemilik" },
+      { "type": "text", "label": "Nama PIC Dealer", "key": "picdealer" }
     ]
   },
   {
@@ -30,33 +29,99 @@
       {
         "type": "dropdown",
         "label": "Produk",
+        "key": "kondisiKendaraan",
         "options": ["MOBIL BEKAS", "MOBIL BARU", "MOTOR BEKAS", "MOTOR BARU"]
       },
-      { "type": "text", "label": "Merk" },
-      { "type": "text", "label": "Type" },
-      { "type": "number", "label": "Tahun" },
-      { "type": "text", "label": "No. Polisi" }
+      { "type": "text", "label": "Merk", "key": "merkkendaraan" },
+      { "type": "text", "label": "Type", "key": "typekendaraan" },
+      { "type": "number", "label": "Tahun", "key": "tahunkendaraan" },
+      { "type": "text", "label": "No. Polisi", "key": "nopolisikendaraan" }
+    ]
+  },
+  {
+    "title": "Foto Kendaraan",
+    "fields": [
+      { "type": "numberDecimal", "label": "Odometer (Kilometer)", "key": "odometer" },
+      { "type": "file", "label": "Foto Unit Depan (Diagonal)" , "key": "fotounitdepan"},
+      { "type": "file", "label": "Foto Unit Belakang (Diagonal)", "key": "fotounitbelakang" },
+      { "type": "file", "label": "Foto Unit Interior Depan", "key": "fotounitinteriordepan" },
+      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" , "key": "fotounitmesinplat"},
+      { "type": "file", "label": "Foto Mesin" , "key": "fotomesin"},
+      { "type": "file", "label": "Foto Unit Selfie CMO" , "key": "fotounitselfiecmo"},
+      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)", "key": "fotospeedometer" },
+      { "type": "cameraAndUpload", "label": "Foto Hasil Gesekan Noka Nosin", "key": "fotogesekannoka" },
+      { "type": "cameraAndUpload", "label": "Foto STNK", "key": "fotostnk" },
+      { "type": "cameraAndUpload", "label": "Foto Notice Pajak" , "key": "fotonoticepajak"},
+      { "type": "cameraAndUpload", "label": "Foto BPKB 1", "key": "fotobpkb1" },
+      { "type": "cameraAndUpload", "label": "Foto BPKB 2", "key": "fotobpkb2" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Legalitas",
+    "fields": [
+      { "type": "file", "label": "Foto KTP Asli Pemohon", "key": "fotoktppemohon" },
+      { "type": "cameraAndUpload", "label": "Foto KTP Pasangan", "key": "fotoktppasangan" },
+      { "type": "cameraAndUpload", "label": "Foto Kartu Keluarga", "key": "fotokk" },
+      { "type": "cameraAndUpload", "label": "Foto SIM-A Pemohon / Pasangan", "key": "fotosima" },
+      { "type": "cameraAndUpload", "label": "Foto NPWP Pemohon / Pasangan", "key": "fotonpwp" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tempat Tinggal",
+    "fields": [
+      { "type": "file", "label": "Foto Rumah", "key": "fotorumah" },
+      { "type": "file", "label": "Foto Rumah Selfie CMO" , "key": "fotorumahselfiecmo"},
+      { "type": "file", "label": "Foto Cek Lingkungan Selfie CMO", "key": "fotolingkunganselfiecmo" },
+      { "type": "file", "label": "Foto Bukti Kepemilikan Tempat Tinggal", "key": "fotobuktimilikrumah" },
+      { "type": "file", "label": "Foto Close-Up Pemohon", "key": "fotocloseuppemohon" },
+      { "type": "file", "label": "Foto Pemohon TTD FPP", "key": "fotopemohonttdfpp" },
+      { "type": "file", "label": "Foto FPP Tampak Depan", "key": "fotofppdepan" },
+      { "type": "file", "label": "Foto FPP Tampak Belakang", "key": "fotofppbelakang" }
+    ]
+  },
+   {
+    "title": "Foto & Dokumen Pekerjaan / Usaha",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "dokpekerjaan1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "dokpekerjaan2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "dokpekerjaan3" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Simulasi Perhitungan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doksimulasi1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doksimulasi2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doksimulasi3" }
+    ]
+  },
+  {
+    "title": "Foto & Dokumen Tambahan",
+    "fields": [
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1", "key": "doktambahan1" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2", "key": "doktambahan2" },
+      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3", "key": "doktambahan3" }
     ]
   },
   {
     "title": "Profil Singkat Pembiayaan",
     "fields": [
-      { "type": "numberDecimal", "label": "Harga Kendaraan" },
-      { "type": "numberDecimal", "label": "Total Uang Muka" },
-      { "type": "numberDecimal", "label": "Total Pokok Hutang" }
+      { "type": "numberDecimal", "label": "Harga Kendaraan", "key": "hargakendaraan" },
+      { "type": "numberDecimal", "label": "Total Uang Muka" , "key": "uangmuka"},
+      { "type": "numberDecimal", "label": "Total Pokok Hutang", "key": "pokokhutang" }
     ]
   },
   {
     "title": "Alamat Survey",
     "fields": [
-      { "type": "text", "label": "Alamat" },
-      { "type": "number", "label": "RT" },
-      { "type": "number", "label": "RW" },
-      { "type": "number", "label": "Kode Pos" },
-      { "type": "text", "label": "Kelurahan/Desa" },
-      { "type": "text", "label": "Kecamatan" },
-      { "type": "text", "label": "Kota/Kabupaten" },
-      { "type": "text", "label": "Provinsi" }
+      { "type": "text", "label": "Alamat", "key": "alamatsurvey" },
+      { "type": "number", "label": "RT", "key": "rtsurvey" },
+      { "type": "number", "label": "RW" , "key": "rwsurvey"},
+      { "type": "number", "label": "Kode Pos", "key": "kodepoksurvey" },
+      { "type": "text", "label": "Kelurahan/Desa", "key": "kelsurvey" },
+      { "type": "text", "label": "Kecamatan" , "key": "kecsurvey"},
+      { "type": "text", "label": "Kota/Kabupaten", "key": "kotasurvey" },
+      { "type": "text", "label": "Provinsi", "key": "provinsisurvey" }
     ]
   },
   {
@@ -65,49 +130,57 @@
        {
         "type": "dropdown",
         "label": "Kategori Pemohon",
+        "key": "katpemohon",
         "options": ["PERORANGAN", "BADAN USAHA"]
       },
       {
         "type": "dropdownWithAction",
         "label": "Status Pernikahan",
+        "key": "statuspernikahan",
         "options": ["MENIKAH", "BELUM MENIKAH", "JANDA/DUDA"]
       },
-      { "type": "text", "label": "Nama Pemohon" },
-      { "type": "text", "label": "Agama" },
+      { "type": "text", "label": "Nama Pemohon", "key": "nama" },
+      { "type": "text", "label": "Agama", "key": "agamapemohon" },
       {
         "type": "dropdown",
         "label": "Pendidikan",
+        "key": "pendidikan",
         "options": ["SD", "SMP", "SMA","D1","D2", "D3", "S1", "S2", "S3", "LAINNYA"]
       },
       {
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "key": "jenispekerjaan",
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
             "title": "Data Pekerjaan",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaan" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatan",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Masa Kerja" },
-              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatan" },
+              { "type": "text", "label": "Alamat Perusahaan" , "key": "alamatusaha"},
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposusaha" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
+
+              { "type": "text", "label": "Masa Kerja" , "key": "masakerjapemohon"},
+              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipemohon" },
               {
                 "type": "dropdown",
                 "label": "Slip Gaji",
+                "key": "slipgajipemohon",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               },
               {
                 "type": "dropdown",
                 "label": "Penghasilan di Payroll",
+                "key": "payrollpemohon",
                 "options": ["TERCERMIN", "TIDAK TERCERMIN"]
               }
             ]
@@ -116,22 +189,25 @@
             "show": ["WIRASWASTA"],
             "title": "Data Usaha",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaan" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatan",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Bidang Usaha" },
-              { "type": "text", "label": "Lama Usaha" },
-              { "type": "text", "label": "Omzet Usaha/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatan" },
+              { "type": "text", "label": "Alamat Perusahaan" , "key": "alamatusaha"},
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposusaha" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusaha" },
+
+              { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapemohon"  },
+              { "type": "text", "label": "Lama Usaha", "key": "lamausahapemohon"  },
+              { "type": "numberDecimal", "label": "Omzet Usaha/bulan", "key": "omzetusahapemohon"  },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
+                 "key": "profitusahapemohon",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               }
             ]
@@ -141,38 +217,44 @@
       
       {
         "type": "dropdown",
-        "label": "Kewarganegaraan",
+        "label": "Kewarganegaraan", 
+        "key": "warganegarapemohon",        
         "options": ["WNI", "WNA"]
       },
-      { "type": "number", "label": "No. Telepon" },
-      { "type": "number", "label": "No. Whatsapp" },
-      { "type": "text", "label": "Email" },
-      { "type": "number", "label": "SIM (Nomor)" },
-      { "type": "number", "label": "NPWP (Nomor)" },
-      { "type": "text", "label": "Nama Ibu Kandung" },
+      { "type": "number", "label": "No. Telepon" , "key": "nomortelepon"},
+      { "type": "number", "label": "No. Whatsapp" , "key": "nohp"},
+      { "type": "text", "label": "Email" , "key": "email"},
+      { "type": "number", "label": "SIM (Nomor)" , "key": "sim"},
+      { "type": "number", "label": "NPWP (Nomor)" , "key": "npwp"},
+      { "type": "text", "label": "Nama Ibu Kandung" , "key": "namaibu"},
       {
         "type": "dropdown",
         "label": "Status Kepemilikan Tempat Tinggal",
+        "key": "statusrumah",
         "options": ["PRIBADI", "KELUARGA", "DINAS", "KONTRAK"]
       },
       {
         "type": "dropdown",
         "label": "Lokasi Rumah",
+        "key": "lokasirumah",
         "options": ["JL. BESAR", "JL. KECIL", "GANG", "GANG KECIL"]
       },
       {
         "type": "dropdown",
         "label": "Kategori Tempat Tinggal",
+        "key": "katrumahpemohon",
         "options": ["RUMAH 1 LANTAI", "RUMAH > 1 LANTAI", "APARTEMEN", "KOS", "RUMAH PETAK"]
       },
       {
         "type": "dropdown",
         "label": "Bukti Kepemilikan Tempat Tinggal",
+        "key": "buktimilikrumahpemohon",
         "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
       },
       {
         "type": "dropdown",
         "label": "Lama Tinggal",
+        "key": "lamatinggalpemohon",
         "options": ["< 6 BULAN", "6 BULAN - 1 TAHUN", "> 1 - 2 TAHUN", "> 2 TAHUN"]
       }
     ]
@@ -180,42 +262,47 @@
   {
     "title": "Data Pasangan",
     "showIf": {
-      "Status Pernikahan": ["MENIKAH"]
+      "statuspernikahan": ["MENIKAH"]
     },
     "fields": [
-     { "type": "text", "label": "Nama" },
-     { "type": "text", "label": "Nama Panggilan" },
-     { "type": "number", "label": "KTP Pasangan" },
-      { "type": "text", "label": "Agama" },
+     { "type": "text", "label": "Nama", "key": "namapasangan" },
+     { "type": "text", "label": "Nama Panggilan", "key": "namapanggilan" },
+     { "type": "number", "label": "KTP Pasangan", "key": "ktppasangan" },
+      { "type": "text", "label": "Agama", "key": "agamapasangan" },
       {
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "key": "pekerjaanpasangan",
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
             "title": "Data Pekerjaan",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpasangan" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpasangan",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Masa Kerja" },
-              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasangan" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapasangan" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasangan" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
+
+              { "type": "text", "label": "Masa Kerja", "key": "masakerjapasangan" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipasangan" },
               {
                 "type": "dropdown",
                 "label": "Slip Gaji",
+                "key": "slipgajipasangan",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               },
               {
                 "type": "dropdown",
                 "label": "Penghasilan di Payroll",
+                "key": "payrollpasangan",
                 "options": ["TERCERMIN", "TIDAK TERCERMIN"]
               }
             ]
@@ -224,22 +311,25 @@
             "show": ["WIRASWASTA"],
             "title": "Data Usaha",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+             { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpasangan" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpasangan",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Bidang Usaha" },
-              { "type": "text", "label": "Lama Usaha" },
-              { "type": "text", "label": "Omzet Usaha/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasangan" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapasangan" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasangan" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasangan" },
+
+              { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapasangan" },
+              { "type": "text", "label": "Lama Usaha", "key": "lamausahapasangan" },
+              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetusahapasangan" },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
+                "key": "profitusahapasangan",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               }
             ]
@@ -249,29 +339,32 @@
       {
         "type": "dropdown",
         "label": "Kewarganegaraan",
+        "key": "warganegarapasangan",
         "options": ["WNI", "WNA"]
       },
-      { "type": "number", "label": "No. Telepon" },
-      { "type": "number", "label": "No. Whatsapp" }
+      { "type": "number", "label": "No. Telepon", "key": "notelppasangan" },
+      { "type": "number", "label": "No. Whatsapp", "key": "nohppasangan" }
     ]
   },
   {
     "title": "Data Emergency Contact",
     "fields": [
-      { "type": "text", "label": "Nama" },
+      { "type": "text", "label": "Nama", "key": "namakontak" },
       {
         "type": "dropdown",
         "label": "Jenis Kelamin",
+        "key": "jeniskelaminkontak",
         "options": ["LAKI-LAKI", "PEREMPUAN"]
       },
       {
         "type": "dropdown",
         "label": "Hubungan Keluarga",
+        "key": "hubungankeluarga",
         "options": ["ORANG TUA", "SAUDARA KANDUNG", "ANAK", "SAUDARA KANDUNG DARI ORANG TUA", "LAINNYA"]
       },
-      { "type": "number", "label": "Nomor Telepon" },
-      { "type": "text", "label": "Alamat Lengkap" },
-      { "type": "number", "label": "Kode Pos" }
+      { "type": "number", "label": "Nomor Telepon", "key": "nohpkontak" },
+      { "type": "text", "label": "Alamat Lengkap", "key": "alamatkontak" },
+      { "type": "number", "label": "Kode Pos", "key": "kodeposkontak" }
     ]
   },
   {
@@ -280,6 +373,7 @@
       {
         "type": "radio",
         "label": "Apakah Ada Penjamin ?",
+        "key": "isPenjaminExist",
         "options": ["Ya", "Tidak"]
       }
     ]
@@ -287,50 +381,57 @@
   {
     "title": "Data Penjamin",
     "showIf": {
-      "Apakah Ada Penjamin ?": ["Ya"]
+      "isPenjaminExist": ["Ya"]
     },
     "fields": [
        {
         "type": "dropdown",
         "label": "Kategori Penjamin",
+        "key": "jnspenjamin",
         "options": ["PERORANGAN", "BADAN USAHA"]
       },
       {
         "type": "dropdownWithAction",
         "label": "Status Pernikahan Penjamin",
+        "key": "statuspernikahanpenjamin",
         "options": ["MENIKAH", "BELUM MENIKAH", "JANDA/DUDA"]
       },
-      { "type": "text", "label": "Nama Penjamin" },
-      { "type": "text", "label": "Agama" },
+      { "type": "text", "label": "Nama Penjamin", "key": "namapenjamin" },
+      { "type": "text", "label": "Agama", "key": "agamapenjamin" },
       {
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "key": "pekerjaanpenjamin",
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
             "title": "Data Pekerjaan",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpenjamin",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Masa Kerja" },
-              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpenjamin" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapenjamin" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
+
+              { "type": "text", "label": "Masa Kerja", "key": "masakerjapenjamin" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipenjamin" },
               {
                 "type": "dropdown",
                 "label": "Slip Gaji",
+                "key": "slipgajipenjamin",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               },
               {
                 "type": "dropdown",
                 "label": "Penghasilan di Payroll",
+                "key": "payrollpenjamin",
                 "options": ["TERCERMIN", "TIDAK TERCERMIN"]
               }
             ]
@@ -339,22 +440,25 @@
             "show": ["WIRASWASTA"],
             "title": "Data Usaha",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+             { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpenjamin",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Bidang Usaha" },
-              { "type": "text", "label": "Lama Usaha" },
-              { "type": "text", "label": "Omzet Usaha/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpenjamin" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatusahapenjamin" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapenjamin" },
+
+              { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapenjamin" },
+              { "type": "text", "label": "Lama Usaha", "key": "lamausahapenjamin" },
+              { "type": "numberDecimal", "label": "Omzet Usaha/bulan", "key": "omzetusahapenjamin" },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
+                "key": "profitusahapenjamin",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               }
             ]
@@ -364,40 +468,45 @@
       {
         "type": "dropdown",
         "label": "Kewarganegaraan",
+        "key": "warganegarapenjamin",
         "options": ["WNI", "WNA"]
       },
-      { "type": "number", "label": "No. Telepon" },
-      { "type": "number", "label": "No. Whatsapp" },
-      { "type": "number", "label": "KTP" },
-      { "type": "number", "label": "Tanggal KTP" },
-      { "type": "number", "label": "SIM (Nomor)" },
-      { "type": "number", "label": "NPWP (Nomor)" },
-      { "type": "number", "label": "Alamat" },
-      { "type": "number", "label": "kota" },
-      { "type": "text", "label": "Nama Ibu Kandung" },
+      { "type": "number", "label": "No. Telepon", "key": "notelppenjamin" },
+      { "type": "number", "label": "No. Whatsapp", "key": "nowapenjamin" },
+      { "type": "number", "label": "KTP", "key": "ktppenjamin" },
+      { "type": "text", "label": "Tanggal KTP", "key": "tglktppenjamin" },
+      { "type": "number", "label": "SIM (Nomor)", "key": "simpenjamin" },
+      { "type": "number", "label": "NPWP (Nomor)", "key": "npwppenjamin" },
+      { "type": "text", "label": "Alamat", "key": "alamatpenjamin" },
+      { "type": "text", "label": "kota", "key": "kotapenjamin" },
       {
         "type": "dropdown",
         "label": "Status Kepemilikan Tempat Tinggal",
+        "key": "statusrumahpenjamin",
         "options": ["PRIBADI", "KELUARGA", "DINAS", "KONTRAK"]
       },
       {
         "type": "dropdown",
         "label": "Lokasi Rumah",
+        "key": "lokasirumahpenjamin",
         "options": ["JL. BESAR", "JL. KECIL", "GANG", "GANG KECIL"]
       },
       {
         "type": "dropdown",
         "label": "Kategori Tempat Tinggal",
+        "key": "katrumahpenjamin",
         "options": ["RUMAH 1 LANTAI", "RUMAH > 1 LANTAI", "APARTEMEN", "KOS", "RUMAH PETAK"]
       },
       {
         "type": "dropdown",
         "label": "Bukti Kepemilikan Tempat Tinggal",
+        "key": "buktimilikrumahpenjamin",
         "options": ["PBB/AJB/PPJB", "SERTIFIKAT (SHM/SHGB)", "REKENING PLN/PDAM", "LAIN-LAIN"]
       },
       {
         "type": "dropdown",
         "label": "Lama Tinggal",
+        "key": "lamatinggalpenjamin",
         "options": ["< 6 BULAN", "6 BULAN - 1 TAHUN", "> 1 - 2 TAHUN", "> 2 TAHUN"]
       }
     ]
@@ -405,41 +514,45 @@
   {
     "title": "Data Pasangan Penjamin",
     "showIf": {
-      "Apakah Ada Penjamin ?": ["Ya"],
-      "Status Pernikahan Penjamin": ["MENIKAH"]
+      "statuspernikahanpenjamin": ["MENIKAH"]
     },
     "fields": [
-      { "type": "text", "label": "Nama" },
-      { "type": "text", "label": "Agama" },
+      { "type": "text", "label": "Nama", "key": "namapasanganpenjamin" },
+      { "type": "text", "label": "Agama", "key": "agamapasanganpenjamin" },
       {
         "type": "dropdownWithSection",
         "label": "Pekerjaan",
-        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS"],
+        "key": "pekerjaanpasanganpenjamin",
+        "options": ["KARYAWAN", "PROFESIONAL", "WIRASWASTA", "TNI/PORLI", "PNS", "IBU RUMAH TANGGA"],
         "section": [
           {
             "show": ["KARYAWAN", "PROFESIONAL", "TNI/PORLI", "PNS"],
             "title": "Data Pekerjaan",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpasanganpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpasanganpenjamin",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Masa Kerja" },
-              { "type": "numberDecimal", "label": "Penghasilan/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasanganpenjamin" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatperusahaanpasanganpenjamin" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
+
+              { "type": "text", "label": "Masa Kerja", "key": "masakerjapasanganpenjamin" },
+              { "type": "numberDecimal", "label": "Penghasilan/bulan", "key": "gajipasanganpenjamin"  },
               {
                 "type": "dropdown",
-                "label": "Slip Gaji",
+                "label": "Slip Gaji", 
+                "key": "slipgajipasanganpenjamin" ,
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               },
               {
                 "type": "dropdown",
                 "label": "Penghasilan di Payroll",
+                 "key": "payrollpasanganpenjamin",
                 "options": ["TERCERMIN", "TIDAK TERCERMIN"]
               }
             ]
@@ -448,22 +561,25 @@
             "show": ["WIRASWASTA"],
             "title": "Data Usaha",
             "fields": [
-              { "type": "text", "label": "Nama Perusahaan" },
+              { "type": "text", "label": "Nama Perusahaan", "key": "namaperusahaanpasanganpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Jabatan",
+                "key": "jabatanpasanganpenjamin",
                 "options": ["PEMILIK", "DIREKTUR", "MANAGER", "SUPERVISOR", "STAFF", "KONTRAK", "NON STAFF"]
               },
-              { "type": "text", "label": "Keterangan Tambahan Jabatan" },
-              { "type": "text", "label": "Alamat Perusahaan" },
-              { "type": "text", "label": "Kode Pos Perusahaan" },
-              { "type": "text", "label": "No. Telepon Perusahaan" },
-              { "type": "text", "label": "Bidang Usaha" },
-              { "type": "text", "label": "Lama Usaha" },
-              { "type": "text", "label": "Omzet Usaha/bulan" },
+              { "type": "text", "label": "Keterangan Tambahan Jabatan", "key": "ketjabatanpasanganpenjamin" },
+              { "type": "text", "label": "Alamat Perusahaan", "key": "alamatperusahaanpasanganpenjamin" },
+              { "type": "text", "label": "Kode Pos Perusahaan", "key": "kodeposperusahaanpasanganpenjamin" },
+              { "type": "number", "label": "No. Telepon Perusahaan", "key": "noteleponusahapasanganpenjamin" },
+
+              { "type": "text", "label": "Bidang Usaha", "key": "bidangusahapasanganpenjamin" },
+              { "type": "text", "label": "Lama Usaha", "key": "lamausahapasanganpenjamin" },
+              { "type": "text", "label": "Omzet Usaha/bulan", "key": "omzetusahapasanganpenjamin" },
               {
                 "type": "dropdown",
                 "label": "Profit Usaha",
+                "key": "profitusahapasanganpenjamin",
                 "options": ["TERLAMPIR", "TIDAK TERLAMPIR"]
               }
             ]
@@ -473,93 +589,17 @@
       {
         "type": "dropdown",
         "label": "Kewarganegaraan",
+        "key": "warganegarapasanganpenjamin",
         "options": ["WNI", "WNA"]
       },
-      { "type": "number", "label": "No. Telepon" },
-      { "type": "number", "label": "No. Whatsapp" }
+      { "type": "number", "label": "No. Telepon", "key": "notelponpasanganpenjamin" },
+      { "type": "number", "label": "No. Whatsapp", "key": "nowapasanganpenjamin" }
     ]
   },
    {
     "title": "Catatan Analisa CMO",
     "fields": [
-      { "type": "text", "label": "Deskripsi" }
-    ]
-  },
-  {
-    "title": "Foto Kendaraan",
-    "fields": [
-      { "type": "numberDecimal", "label": "Odometer (Kilometer)" },
-      { "type": "file", "label": "Foto Unit Depan (Diagonal)" },
-      { "type": "file", "label": "Foto Unit Belakang (Diagonal)" },
-      { "type": "file", "label": "Foto Unit Interior Depan" },
-      { "type": "file", "label": "Foto Unit Mesin & Plat Nomor" },
-      { "type": "file", "label": "Foto Mesin" },
-      { "type": "file", "label": "Foto Unit Selfie CMO" },
-      { "type": "file", "label": "Foto Speedometer (Kilometer Terlihat Jelas)" },
-      { "type": "cameraAndUpload", "label": "Foto Hasil Gesekan Noka Nosin" },
-      { "type": "cameraAndUpload", "label": "Foto STNK" },
-      { "type": "cameraAndUpload", "label": "Foto Notice Pajak" },
-      { "type": "cameraAndUpload", "label": "Foto BPKB 1" },
-      { "type": "cameraAndUpload", "label": "Foto BPKB 2" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Legalitas",
-    "fields": [
-      { "type": "file", "label": "Foto KTP Asli Pemohon" },
-      { "type": "cameraAndUpload", "label": "Foto KTP Pasangan" },
-      { "type": "file", "label": "Foto Kartu Keluarga" },
-      { "type": "cameraAndUpload", "label": "Foto SIM-A Pemohon / Pasangan" },
-      { "type": "cameraAndUpload", "label": "Foto NPWP Pemohon / Pasangan" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Tempat Tinggal",
-    "fields": [
-      { "type": "file", "label": "Foto Rumah" },
-      { "type": "file", "label": "Foto Rumah Selfie CMO" },
-      { "type": "file", "label": "Foto Cek Lingkungan Selfie CMO" },
-      { "type": "file", "label": "Foto Bukti Kepemilikan Tempat Tinggal" },
-      { "type": "file", "label": "Foto Close-Up Pemohon" },
-      { "type": "file", "label": "Foto Pemohon TTD FPP" },
-      { "type": "file", "label": "Foto FPP Tampak Depan" },
-      { "type": "file", "label": "Foto FPP Tampak Belakang" }
-    ]
-  },
-   {
-    "title": "Foto & Dokumen Pekerjaan / Usaha",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Simulasi Perhitungan",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" }
-    ]
-  },
-  {
-    "title": "Foto & Dokumen Tambahan",
-    "fields": [
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 1" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 2" },
-      { "type": "cameraAndUpload", "label": "Foto & Dokumen 3" }
-    ]
-  },
-  {
-    "title": "Hasil Cek Linkungan",
-    "fields": [
-      { "type": "text", "label": "Bertemu Dengan? (Nama)" },
-      {
-        "type": "dropdown",
-        "label": "Hubungan",
-        "options": ["TETANGGA", "RT", "SECURITY", "LAINNYA"]
-      },
-      { "type": "text", "label": "Informasi" }
+      { "type": "text", "label": "Deskripsi", "key": "analisacmo" }
     ]
   }
 ]

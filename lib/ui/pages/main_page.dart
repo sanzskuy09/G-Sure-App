@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/home_page.dart';
+import 'package:gsure/ui/pages/progress_survey_page.dart';
 import 'package:gsure/ui/pages/settings_page.dart';
 import 'package:gsure/ui/pages/settings_pages/log_page.dart';
 import 'package:gsure/ui/pages/survey_list_page.dart';
@@ -19,15 +22,25 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late int _selectedIndex = 0;
+  bool _isSurveyList = false;
 
   final List<Widget> _pages = const [
     HomePage(),
     SurveyListPage(),
+    ProgressSurveyPage(),
     SettingsPage()
     // LogPage()
   ];
 
   void _onTabTapped(int index) {
+    if (_isSurveyList == false && index == 1) {
+      context.read<SurveyBloc>().add(GetDataSurveyFromOrder());
+
+      setState(() {
+        _isSurveyList = true;
+      });
+    }
+
     setState(() {
       _selectedIndex = index;
     });
@@ -59,9 +72,9 @@ class _MainPageState extends State<MainPage> {
               _buildNavItem(icon: Icons.home, label: 'Home', index: 0),
               _buildNavItem(
                   icon: Icons.travel_explore, label: 'Survey', index: 1),
-              // _buildNavItem(
-              //     icon: Icons.library_add_check, label: 'Check', index: 2),
-              _buildNavItem(icon: Icons.settings, label: 'Settings', index: 2),
+              _buildNavItem(
+                  icon: Icons.library_add_check, label: 'Progress', index: 2),
+              _buildNavItem(icon: Icons.settings, label: 'Settings', index: 3),
             ],
           ),
         ),

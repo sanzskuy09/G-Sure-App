@@ -17,7 +17,7 @@ class _LoginUserPageState extends State<LoginUserPage> {
     String username = _usernameController.text;
     String password = _passwordController.text;
 
-    if (username == 'admin' && password == '1234') {
+    if (username == 'cmo_jakarta' && password == 'cmo1234') {
       Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

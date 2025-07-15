@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gsure/models/question_model.dart';
-import 'package:gsure/ui/pages/form_survey_page.dart';
+// import 'package:gsure/ui/pages/form_survey_page.dart';
 import 'package:gsure/ui/widgets/form_field_builder.dart';
+import 'package:gsure/ui/widgets/nested_accordion.dart';
 
 class SectionFieldContent extends StatefulWidget {
   final QuestionSection item;
@@ -22,6 +23,7 @@ class SectionFieldContent extends StatefulWidget {
 
 class _SectionFieldContentState extends State<SectionFieldContent> {
   late List<FieldModel> _fields;
+  final Map<String, List<FieldModel>> _nestedFieldsCache = {};
 
   @override
   void initState() {
@@ -62,7 +64,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                           onValueChanged: (newValue) {
                             setState(() {
                               rtField.value = newValue;
-                              widget.formAnswers[rtField.label] = newValue;
+                              widget.formAnswers[rtField.key!] = newValue;
                               widget.onFieldChanged?.call();
                             });
                           },
@@ -78,7 +80,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                           onValueChanged: (newValue) {
                             setState(() {
                               rwField.value = newValue;
-                              widget.formAnswers[rwField.label] = newValue;
+                              widget.formAnswers[rwField.key!] = newValue;
                               widget.onFieldChanged?.call();
                             });
                           },
@@ -112,7 +114,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                   onValueChanged: (newValue) {
                     setState(() {
                       field.value = newValue;
-                      widget.formAnswers[field.label] = newValue;
+                      widget.formAnswers[field.key!] = newValue;
                       widget.onFieldChanged?.call();
                     });
                   },
@@ -123,14 +125,29 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
                     .where((sub) =>
                         (sub['show'] as List).contains(field.value.toString()))
                     .expand((sub) {
-                  final subFields = (sub['fields'] as List)
-                      .map((f) => FieldModel.fromJson(f))
-                      .toList();
+                  // Buat key unik untuk setiap sub-section
+                  final cacheKey = "${field.key}_${sub['title']}";
+
+                  // Ambil dari cache, atau buat baru jika belum ada
+                  final subFields =
+                      _nestedFieldsCache.putIfAbsent(cacheKey, () {
+                    // Kode ini hanya akan berjalan SEKALI untuk setiap sub-section
+                    return (sub['fields'] as List)
+                        .map((f) => FieldModel.fromJson(f))
+                        .toList();
+                  });
+
+                  // final subFields = (sub['fields'] as List)
+                  //     .map((f) => FieldModel.fromJson(f))
+                  //     .toList();
                   return [
                     const SizedBox(height: 8),
                     MyNestedAccordion(
                       title: sub['title'],
                       fields: subFields,
+                      // V-- KIRIM DATA & CALLBACK DARI PARENT --V
+                      formAnswers: widget.formAnswers,
+                      onFieldChanged: widget.onFieldChanged,
                     ),
                   ];
                 }),
