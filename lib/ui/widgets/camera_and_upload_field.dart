@@ -191,6 +191,36 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     }
   }
 
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // Kualitas bisa disesuaikan
+    );
+
+    if (pickedFile == null) {
+      return; // Pengguna membatalkan pemilihan
+    }
+
+    // --- Gunakan logika yang hampir sama dengan fungsi lainnya ---
+    final now = DateTime.now();
+    final galleryFile = File(pickedFile.path);
+
+    if (!mounted) return;
+
+    setState(() {
+      _fileData = galleryFile.path;
+      _dateTime = now;
+      _photoPosition = null; // Tidak ada data lokasi dari galeri
+      _isFileFromPicker =
+          true; // Anggap dari picker agar metadata lokasi tidak tampil
+      _displayController.text = galleryFile.path.split('/').last;
+    });
+
+    // Panggil callback ke parent dengan data yang relevan
+    widget.onFilePicked(galleryFile, now, null);
+  }
+
   void _captureImage() async {
     // _isFilePicked = false;
     if (_isMockLocation) return;
@@ -262,97 +292,94 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            kIsWeb
-                ? Image.memory(
-                    _fileData as Uint8List,
-                    height: 160,
-                    fit: BoxFit.cover,
-                  )
-                : Image.file(
-                    File(_fileData),
-                    height: 160,
-                    fit: BoxFit.cover,
-                  ),
-            !_isFileFromPicker
-                ? Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 8),
-                      Text(
-                        _dateTime != null
-                            ? 'Waktu Photo : ${DateFormat('dd MMM yyyy – HH:mm').format(_dateTime!)}'
-                            : '-',
+            // [MODIFIKASI] Tambahkan pengecekan isImage di sini
+            if (isImage)
+              // Jika file adalah gambar, tampilkan seperti biasa
+              kIsWeb
+                  ? Image.memory(
+                      _fileData as Uint8List,
+                      height: 160,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(_fileData),
+                      height: 160,
+                      fit: BoxFit.cover,
+                    )
+            else
+              // ✅ Jika file adalah PDF, tampilkan preview khusus PDF
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_rounded,
+                        color: Colors.red.shade700, size: 36),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _displayController.text,
                         style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.grey,
-                        ),
+                            fontSize: 14, overflow: TextOverflow.ellipsis),
                       ),
-                      const SizedBox(height: 4), // Jarak antar baris
-                      if (_photoPosition != null)
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Lokasi : ${_photoPosition!.latitude.toStringAsFixed(6)}, ${_photoPosition!.longitude.toStringAsFixed(6)}',
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                            TextButton.icon(
-                              onPressed: () => _openMap(
-                                _photoPosition!.latitude,
-                                _photoPosition!.longitude,
-                              ),
-                              icon: const Icon(Icons.map, size: 14),
-                              label: const Text(
-                                "Lihat Maps",
-                                style: TextStyle(fontSize: 12),
-                              ),
-                              style: TextButton.styleFrom(
-                                padding: const EdgeInsets.only(
-                                    left: 4), // rapatkan ke kiri
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                            ),
-                          ],
+                    ),
+                  ],
+                ),
+              ),
+
+            // Tampilkan metadata hanya jika file berasal dari kamera (bukan dari picker)
+            if (!_isFileFromPicker)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    _dateTime != null
+                        ? 'Waktu Photo : ${DateFormat('dd MMM yyyy – HH:mm').format(_dateTime!)}'
+                        : '-',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 4),
+                  if (_photoPosition != null)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Lokasi : ${_photoPosition!.latitude.toStringAsFixed(6)}, ${_photoPosition!.longitude.toStringAsFixed(6)}',
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
-                      // if (widget.latitude != null && widget.longitude != null)
-                      //   Row(
-                      //     crossAxisAlignment: CrossAxisAlignment.center,
-                      //     children: [
-                      //       Expanded(
-                      //         child: Text(
-                      //           'Lokasi : ${widget.latitude!.toStringAsFixed(6)}, ${widget.longitude!.toStringAsFixed(6)}',
-                      //           style: const TextStyle(
-                      //               fontSize: 12, color: Colors.grey),
-                      //           overflow: TextOverflow.ellipsis,
-                      //         ),
-                      //       ),
-                      //       TextButton.icon(
-                      //         onPressed: () => _openMap(
-                      //           widget.latitude!,
-                      //           widget.longitude!,
-                      //         ),
-                      //         icon: const Icon(Icons.map, size: 14),
-                      //         label: const Text(
-                      //           "Lihat Maps",
-                      //           style: TextStyle(fontSize: 12),
-                      //         ),
-                      //         style: TextButton.styleFrom(
-                      //           padding: const EdgeInsets.only(
-                      //               left: 4), // rapatkan ke kiri
-                      //           minimumSize: Size.zero,
-                      //           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                    ],
-                  )
-                : const SizedBox.shrink(),
+                        TextButton.icon(
+                          onPressed: () => _openMap(
+                            _photoPosition!.latitude,
+                            _photoPosition!.longitude,
+                          ),
+                          icon: const Icon(Icons.map, size: 14),
+                          label: const Text(
+                            "Lihat Maps",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.only(
+                                left: 4), // rapatkan ke kiri
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
       );
@@ -399,7 +426,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                 border: const UnderlineInputBorder(),
                 contentPadding: const EdgeInsets.only(
                   left: 12,
-                  right: 48,
+                  right: 100,
                   top: 14,
                   bottom: 14,
                 ),
@@ -409,7 +436,19 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
             Positioned(
               right: 4,
               child: Row(
+                mainAxisSize: MainAxisSize.min, // Agar tombol-tombol merapat
                 children: [
+                  // [BARU] Tombol untuk membuka Galeri
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    constraints:
+                        const BoxConstraints(minWidth: 32, minHeight: 32),
+                    icon: const Icon(Icons.photo_library_rounded),
+                    onPressed: _fileData == null ? _pickFromGallery : null,
+                  ),
+
+                  // Tombol Attach File (yang sudah ada)
                   IconButton(
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
@@ -418,6 +457,8 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                     icon: const Icon(Icons.attach_file),
                     onPressed: _fileData == null ? _pickFile : null,
                   ),
+
+                  // Tombol Kamera (yang sudah ada)
                   IconButton(
                     padding: EdgeInsets.zero,
                     visualDensity: VisualDensity.compact,
@@ -433,6 +474,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
             )
           ],
         ),
+
         if (preview != null) preview,
         // if (_dateTime != null) Text('Waktu poto : ${_dateTime.toString()}'),
         // if (_photoPosition != null)

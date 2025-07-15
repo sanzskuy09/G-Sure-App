@@ -78,11 +78,6 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   }
 
   void printPrettyJson(Map<String, dynamic> data) {
-    // const encoder = JsonEncoder.withIndent('');
-    // final prettyJson = encoder.convert(data);
-    // print(prettyJson);
-    // final compactJson = jsonEncode(data);
-    // print(compactJson);
     final logger = Logger(
       printer: PrettyPrinter(
         methodCount: 0,
@@ -90,7 +85,6 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         lineLength: 99999999, // supaya tidak wrap
         colors: false,
         printEmojis: false,
-        printTime: false,
       ),
     );
 
