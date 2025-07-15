@@ -179,9 +179,12 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       final Map<String, dynamic> finalForm =
           formService.processFormToNestedMap(formAnswers);
 
+      finalForm.addAll({'status': 'DRAFT'});
+
       final box = Hive.box<AplikasiSurvey>('survey_apps');
       final aplikasi = AplikasiSurvey.fromJson(finalForm);
-      final uniqueId = 'app_${DateTime.now().millisecondsSinceEpoch}';
+      // final uniqueId = 'app_${DateTime.now().millisecondsSinceEpoch}';
+      final uniqueId = '${widget.order.application_id}';
       box.put(uniqueId, aplikasi);
 
       // print('Data survey berhasil disimpan ke Hive dengan key: $uniqueId.');
@@ -220,7 +223,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
     if (isConfirmed == true) {
       if (!context.mounted) return;
-      // _saveAplikasiToHive();
+      _saveAplikasiToHive();
     }
   }
 
@@ -242,17 +245,19 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   void _initializeFormAnswers() {
     final order = widget.order;
 
-    formAnswers = {
-      'katpemohon': 'PERORANGAN', // Contoh nilai default
-      'namadealer': order.cabang,
-      'application_id': order.id,
-      'nik': order.nik,
-      'statuspernikahan': order.statusperkawinan,
-      'nama': order.nama,
-      'namapasangan': order.namapasangan,
-      'ktppasangan': order.nikpasangan,
-      'isPenjaminExist': 'Ya',
-    };
+    formAnswers = order.toJson();
+
+    // formAnswers = {
+    //   'application_id': order.application_id,
+    //   'katpemohon': 'PERORANGAN', // Contoh nilai default
+    //   'namadealer': order.cabang,
+    //   'nik': order.nik,
+    //   'statuspernikahan': order.statusperkawinan,
+    //   'nama': order.nama,
+    //   'namapasangan': order.namapasangan,
+    //   'ktppasangan': order.nikpasangan,
+    //   'isPenjaminExist': 'Ya',
+    // };
   }
 
   @override

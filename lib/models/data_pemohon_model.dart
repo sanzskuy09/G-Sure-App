@@ -64,26 +64,34 @@ class DataPemohon extends HiveObject {
   });
 
   // Method untuk API
-  Map<String, dynamic> toJson() => {
-        'katpemohon': katpemohon,
-        'statuspernikahan': statuspernikahan,
-        'nama': nama,
-        'agamapemohon': agamapemohon,
-        'pendidikan': pendidikan,
-        'warganegarapemohon': warganegarapemohon,
-        'nomortelepon': nomortelepon,
-        'nohp': nohp,
-        'email': email,
-        'sim': sim,
-        'npwp': npwp,
-        'namaibu': namaibu,
-        'statusrumah': statusrumah,
-        'lokasirumah': lokasirumah,
-        'katrumahpemohon': katrumahpemohon,
-        'buktimilikrumahpemohon': buktimilikrumahpemohon,
-        'lamatinggalpemohon': lamatinggalpemohon,
-        'dataPekerjaan': dataPekerjaan?.toJson(),
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> jsonMap = {
+      'katpemohon': katpemohon ?? 'PERORANGAN',
+      'statuspernikahan': statuspernikahan,
+      'nama': nama,
+      'agamapemohon': agamapemohon,
+      'pendidikan': pendidikan,
+      'warganegarapemohon': warganegarapemohon,
+      'nomortelepon': nomortelepon,
+      'nohp': nohp,
+      'email': email,
+      'sim': sim,
+      'npwp': npwp,
+      'namaibu': namaibu,
+      'statusrumah': statusrumah,
+      'lokasirumah': lokasirumah,
+      'katrumahpemohon': katrumahpemohon,
+      'buktimilikrumahpemohon': buktimilikrumahpemohon,
+      'lamatinggalpemohon': lamatinggalpemohon,
+    };
+
+    // Tambahkan properti dari dataPekerjaan secara langsung jika ada
+    if (dataPekerjaan != null) {
+      jsonMap.addAll(dataPekerjaan!.toJson());
+    }
+
+    return jsonMap;
+  }
 
   factory DataPemohon.fromJson(Map<String, dynamic> json) => DataPemohon(
         katpemohon: json['katpemohon'],

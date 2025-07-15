@@ -12,6 +12,7 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
 
   SurveyBloc(this._surveyService) : super(SurveyInitial()) {
     on<GetDataSurveyFromOrder>(_getDataSurveyFromOrder);
+    on<SendSurveyData>(_sendSurveyData);
   }
 
   Future<void> _getDataSurveyFromOrder(
@@ -36,6 +37,23 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       emit(ListDataFromOrderSuccess());
     } catch (e) {
       emit(ErrorListDataFromOrder(e.toString()));
+    }
+  }
+
+  // IMPLEMENTASI HANDLER BARU
+  Future<void> _sendSurveyData(
+    SendSurveyData event,
+    Emitter<SurveyState> emit,
+  ) async {
+    emit(SendingSurvey()); // 1. Emit state loading
+    try {
+      // 2. Panggil service untuk mengirim data
+      await _surveyService.sendSurveyData(event.surveyData);
+      emit(SendSurveySuccess(event.uniqueId)); // 3. Emit state sukses
+    } catch (e) {
+      emit(
+        SendSurveyFailure(e.toString()),
+      ); // 4. Emit state gagal jika ada error
     }
   }
 }

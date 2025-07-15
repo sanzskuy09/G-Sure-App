@@ -315,21 +315,21 @@ class FormProcessingServiceAPI {
         flatFormAnswers['fotofppbelakang'];
 
     final Map<String, dynamic> nestedData = {
-      'dealer_applications': dealerData,
+      'dealer': dealerData,
       // data pemohon
       'pemohon': pemohonData,
-      'pekerjaan': pekerjaanData,
+      'pekerjaan_pemohon': pekerjaanData,
       // data Pasangan
-      'pasangan': pasanganData,
-      'pekerjaanPasangan': pasanganPekerjaanData,
+      'pasangan_pemohon': pasanganData,
+      'pekerjaan_pasangan': pasanganPekerjaanData,
       // data penjamin
       'penjamin': penjaminData,
-      'pekerjaanPenjamin': pekerjaanPenjaminData,
+      'pekerjaan_penjamin': pekerjaanPenjaminData,
       // data pasangan penjamin
-      'pasanganPenjamin': pasanganPenjaminData,
-      'pekerjaanPasanganPenjamin': pasanganPekerjaanPenjaminData,
+      'pasangan_penjamin': pasanganPenjaminData,
+      'pekerjaan_pasangan_penjamin': pasanganPekerjaanPenjaminData,
       // data Kontak Darurat
-      'kontakDarurat': kontakDaruratData,
+      'kontak_darurat': kontakDaruratData,
       // Foto Dokumen
       // 'fotoKendaraan': fotoKendaraanData,
       // 'fotoLegalitas': fotoLegalitasData,
@@ -655,6 +655,8 @@ class FormProcessingService {
 
     // 3. Gabungkan semua map bagian menjadi satu map akhir yang bertingkat
     final Map<String, dynamic> nestedData = {
+      'application_id': flatFormAnswers['application_id'],
+      'nik': flatFormAnswers['nik'],
       'dataDealer': dealerData,
       'dataKendaraan': kendaraanData,
       'dataAlamatSurvey': alamatSurveyData,

@@ -17,7 +17,7 @@ class SurveyListPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('LIST SURVEY'),
+        title: const Text('LIST NEW SURVEY'),
         automaticallyImplyLeading: false,
         actions: [
           // Tambahkan tombol refresh untuk memicu sinkronisasi manual
@@ -127,21 +127,29 @@ class SurveyListPage extends StatelessWidget {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
-                                    order.nama ?? 'Tanpa Nama',
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16),
+                                  Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      _buildStatusBadge('NEW'),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          order.nama ?? 'Tanpa Nama',
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                   const SizedBox(height: 4),
-                                  // Text(
-                                  //     'Active: ${order.isActived == true ? 'Yes' : 'No'}'),
                                   Text('NIK: ${order.nik ?? '-'}'),
+                                  Text('ID: ${order.application_id ?? '-'}'),
                                   Text('Alamat: ${order.alamat ?? '-'}',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis),
-                                  // const SizedBox(height: 6),
-                                  // _buildStatusBadge(order.statusslik!),
                                 ],
                               ),
                             ),
@@ -263,6 +271,11 @@ Widget _buildStatusBadge(String status) {
   String label;
 
   switch (status) {
+    case 'NEW':
+      bgColor = Colors.green.shade100;
+      textColor = Colors.green.shade800;
+      label = 'New';
+      break;
     case 'BERSIH':
       bgColor = Colors.green.shade100;
       textColor = Colors.green.shade800;

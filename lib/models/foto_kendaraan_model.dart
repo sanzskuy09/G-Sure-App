@@ -65,22 +65,6 @@ class FotoKendaraan extends HiveObject {
         'fotobpkb2': fotobpkb2,
       };
 
-  // factory FotoKendaraan.fromJson(Map<String, dynamic> json) => FotoKendaraan(
-  //       odometer: json['odometer'],
-  //       fotounitdepan: json['fotounitdepan'],
-  //       fotounitbelakang: json['fotounitbelakang'],
-  //       fotounitinteriordepan: json['fotounitinteriordepan'],
-  //       fotounitmesinplat: json['fotounitmesinplat'],
-  //       fotomesin: json['fotomesin'],
-  //       fotounitselfiecmo: json['fotounitselfiecmo'],
-  //       fotospeedometer: json['fotospeedometer'],
-  //       fotogesekannoka: json['fotogesekannoka'],
-  //       fotostnk: json['fotostnk'],
-  //       fotonoticepajak: json['fotonoticepajak'],
-  //       fotobpkb1: json['fotobpkb1'],
-  //       fotobpkb2: json['fotobpkb2'],
-  //     );
-
   // Perbarui juga factory fromJson-nya
   factory FotoKendaraan.fromJson(Map<String, dynamic> json) {
     return FotoKendaraan(

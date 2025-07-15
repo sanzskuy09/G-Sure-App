@@ -20,3 +20,24 @@ class ErrorListDataFromOrder extends SurveyState {
   @override
   List<Object> get props => [message];
 }
+
+// =============== Send Data Survey To API =============== //
+class SendingSurvey extends SurveyState {}
+
+class SendSurveySuccess extends SurveyState {
+  final String uniqueId; // <-- TAMBAHKAN INI
+
+  const SendSurveySuccess(this.uniqueId);
+
+  @override
+  List<Object> get props => [uniqueId];
+}
+
+class SendSurveyFailure extends SurveyState {
+  final String error;
+
+  const SendSurveyFailure(this.error);
+
+  @override
+  List<Object> get props => [error];
+}

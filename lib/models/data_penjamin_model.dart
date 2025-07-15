@@ -70,28 +70,35 @@ class DataPenjamin extends HiveObject {
   });
 
   // Method untuk API
-  Map<String, dynamic> toJson() => {
-        'jnspenjamin': jnspenjamin,
-        'statuspernikahanpenjamin': statuspernikahanpenjamin,
-        'namapenjamin': namapenjamin,
-        'agamapenjamin': agamapenjamin,
-        'warganegarapenjamin': warganegarapenjamin,
-        'notelppenjamin': notelppenjamin,
-        'nowapenjamin': nowapenjamin,
-        'ktppenjamin': ktppenjamin,
-        'tglktppenjamin': tglktppenjamin,
-        'simpenjamin': simpenjamin,
-        'npwppenjamin': npwppenjamin,
-        'alamatpenjamin': alamatpenjamin,
-        'kotapenjamin': kotapenjamin,
-        'namaibupenjamin': namaibupenjamin,
-        'statusrumahpenjamin': statusrumahpenjamin,
-        'lokasirumahpenjamin': lokasirumahpenjamin,
-        'katrumahpenjamin': katrumahpenjamin,
-        'buktimilikrumahpenjamin': buktimilikrumahpenjamin,
-        'lamatinggalpenjamin': lamatinggalpenjamin,
-        'dataPekerjaanPenjamin': dataPekerjaanPenjamin?.toJson(),
-      };
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> jsonMap = {
+      'jnspenjamin': jnspenjamin,
+      'statuspernikahanpenjamin': statuspernikahanpenjamin,
+      'namapenjamin': namapenjamin,
+      'agamapenjamin': agamapenjamin,
+      'warganegarapenjamin': warganegarapenjamin,
+      'notelppenjamin': notelppenjamin,
+      'nowapenjamin': nowapenjamin,
+      'ktppenjamin': ktppenjamin,
+      'tglktppenjamin': tglktppenjamin,
+      'simpenjamin': simpenjamin,
+      'npwppenjamin': npwppenjamin,
+      'alamatpenjamin': alamatpenjamin,
+      'kotapenjamin': kotapenjamin,
+      'namaibupenjamin': namaibupenjamin,
+      'statusrumahpenjamin': statusrumahpenjamin,
+      'lokasirumahpenjamin': lokasirumahpenjamin,
+      'katrumahpenjamin': katrumahpenjamin,
+      'buktimilikrumahpenjamin': buktimilikrumahpenjamin,
+      'lamatinggalpenjamin': lamatinggalpenjamin,
+    };
+
+    if (dataPekerjaanPenjamin != null) {
+      jsonMap.addAll(dataPekerjaanPenjamin!.toJson());
+    }
+
+    return jsonMap;
+  }
 
   factory DataPenjamin.fromJson(Map<String, dynamic> json) => DataPenjamin(
         jnspenjamin: json['jnspenjamin'],

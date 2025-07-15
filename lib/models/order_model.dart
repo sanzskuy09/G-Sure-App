@@ -116,6 +116,9 @@ class OrderModel extends HiveObject {
   @HiveField(36)
   bool? isActived;
 
+  @HiveField(37)
+  String? application_id;
+
   OrderModel({
     this.id,
     this.cabang,
@@ -154,14 +157,15 @@ class OrderModel extends HiveObject {
     this.catatan,
     this.is_survey,
     this.isActived,
+    this.application_id,
   });
 
   // Method toJson yang lebih lengkap
   Map<String, dynamic> toJson() {
     return {
       'id': id,
-      'cabang': cabang,
-      'statusperkawinan': statusperkawinan,
+      'kotadealer': cabang,
+      'statuspernikahan': statusperkawinan,
       'nik': nik,
       'nama': nama,
       'tempatlahir': tempatlahir,
@@ -173,10 +177,10 @@ class OrderModel extends HiveObject {
       'kec': kec,
       'kota': kota,
       'provinsi': provinsi,
-      'dealer': dealer,
+      'namadealer': dealer,
       'catatan': catatan,
       'statusslik': statusslik,
-      'nikpasangan': nikpasangan,
+      'ktppasangan': nikpasangan,
       'namapasangan': namapasangan,
       'tempatlahirpasangan': tempatlahirpasangan,
       'tgllahirpasangan': tgllahirpasangan?.toIso8601String(),
@@ -191,6 +195,7 @@ class OrderModel extends HiveObject {
       'jeniskelamin': jeniskelamin,
       'is_survey': is_survey,
       'isActived': isActived,
+      'application_id': application_id,
       // Foto biasanya di-handle terpisah (misalnya di-upload sebagai multipart/form-data)
     };
   }
@@ -234,6 +239,7 @@ class OrderModel extends HiveObject {
       catatan: json['catatan'],
       is_survey: json['is_survey'],
       isActived: true,
+      application_id: json['application_id'],
     );
   }
 
@@ -279,6 +285,7 @@ class OrderModel extends HiveObject {
     String? kotapasangan,
     int? is_survey,
     bool? isActived,
+    String? application_id,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -318,6 +325,7 @@ class OrderModel extends HiveObject {
       kotapasangan: kotapasangan ?? this.kotapasangan,
       is_survey: is_survey ?? this.is_survey,
       isActived: isActived ?? this.isActived,
+      application_id: application_id ?? this.application_id,
     );
   }
 }

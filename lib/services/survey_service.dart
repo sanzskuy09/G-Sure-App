@@ -23,4 +23,34 @@ class SurveyService {
       rethrow;
     }
   }
+
+  Future<void> sendSurveyData(Map<String, dynamic> data) async {
+    // Ganti 'submit-survey' dengan endpoint API Anda yang sebenarnya
+    final Uri url = Uri.parse('$baseUrlSurvey/alldata');
+
+    try {
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(data),
+      );
+
+      // 200 (OK) atau 201 (Created) biasanya menandakan sukses
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('Data survey berhasil dikirim!');
+        // Anda bisa mengembalikan response body jika diperlukan
+        // return jsonDecode(response.body);
+      } else {
+        // Gagal mengirim data
+        throw Exception(
+            'Gagal mengirim data. Status: ${response.statusCode}, Body: ${response.body}');
+      }
+    } catch (e) {
+      // Menangani error koneksi atau lainnya
+      print('Terjadi error saat mengirim data survey: $e');
+      rethrow;
+    }
+  }
 }
