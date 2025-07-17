@@ -1,9 +1,11 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:intl/intl.dart';
@@ -12,7 +14,7 @@ import 'package:url_launcher/url_launcher.dart';
 class CameraFieldForm extends StatefulWidget {
   final int index;
   final String label;
-  final dynamic value; // Menerima Map dari state utama
+  final dynamic value; // Ini akan menerima Map dari formAnswers
   final Function(dynamic, DateTime, Position?) onFilePicked;
 
   const CameraFieldForm({
@@ -22,19 +24,21 @@ class CameraFieldForm extends StatefulWidget {
     required this.value,
     required this.onFilePicked,
   });
+
   @override
   State<CameraFieldForm> createState() => _CameraFieldFormState();
 }
 
 class _CameraFieldFormState extends State<CameraFieldForm> {
-  // 2. Controller LOKAL, hanya untuk tampilan di widget ini.
   late final TextEditingController _displayController;
 
-  // State lokal untuk data yang sudah diproses
-  dynamic _fileDataForPreview;
+  // State lokal untuk menyimpan data yang sudah diproses
+  dynamic _fileData; // Bisa berupa String path atau Uint8List
   DateTime? _dateTime;
   Position? _photoPosition;
+
   bool _isMockLocation = false;
+  bool _isFileFromPicker = false;
 
   bool get isImage {
     final name = _displayController.text.toLowerCase();
@@ -46,7 +50,10 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
   @override
   void initState() {
     super.initState();
+    // Inisialisasi controller lokal
     _displayController = TextEditingController();
+
+    // 3. Logika utama: Proses 'widget.value' saat pertama kali widget dibuat
     _processInitialValue();
     _checkFakeGPS();
   }
@@ -113,24 +120,21 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
     );
   }
 
-  // 3. Logika untuk memproses 'value' dari parent saat widget pertama kali dibuat
   void _processInitialValue() {
-    if (widget.value != null && widget.value is Map) {
+    // Prioritas 1: Cek jika value adalah Map (dari form yang baru diisi)
+    if (widget.value is Map) {
       final initialData = widget.value as Map;
       final file = initialData['file'];
 
       if (file != null) {
-        // Asumsikan 'file' adalah object File, ambil path-nya
         if (file is File) {
-          _fileDataForPreview = file.path;
+          _fileData = file.path;
           _displayController.text = file.path.split('/').last;
         } else if (file is String) {
-          // Fallback jika ternyata path
-          _fileDataForPreview = file;
+          _fileData = file;
           _displayController.text = file.split('/').last;
         }
       }
-
       _dateTime = initialData['timestamp'];
       final lat = initialData['latitude'] as double?;
       final lon = initialData['longitude'] as double?;
@@ -147,21 +151,153 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
             speed: 0,
             speedAccuracy: 0);
       }
-    } else if (widget.value != null) {
-      // Fallback jika value hanya String
-      _fileDataForPreview = widget.value;
-      _displayController.text = widget.value.toString().split('/').last;
+    }
+    // ✅ TAMBAHKAN BLOK INI
+    // Prioritas 2: Cek jika value adalah objek PhotoData (dari data Hive/draft)
+    else if (widget.value is PhotoData) {
+      final photoData = widget.value as PhotoData;
+      final path = photoData.path;
+
+      if (path != null) {
+        // Set state lokal sama seperti di _pickFile
+        _fileData = path; // <-- Simpan path sebagai String
+        _displayController.text = path.split('/').last;
+        _dateTime = photoData.timestamp;
+
+        // Buat ulang objek Position dari data yang ada
+        if (photoData.latitude != null && photoData.longitude != null) {
+          _photoPosition = Position(
+              latitude: photoData.latitude!,
+              longitude: photoData.longitude!,
+              timestamp: DateTime.now(),
+              accuracy: 0,
+              altitude: 0,
+              altitudeAccuracy: 0,
+              heading: 0,
+              headingAccuracy: 0,
+              speed: 0,
+              speedAccuracy: 0);
+        }
+      }
+    }
+    // Fallback jika value adalah tipe lain tapi tidak null (misal: String langsung)
+    else if (widget.value != null) {
+      _fileData = widget.value.toString();
+      _displayController.text = _fileData.toString().split('/').last;
     }
   }
 
+  // void _processInitialValue() {
+  //   // Jika value dari parent adalah Map (sesuai desain kita)
+  //   if (widget.value != null && widget.value is Map) {
+  //     final initialData = widget.value as Map;
+  //     final file = initialData['file'];
+
+  //     if (file != null) {
+  //       if (file is File) {
+  //         _fileData = file.path;
+  //         _displayController.text = file.path.split('/').last;
+  //       } else if (file is String) {
+  //         _fileData = file;
+  //         _displayController.text = file.split('/').last;
+  //       }
+  //     }
+
+  //     _dateTime = initialData['timestamp'];
+  //     final lat = initialData['latitude'] as double?;
+  //     final lon = initialData['longitude'] as double?;
+  //     if (lat != null && lon != null) {
+  //       _photoPosition = Position(
+  //           latitude: lat,
+  //           longitude: lon,
+  //           timestamp: DateTime.now(),
+  //           accuracy: 0,
+  //           altitude: 0,
+  //           altitudeAccuracy: 0,
+  //           heading: 0,
+  //           headingAccuracy: 0,
+  //           speed: 0,
+  //           speedAccuracy: 0);
+  //     }
+  //   }
+  //   // Fallback jika value hanya String
+  //   else if (widget.value != null) {
+  //     _fileData = widget.value;
+  //     _displayController.text = widget.value.toString().split('/').last;
+
+  //     print('_fileData');
+  //     print(_fileData);
+  //     print('===============================');
+  //     print('_displayController');
+  //     print(_displayController);
+  //   }
+  // }
+
   @override
   void dispose() {
+    // 4. Jangan lupa dispose controller lokal
     _displayController.dispose();
     super.dispose();
   }
 
+  Future<void> _pickFile() async {
+    // final now = DateTime.now();
+    // _isFilePicked = true;
+
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
+      withData: true,
+    );
+
+    if (result != null && result.files.isNotEmpty) {
+      final file = result.files.first;
+      final pickedFileData = File(file.path!); // Kita butuh object File
+
+      setState(() {
+        _fileData = pickedFileData.path; // Simpan path untuk preview
+        _displayController.text = file.name; // Update controller LOKAL
+        _isFileFromPicker = true;
+      });
+      // Panggil callback ke parent dengan object File
+      widget.onFilePicked(pickedFileData, DateTime.now(), null);
+    }
+  }
+
+  Future<void> _pickFromGallery() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80, // Kualitas bisa disesuaikan
+    );
+
+    if (pickedFile == null) {
+      return; // Pengguna membatalkan pemilihan
+    }
+
+    // --- Gunakan logika yang hampir sama dengan fungsi lainnya ---
+    final now = DateTime.now();
+    final galleryFile = File(pickedFile.path);
+
+    if (!mounted) return;
+
+    setState(() {
+      _fileData = galleryFile.path;
+      _dateTime = now;
+      _photoPosition = null; // Tidak ada data lokasi dari galeri
+      _isFileFromPicker =
+          true; // Anggap dari picker agar metadata lokasi tidak tampil
+      _displayController.text = galleryFile.path.split('/').last;
+    });
+
+    // Panggil callback ke parent dengan data yang relevan
+    widget.onFilePicked(galleryFile, now, null);
+  }
+
   void _captureImage() async {
+    // _isFilePicked = false;
     if (_isMockLocation) return;
+
     _showLoadingDialog(); // ⏳ Tampilkan loading SEBELUM buka kamera
 
     final picker = ImagePicker();
@@ -176,27 +312,32 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
     }
 
     final now = DateTime.now();
+
     Position? currentPosition;
     try {
-      currentPosition = await Geolocator.getCurrentPosition(
-          timeLimit: const Duration(seconds: 5));
+      currentPosition = await Geolocator.getLastKnownPosition();
+      currentPosition ??= await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.low,
+        timeLimit: const Duration(seconds: 5),
+      );
     } catch (e) {
       currentPosition = null;
     }
 
-    final capturedFile = File(pickedFile.path); // Buat objek File
+    // final fileData = kIsWeb ? await pickedFile.readAsBytes() : pickedFile.path;
+    final capturedFile = File(pickedFile.path);
 
     if (!mounted) return;
 
     setState(() {
-      _fileDataForPreview = capturedFile.path;
+      _fileData =
+          capturedFile.path; // State lokal tetap simpan path untuk preview
       _dateTime = now;
       _photoPosition = currentPosition;
       _displayController.text =
-          '${widget.label}_${DateFormat('yyyyMMdd_HHmmss').format(now)}.jpg';
+          '${widget.label}_${now.year}${now.month}${now.day}_${now.hour}${now.minute}${now.second}.jpg';
     });
 
-    // Kirim OBJEK FILE-nya, bukan path-nya
     widget.onFilePicked(capturedFile, now, currentPosition);
 
     if (mounted) Navigator.of(context).pop(); // ✅ Tutup loading
@@ -217,70 +358,101 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
   @override
   Widget build(BuildContext context) {
     Widget? preview;
-    if (_fileDataForPreview != null) {
+
+    if (_fileData != null) {
       preview = Padding(
         padding: const EdgeInsets.only(top: 12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            kIsWeb
-                ? Image.memory(
-                    _fileDataForPreview as Uint8List,
-                    height: 160,
-                    fit: BoxFit.cover,
-                  )
-                : Image.file(
-                    File(_fileDataForPreview),
-                    height: 160,
-                    fit: BoxFit.cover,
-                  ),
-            const SizedBox(height: 8),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  _dateTime != null
-                      ? 'Waktu Photo : ${DateFormat('dd MMM yyyy – HH:mm').format(_dateTime!)}'
-                      : '-',
-                  style: const TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey,
-                  ),
+            // [MODIFIKASI] Tambahkan pengecekan isImage di sini
+            if (isImage)
+              // Jika file adalah gambar, tampilkan seperti biasa
+              kIsWeb
+                  ? Image.memory(
+                      _fileData as Uint8List,
+                      height: 160,
+                      fit: BoxFit.cover,
+                    )
+                  : Image.file(
+                      File(_fileData),
+                      height: 160,
+                      fit: BoxFit.cover,
+                    )
+            else
+              // ✅ Jika file adalah PDF, tampilkan preview khusus PDF
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[100],
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.grey.shade300),
                 ),
-                const SizedBox(height: 4), // Jarak antar baris
-                if (_photoPosition != null)
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Lokasi : ${_photoPosition!.latitude.toStringAsFixed(6)}, ${_photoPosition!.longitude.toStringAsFixed(6)}',
-                          style:
-                              const TextStyle(fontSize: 12, color: Colors.grey),
-                          overflow: TextOverflow.ellipsis,
-                        ),
+                child: Row(
+                  children: [
+                    Icon(Icons.picture_as_pdf_rounded,
+                        color: Colors.red.shade700, size: 36),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Text(
+                        _displayController.text,
+                        style: const TextStyle(
+                            fontSize: 14, overflow: TextOverflow.ellipsis),
                       ),
-                      TextButton.icon(
-                        onPressed: () => _openMap(
-                          _photoPosition!.latitude,
-                          _photoPosition!.longitude,
-                        ),
-                        icon: const Icon(Icons.map, size: 14),
-                        label: const Text(
-                          "Lihat Maps",
-                          style: TextStyle(fontSize: 12),
-                        ),
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.only(
-                              left: 4), // rapatkan ke kiri
-                          minimumSize: Size.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        ),
-                      ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+
+            // Tampilkan metadata hanya jika file berasal dari kamera (bukan dari picker)
+            if (!_isFileFromPicker)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 8),
+                  Text(
+                    _dateTime != null
+                        ? 'Waktu Photo : ${DateFormat('dd MMM yyyy – HH:mm').format(_dateTime!)}'
+                        : '-',
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
                   ),
-              ],
-            ),
+                  const SizedBox(height: 4),
+                  if (_photoPosition != null)
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Text(
+                            'Lokasi : ${_photoPosition!.latitude.toStringAsFixed(6)}, ${_photoPosition!.longitude.toStringAsFixed(6)}',
+                            style: const TextStyle(
+                                fontSize: 12, color: Colors.grey),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        TextButton.icon(
+                          onPressed: () => _openMap(
+                            _photoPosition!.latitude,
+                            _photoPosition!.longitude,
+                          ),
+                          icon: const Icon(Icons.map, size: 14),
+                          label: const Text(
+                            "Lihat Maps",
+                            style: TextStyle(fontSize: 12),
+                          ),
+                          style: TextButton.styleFrom(
+                            padding: const EdgeInsets.only(
+                                left: 4), // rapatkan ke kiri
+                            minimumSize: Size.zero,
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
+                        ),
+                      ],
+                    ),
+                ],
+              )
+            else
+              const SizedBox.shrink(),
           ],
         ),
       );
@@ -323,11 +495,11 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
               controller: _displayController,
               readOnly: true,
               decoration: InputDecoration(
-                hintText: 'Take a photo...',
+                hintText: 'Upload or Take a photo...',
                 border: const UnderlineInputBorder(),
                 contentPadding: const EdgeInsets.only(
                   left: 12,
-                  right: 48,
+                  right: 100,
                   top: 14,
                   bottom: 14,
                 ),
@@ -336,17 +508,33 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
             ),
             Positioned(
               right: 4,
-              child: IconButton(
-                icon: const Icon(Icons.camera_alt_rounded),
-                // onPressed: widget.enabled == true ? _pickFile : null,
-                onPressed: _fileDataForPreview == null && !_isMockLocation
-                    ? _captureImage
-                    : null,
+              child: Row(
+                mainAxisSize: MainAxisSize.min, // Agar tombol-tombol merapat
+                children: [
+                  // Tombol Kamera (yang sudah ada)
+                  IconButton(
+                    padding: EdgeInsets.zero,
+                    visualDensity: VisualDensity.compact,
+                    constraints:
+                        const BoxConstraints(minWidth: 32, minHeight: 32),
+                    icon: const Icon(Icons.camera_alt_rounded),
+                    onPressed: _fileData == null && !_isMockLocation
+                        ? _captureImage
+                        : null,
+                  ),
+                ],
               ),
-            ),
+            )
           ],
         ),
+
         if (preview != null) preview,
+        // if (preview != null) Text('Preview'),
+        // if (_dateTime != null) Text('Waktu poto : ${_dateTime.toString()}'),
+        // if (_photoPosition != null)
+        //   Text(
+        //     'Lokasi: Lat ${_photoPosition!.latitude}, Lon ${_photoPosition!.longitude}',
+        //   ),
       ],
     );
   }

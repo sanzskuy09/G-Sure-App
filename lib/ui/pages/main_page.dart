@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/home_page.dart';
@@ -34,7 +35,16 @@ class _MainPageState extends State<MainPage> {
 
   void _onTabTapped(int index) {
     if (_isSurveyList == false && index == 1) {
-      context.read<SurveyBloc>().add(GetDataSurveyFromOrder());
+      // context.read<SurveyBloc>().add(GetDataSurveyFromOrder());
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthSuccess) {
+        final username = authState.user.username;
+        if (username != null) {
+          print('username : $username');
+          context.read<SurveyBloc>().add(GetDataSurveyFromOrder(username));
+          // context.read<OrderBloc>().add(FetchOrders(username));
+        }
+      }
 
       setState(() {
         _isSurveyList = true;

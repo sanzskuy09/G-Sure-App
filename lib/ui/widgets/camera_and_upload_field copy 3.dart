@@ -5,7 +5,6 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:gsure/models/photo_data_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:intl/intl.dart';
@@ -122,8 +121,8 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
   }
 
   void _processInitialValue() {
-    // Prioritas 1: Cek jika value adalah Map (dari form yang baru diisi)
-    if (widget.value is Map) {
+    // Jika value dari parent adalah Map (sesuai desain kita)
+    if (widget.value != null && widget.value is Map) {
       final initialData = widget.value as Map;
       final file = initialData['file'];
 
@@ -136,6 +135,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
           _displayController.text = file.split('/').last;
         }
       }
+
       _dateTime = initialData['timestamp'];
       final lat = initialData['latitude'] as double?;
       final lon = initialData['longitude'] as double?;
@@ -153,86 +153,12 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
             speedAccuracy: 0);
       }
     }
-    // ✅ TAMBAHKAN BLOK INI
-    // Prioritas 2: Cek jika value adalah objek PhotoData (dari data Hive/draft)
-    else if (widget.value is PhotoData) {
-      final photoData = widget.value as PhotoData;
-      final path = photoData.path;
-
-      if (path != null) {
-        // Set state lokal sama seperti di _pickFile
-        _fileData = path; // <-- Simpan path sebagai String
-        _displayController.text = path.split('/').last;
-        _dateTime = photoData.timestamp;
-
-        // Buat ulang objek Position dari data yang ada
-        if (photoData.latitude != null && photoData.longitude != null) {
-          _photoPosition = Position(
-              latitude: photoData.latitude!,
-              longitude: photoData.longitude!,
-              timestamp: DateTime.now(),
-              accuracy: 0,
-              altitude: 0,
-              altitudeAccuracy: 0,
-              heading: 0,
-              headingAccuracy: 0,
-              speed: 0,
-              speedAccuracy: 0);
-        }
-      }
-    }
-    // Fallback jika value adalah tipe lain tapi tidak null (misal: String langsung)
+    // Fallback jika value hanya String
     else if (widget.value != null) {
-      _fileData = widget.value.toString();
-      _displayController.text = _fileData.toString().split('/').last;
+      _fileData = widget.value;
+      _displayController.text = widget.value.toString().split('/').last;
     }
   }
-
-  // void _processInitialValue() {
-  //   // Jika value dari parent adalah Map (sesuai desain kita)
-  //   if (widget.value != null && widget.value is Map) {
-  //     final initialData = widget.value as Map;
-  //     final file = initialData['file'];
-
-  //     if (file != null) {
-  //       if (file is File) {
-  //         _fileData = file.path;
-  //         _displayController.text = file.path.split('/').last;
-  //       } else if (file is String) {
-  //         _fileData = file;
-  //         _displayController.text = file.split('/').last;
-  //       }
-  //     }
-
-  //     _dateTime = initialData['timestamp'];
-  //     final lat = initialData['latitude'] as double?;
-  //     final lon = initialData['longitude'] as double?;
-  //     if (lat != null && lon != null) {
-  //       _photoPosition = Position(
-  //           latitude: lat,
-  //           longitude: lon,
-  //           timestamp: DateTime.now(),
-  //           accuracy: 0,
-  //           altitude: 0,
-  //           altitudeAccuracy: 0,
-  //           heading: 0,
-  //           headingAccuracy: 0,
-  //           speed: 0,
-  //           speedAccuracy: 0);
-  //     }
-  //   }
-  //   // Fallback jika value hanya String
-  //   else if (widget.value != null) {
-  //     _fileData = widget.value;
-  //     _displayController.text = widget.value.toString().split('/').last;
-
-  //     print('_fileData');
-  //     print(_fileData);
-  //     print('===============================');
-  //     print('_displayController');
-  //     print(_displayController);
-  //   }
-  // }
 
   @override
   void dispose() {
@@ -550,7 +476,6 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
         ),
 
         if (preview != null) preview,
-        // if (preview != null) Text('Preview'),
         // if (_dateTime != null) Text('Waktu poto : ${_dateTime.toString()}'),
         // if (_photoPosition != null)
         //   Text(

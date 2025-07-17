@@ -97,15 +97,24 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     final Map<String, dynamic> jsonData = {};
     final Map<String, Map<String, dynamic>> fileData = {};
 
-    final formService = FormProcessingServiceAPI();
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
+
+    // // printPrettyJson(finalForm);
+
+    // finalForm.forEach((section, value) {
+    //   print('[$section]: ${jsonEncode(value)}');
+    // });
+
+    final formService = FormProcessingService();
+
     final Map<String, dynamic> finalForm =
-        formService.processFormToAPI(formAnswers);
+        formService.processFormToNestedMap(formAnswers);
 
-    // printPrettyJson(finalForm);
-
-    finalForm.forEach((section, value) {
-      print('[$section]: ${jsonEncode(value)}');
-    });
+    // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
+    // JsonEncoder encoder =
+    //     JsonEncoder.withIndent('  '); // '  ' untuk 2 spasi indentasi
 
     for (final entry in formAnswers.entries) {
       final key = entry.key;
@@ -125,6 +134,12 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     final String fileString = encoder.convert(fileData.map((key, value) =>
         MapEntry(
             key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+
+    String prettyprint = encoder.convert(finalForm);
+    print("--- ISI FINALFORM ---");
+    print(prettyprint);
+    print("---------------------");
+    // ==========================================================
 
     // 3. Tampilkan dialog
     showDialog(
@@ -215,7 +230,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       context: context,
       title: 'Lanjutkan Proses?',
       message:
-          'Proses akan dilanjutkan ke tahap survey lapangan. Pastikan semua data sudah benar.',
+          'Proses akan disimpan di data lokal. Pastikan semua data sudah benar.',
       lottieAsset: 'assets/animations/success.json', // Ganti dengan path Anda
       confirmButtonColor: successColor,
       confirmButtonText: 'Lanjutkan',
@@ -303,7 +318,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text('FORM SURVEY ASSET ${widget.order.id}'),
+          title: Text('FORM SURVEY'),
         ),
         body: Accordion(
           headerBackgroundColor: secondaryColor,
@@ -374,6 +389,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
                   iconData: Icons.send,
                   title: "Kirim",
                   // isDisabled: true,
+                  // onPressed: () {},
                   onPressed: _showConfirmationDialog,
                 ),
                 BuildButton(

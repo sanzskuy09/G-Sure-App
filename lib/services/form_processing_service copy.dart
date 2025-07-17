@@ -345,28 +345,14 @@ class FormProcessingService {
   /// struktur model AplikasiSurvey.
   Map<String, dynamic> processFormToNestedMap(
       Map<String, dynamic> flatFormAnswers) {
-    // --- GANTI BLOK LOGIKA LAMA DENGAN YANG BARU INI ---
+    // --- TAMBAHKAN BLOK LOGIKA INI DI PALING ATAS ---
     final Map<String, dynamic> processedAnswers = {};
     flatFormAnswers.forEach((key, value) {
       if (value is PhotoData) {
-        // Kasus 1: Value adalah objek PhotoData (dari data lama/draft).
-        // Ubah menjadi Map JSON.
+        // Jika value adalah PhotoData, ubah jadi Map via toJson()
         processedAnswers[key] = value.toJson();
-      } else if (value is Map && value['file'] is File) {
-        // Kasus 2: Value adalah Map dari file picker (dari data baru).
-        // Ekstrak datanya dan ubah File menjadi String path.
-        final File file = value['file'];
-        final DateTime? timestamp = value['timestamp'];
-
-        processedAnswers[key] = {
-          'path': file.path, // <-- Kunci utamanya di sini
-          'timestamp': timestamp?.toIso8601String(),
-          'latitude': value['latitude'],
-          'longitude': value['longitude'],
-        };
       } else {
-        // Kasus 3: Value adalah tipe lain (String, int, dll).
-        // Gunakan value aslinya.
+        // Jika bukan, gunakan value aslinya (String, int, Map dari file picker, dll.)
         processedAnswers[key] = value;
       }
     });
@@ -395,7 +381,8 @@ class FormProcessingService {
     final List<Map<String, dynamic>> fotoSimulasiList = [];
     final List<Map<String, dynamic>> fotoTambahanList = [];
 
-    processedAnswers.forEach((key, value) {
+    // Lakukan iterasi pada semua entri di map datar
+    flatFormAnswers.forEach((key, value) {
       // Cek jika key berawalan 'dokpekerjaan' dan valuenya adalah Map
       if (key.startsWith('dokpekerjaan') && value is Map<String, dynamic>) {
         fotoPekerjaanList.add(value);
@@ -407,225 +394,223 @@ class FormProcessingService {
         fotoTambahanList.add(value);
       }
     });
+
     // Mengisi data untuk bagian Dealer
-    dealerData['kddealer'] = processedAnswers['kddealer'];
-    dealerData['namadealer'] = processedAnswers['namadealer'];
-    dealerData['alamatdealer'] = processedAnswers['alamatdealer'];
-    dealerData['rtdealer'] = processedAnswers['rtdealer'];
-    dealerData['rwdealer'] = processedAnswers['rwdealer'];
-    dealerData['kodeposdealer'] = processedAnswers['kodeposdealer'];
-    dealerData['keldealer'] = processedAnswers['keldealer'];
-    dealerData['kecdealer'] = processedAnswers['kecdealer'];
-    dealerData['kotadealer'] = processedAnswers['kotadealer'];
-    dealerData['provinsidealer'] = processedAnswers['provinsidealer'];
-    dealerData['telpondealer'] = processedAnswers['telpondealer'];
-    dealerData['namapemilikdealer'] = processedAnswers['namapemilikdealer'];
-    dealerData['nohppemilik'] = processedAnswers['nohppemilik'];
-    dealerData['picdealer'] = processedAnswers['picdealer'];
+    dealerData['kddealer'] = flatFormAnswers['kddealer'];
+    dealerData['namadealer'] = flatFormAnswers['namadealer'];
+    dealerData['alamatdealer'] = flatFormAnswers['alamatdealer'];
+    dealerData['rtdealer'] = flatFormAnswers['rtdealer'];
+    dealerData['rwdealer'] = flatFormAnswers['rwdealer'];
+    dealerData['kodeposdealer'] = flatFormAnswers['kodeposdealer'];
+    dealerData['keldealer'] = flatFormAnswers['keldealer'];
+    dealerData['kecdealer'] = flatFormAnswers['kecdealer'];
+    dealerData['kotadealer'] = flatFormAnswers['kotadealer'];
+    dealerData['provinsidealer'] = flatFormAnswers['provinsidealer'];
+    dealerData['telpondealer'] = flatFormAnswers['telpondealer'];
+    dealerData['namapemilikdealer'] = flatFormAnswers['namapemilikdealer'];
+    dealerData['nohppemilik'] = flatFormAnswers['nohppemilik'];
+    dealerData['picdealer'] = flatFormAnswers['picdealer'];
 
     // Mengisi data untuk bagian Kendaraan
-    kendaraanData['kondisiKendaraan'] = processedAnswers['kondisiKendaraan'];
-    kendaraanData['merkkendaraan'] = processedAnswers['merkkendaraan'];
-    kendaraanData['typekendaraan'] = processedAnswers['typekendaraan'];
-    kendaraanData['tahunkendaraan'] = processedAnswers['tahunkendaraan'];
-    kendaraanData['nopolisikendaraan'] = processedAnswers['nopolisikendaraan'];
+    kendaraanData['kondisiKendaraan'] = flatFormAnswers['kondisiKendaraan'];
+    kendaraanData['merkkendaraan'] = flatFormAnswers['merkkendaraan'];
+    kendaraanData['typekendaraan'] = flatFormAnswers['typekendaraan'];
+    kendaraanData['tahunkendaraan'] = flatFormAnswers['tahunkendaraan'];
+    kendaraanData['nopolisikendaraan'] = flatFormAnswers['nopolisikendaraan'];
     // Mengisi data untuk bagian Profil Pembiayaan
-    kendaraanData['hargakendaraan'] = processedAnswers['hargakendaraan'];
-    kendaraanData['uangmuka'] = processedAnswers['uangmuka'];
-    kendaraanData['pokokhutang'] = processedAnswers['pokokhutang'];
+    kendaraanData['hargakendaraan'] = flatFormAnswers['hargakendaraan'];
+    kendaraanData['uangmuka'] = flatFormAnswers['uangmuka'];
+    kendaraanData['pokokhutang'] = flatFormAnswers['pokokhutang'];
 
     // Mengisi data untuk bagian Alamat Survey
-    alamatSurveyData['alamatsurvey'] = processedAnswers['alamatsurvey'];
-    alamatSurveyData['rtsurvey'] = processedAnswers['rtsurvey'];
-    alamatSurveyData['rwsurvey'] = processedAnswers['rwsurvey'];
-    alamatSurveyData['kodepoksurvey'] = processedAnswers['kodepoksurvey'];
-    alamatSurveyData['kelsurvey'] = processedAnswers['kelsurvey'];
-    alamatSurveyData['kecsurvey'] = processedAnswers['kecsurvey'];
-    alamatSurveyData['kotasurvey'] = processedAnswers['kotasurvey'];
-    alamatSurveyData['provinsisurvey'] = processedAnswers['provinsisurvey'];
+    alamatSurveyData['alamatsurvey'] = flatFormAnswers['alamatsurvey'];
+    alamatSurveyData['rtsurvey'] = flatFormAnswers['rtsurvey'];
+    alamatSurveyData['rwsurvey'] = flatFormAnswers['rwsurvey'];
+    alamatSurveyData['kodepoksurvey'] = flatFormAnswers['kodepoksurvey'];
+    alamatSurveyData['kelsurvey'] = flatFormAnswers['kelsurvey'];
+    alamatSurveyData['kecsurvey'] = flatFormAnswers['kecsurvey'];
+    alamatSurveyData['kotasurvey'] = flatFormAnswers['kotasurvey'];
+    alamatSurveyData['provinsisurvey'] = flatFormAnswers['provinsisurvey'];
 
     // Mengisi data untuk bagian Pemohon (termasuk data pekerjaan)
-    pemohonData['katpemohon'] = processedAnswers['katpemohon'];
-    pemohonData['statuspernikahan'] = processedAnswers['statuspernikahan'];
-    pemohonData['nama'] = processedAnswers['nama'];
-    pemohonData['agamapemohon'] = processedAnswers['agamapemohon'];
-    pemohonData['pendidikan'] = processedAnswers['pendidikan'];
-    pemohonData['warganegarapemohon'] = processedAnswers['warganegarapemohon'];
-    pemohonData['nomortelepon'] = processedAnswers['nomortelepon'];
-    pemohonData['nohp'] = processedAnswers['nohp'];
-    pemohonData['email'] = processedAnswers['email'];
-    pemohonData['sim'] = processedAnswers['sim'];
-    pemohonData['npwp'] = processedAnswers['npwp'];
-    pemohonData['namaibu'] = processedAnswers['namaibu'];
-    pemohonData['statusrumah'] = processedAnswers['statusrumah'];
-    pemohonData['lokasirumah'] = processedAnswers['lokasirumah'];
-    pemohonData['katrumahpemohon'] = processedAnswers['katrumahpemohon'];
+    pemohonData['katpemohon'] = flatFormAnswers['katpemohon'];
+    pemohonData['statuspernikahan'] = flatFormAnswers['statuspernikahan'];
+    pemohonData['nama'] = flatFormAnswers['nama'];
+    pemohonData['agamapemohon'] = flatFormAnswers['agamapemohon'];
+    pemohonData['pendidikan'] = flatFormAnswers['pendidikan'];
+    pemohonData['warganegarapemohon'] = flatFormAnswers['warganegarapemohon'];
+    pemohonData['nomortelepon'] = flatFormAnswers['nomortelepon'];
+    pemohonData['nohp'] = flatFormAnswers['nohp'];
+    pemohonData['email'] = flatFormAnswers['email'];
+    pemohonData['sim'] = flatFormAnswers['sim'];
+    pemohonData['npwp'] = flatFormAnswers['npwp'];
+    pemohonData['namaibu'] = flatFormAnswers['namaibu'];
+    pemohonData['statusrumah'] = flatFormAnswers['statusrumah'];
+    pemohonData['lokasirumah'] = flatFormAnswers['lokasirumah'];
+    pemohonData['katrumahpemohon'] = flatFormAnswers['katrumahpemohon'];
     pemohonData['buktimilikrumahpemohon'] =
-        processedAnswers['buktimilikrumahpemohon'];
-    pemohonData['lamatinggalpemohon'] = processedAnswers['lamatinggalpemohon'];
+        flatFormAnswers['buktimilikrumahpemohon'];
+    pemohonData['lamatinggalpemohon'] = flatFormAnswers['lamatinggalpemohon'];
     // Data pekerjaan/usaha pemohon
-    pekerjaanData['jenispekerjaan'] = processedAnswers['jenispekerjaan'];
-    pekerjaanData['namaperusahaan'] = processedAnswers['namaperusahaan'];
-    pekerjaanData['jabatan'] = processedAnswers['jabatan'];
-    pekerjaanData['ketjabatan'] = processedAnswers['ketjabatan'];
-    pekerjaanData['alamatusaha'] = processedAnswers['alamatusaha'];
-    pekerjaanData['kodeposusaha'] = processedAnswers['kodeposusaha'];
-    pekerjaanData['noteleponusaha'] = processedAnswers['noteleponusaha'];
-    pekerjaanData['masakerjapemohon'] = processedAnswers['masakerjapemohon'];
-    pekerjaanData['gajipemohon'] = processedAnswers['gajipemohon'];
-    pekerjaanData['slipgajipemohon'] = processedAnswers['slipgajipemohon'];
-    pekerjaanData['payrollpemohon'] = processedAnswers['payrollpemohon'];
-    pekerjaanData['bidangusahapemohon'] =
-        processedAnswers['bidangusahapemohon'];
-    pekerjaanData['lamausahapemohon'] = processedAnswers['lamausahapemohon'];
-    pekerjaanData['omzetusahapemohon'] = processedAnswers['omzetusahapemohon'];
-    pekerjaanData['profitusahapemohon'] =
-        processedAnswers['profitusahapemohon'];
+    pekerjaanData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
+    pekerjaanData['namaperusahaan'] = flatFormAnswers['namaperusahaan'];
+    pekerjaanData['jabatan'] = flatFormAnswers['jabatan'];
+    pekerjaanData['ketjabatan'] = flatFormAnswers['ketjabatan'];
+    pekerjaanData['alamatusaha'] = flatFormAnswers['alamatusaha'];
+    pekerjaanData['kodeposusaha'] = flatFormAnswers['kodeposusaha'];
+    pekerjaanData['noteleponusaha'] = flatFormAnswers['noteleponusaha'];
+    pekerjaanData['masakerjapemohon'] = flatFormAnswers['masakerjapemohon'];
+    pekerjaanData['gajipemohon'] = flatFormAnswers['gajipemohon'];
+    pekerjaanData['slipgajipemohon'] = flatFormAnswers['slipgajipemohon'];
+    pekerjaanData['payrollpemohon'] = flatFormAnswers['payrollpemohon'];
+    pekerjaanData['bidangusahapemohon'] = flatFormAnswers['bidangusahapemohon'];
+    pekerjaanData['lamausahapemohon'] = flatFormAnswers['lamausahapemohon'];
+    pekerjaanData['omzetusahapemohon'] = flatFormAnswers['omzetusahapemohon'];
+    pekerjaanData['profitusahapemohon'] = flatFormAnswers['profitusahapemohon'];
     pemohonData['dataPekerjaan'] = pekerjaanData;
 
     // Mengisi data untuk bagian Pasangan Pemohon (termasuk data pekerjaan)
-    pasanganData['namapasangan'] = processedAnswers['namapasangan'];
-    pasanganData['namapanggilan'] = processedAnswers['namapanggilan'];
-    pasanganData['ktppasangan'] = processedAnswers['ktppasangan'];
-    pasanganData['agamapasangan'] = processedAnswers['agamapasangan'];
+    pasanganData['namapasangan'] = flatFormAnswers['namapasangan'];
+    pasanganData['namapanggilan'] = flatFormAnswers['namapanggilan'];
+    pasanganData['ktppasangan'] = flatFormAnswers['ktppasangan'];
+    pasanganData['agamapasangan'] = flatFormAnswers['agamapasangan'];
     pasanganData['warganegarapasangan'] =
-        processedAnswers['warganegarapasangan'];
-    pasanganData['notelppasangan'] = processedAnswers['notelppasangan'];
-    pasanganData['nomortelepon'] = processedAnswers['nomortelepon'];
-    pasanganData['nohppasangan'] = processedAnswers['nohppasangan'];
+        flatFormAnswers['warganegarapasangan'];
+    pasanganData['notelppasangan'] = flatFormAnswers['notelppasangan'];
+    pasanganData['nomortelepon'] = flatFormAnswers['nomortelepon'];
+    pasanganData['nohppasangan'] = flatFormAnswers['nohppasangan'];
     // Data pekerjaan/usaha pasangan pemohon
-    pasanganData['pekerjaanpasangan'] = processedAnswers['pekerjaanpasangan'];
+    pasanganData['pekerjaanpasangan'] = flatFormAnswers['pekerjaanpasangan'];
     pasanganData['namaperusahaanpasangan'] =
-        processedAnswers['namaperusahaanpasangan'];
-    pasanganData['jabatanpasangan'] = processedAnswers['jabatanpasangan'];
-    pasanganData['ketjabatanpasangan'] = processedAnswers['ketjabatanpasangan'];
+        flatFormAnswers['namaperusahaanpasangan'];
+    pasanganData['jabatanpasangan'] = flatFormAnswers['jabatanpasangan'];
+    pasanganData['ketjabatanpasangan'] = flatFormAnswers['ketjabatanpasangan'];
     pasanganData['alamatusahapasangan'] =
-        processedAnswers['alamatusahapasangan'];
+        flatFormAnswers['alamatusahapasangan'];
     pasanganData['kodeposperusahaanpasangan'] =
-        processedAnswers['kodeposperusahaanpasangan'];
+        flatFormAnswers['kodeposperusahaanpasangan'];
     pasanganData['noteleponusahapasangan'] =
-        processedAnswers['noteleponusahapasangan'];
-    pasanganData['masakerjapasangan'] = processedAnswers['masakerjapasangan'];
-    pasanganData['gajipasangan'] = processedAnswers['gajipasangan'];
-    pasanganData['slipgajipasangan'] = processedAnswers['slipgajipasangan'];
-    pasanganData['payrollpasangan'] = processedAnswers['payrollpasangan'];
+        flatFormAnswers['noteleponusahapasangan'];
+    pasanganData['masakerjapasangan'] = flatFormAnswers['masakerjapasangan'];
+    pasanganData['gajipasangan'] = flatFormAnswers['gajipasangan'];
+    pasanganData['slipgajipasangan'] = flatFormAnswers['slipgajipasangan'];
+    pasanganData['payrollpasangan'] = flatFormAnswers['payrollpasangan'];
     pasanganData['bidangusahapasangan'] =
-        processedAnswers['bidangusahapasangan'];
-    pasanganData['lamausahapasangan'] = processedAnswers['lamausahapasangan'];
-    pasanganData['omzetusahapasangan'] = processedAnswers['omzetusahapasangan'];
+        flatFormAnswers['bidangusahapasangan'];
+    pasanganData['lamausahapasangan'] = flatFormAnswers['lamausahapasangan'];
+    pasanganData['omzetusahapasangan'] = flatFormAnswers['omzetusahapasangan'];
     pasanganData['profitusahapasangan'] =
-        processedAnswers['profitusahapasangan'];
+        flatFormAnswers['profitusahapasangan'];
 
     // Mengisi data untuk bagian Kontak Darurat
-    kontakDaruratData['namakontak'] = processedAnswers['namakontak'];
+    kontakDaruratData['namakontak'] = flatFormAnswers['namakontak'];
     kontakDaruratData['jeniskelaminkontak'] =
-        processedAnswers['jeniskelaminkontak'];
-    kontakDaruratData['hubungankeluarga'] =
-        processedAnswers['hubungankeluarga'];
-    kontakDaruratData['nohpkontak'] = processedAnswers['nohpkontak'];
-    kontakDaruratData['alamatkontak'] = processedAnswers['alamatkontak'];
-    kontakDaruratData['kodeposkontak'] = processedAnswers['kodeposkontak'];
+        flatFormAnswers['jeniskelaminkontak'];
+    kontakDaruratData['hubungankeluarga'] = flatFormAnswers['hubungankeluarga'];
+    kontakDaruratData['nohpkontak'] = flatFormAnswers['nohpkontak'];
+    kontakDaruratData['alamatkontak'] = flatFormAnswers['alamatkontak'];
+    kontakDaruratData['kodeposkontak'] = flatFormAnswers['kodeposkontak'];
 
     // Mengisi data untuk bagian Penjamin (termasuk data pekerjaan)
-    penjaminData['jnspenjamin'] = processedAnswers['jnspenjamin'];
+    penjaminData['jnspenjamin'] = flatFormAnswers['jnspenjamin'];
     penjaminData['statuspernikahanpenjamin'] =
-        processedAnswers['statuspernikahanpenjamin'];
-    penjaminData['namapenjamin'] = processedAnswers['namapenjamin'];
-    penjaminData['agamapenjamin'] = processedAnswers['agamapenjamin'];
+        flatFormAnswers['statuspernikahanpenjamin'];
+    penjaminData['namapenjamin'] = flatFormAnswers['namapenjamin'];
+    penjaminData['agamapenjamin'] = flatFormAnswers['agamapenjamin'];
     penjaminData['warganegarapenjamin'] =
-        processedAnswers['warganegarapenjamin'];
-    penjaminData['notelppenjamin'] = processedAnswers['notelppenjamin'];
-    penjaminData['nowapenjamin'] = processedAnswers['nowapenjamin'];
-    penjaminData['ktppenjamin'] = processedAnswers['ktppenjamin'];
-    penjaminData['tglktppenjamin'] = processedAnswers['tglktppenjamin'];
-    penjaminData['simpenjamin'] = processedAnswers['simpenjamin'];
-    penjaminData['npwppenjamin'] = processedAnswers['npwppenjamin'];
-    penjaminData['alamatpenjamin'] = processedAnswers['alamatpenjamin'];
-    penjaminData['kotapenjamin'] = processedAnswers['kotapenjamin'];
-    penjaminData['namaibupenjamin'] = processedAnswers['namaibupenjamin'];
+        flatFormAnswers['warganegarapenjamin'];
+    penjaminData['notelppenjamin'] = flatFormAnswers['notelppenjamin'];
+    penjaminData['nowapenjamin'] = flatFormAnswers['nowapenjamin'];
+    penjaminData['ktppenjamin'] = flatFormAnswers['ktppenjamin'];
+    penjaminData['tglktppenjamin'] = flatFormAnswers['tglktppenjamin'];
+    penjaminData['simpenjamin'] = flatFormAnswers['simpenjamin'];
+    penjaminData['npwppenjamin'] = flatFormAnswers['npwppenjamin'];
+    penjaminData['alamatpenjamin'] = flatFormAnswers['alamatpenjamin'];
+    penjaminData['kotapenjamin'] = flatFormAnswers['kotapenjamin'];
+    penjaminData['namaibupenjamin'] = flatFormAnswers['namaibupenjamin'];
     penjaminData['statusrumahpenjamin'] =
-        processedAnswers['statusrumahpenjamin'];
+        flatFormAnswers['statusrumahpenjamin'];
     penjaminData['lokasirumahpenjamin'] =
-        processedAnswers['lokasirumahpenjamin'];
-    penjaminData['katrumahpenjamin'] = processedAnswers['katrumahpenjamin'];
+        flatFormAnswers['lokasirumahpenjamin'];
+    penjaminData['katrumahpenjamin'] = flatFormAnswers['katrumahpenjamin'];
     penjaminData['buktimilikrumahpenjamin'] =
-        processedAnswers['buktimilikrumahpenjamin'];
+        flatFormAnswers['buktimilikrumahpenjamin'];
     penjaminData['lamatinggalpenjamin'] =
-        processedAnswers['lamatinggalpenjamin'];
+        flatFormAnswers['lamatinggalpenjamin'];
     // Data pekerjaan/usaha Penjamin
     pekerjaanPenjaminData['pekerjaanpenjamin'] =
-        processedAnswers['pekerjaanpenjamin'];
+        flatFormAnswers['pekerjaanpenjamin'];
     pekerjaanPenjaminData['namaperusahaanpenjamin'] =
-        processedAnswers['namaperusahaanpenjamin'];
+        flatFormAnswers['namaperusahaanpenjamin'];
     pekerjaanPenjaminData['jabatanpenjamin'] =
-        processedAnswers['jabatanpenjamin'];
+        flatFormAnswers['jabatanpenjamin'];
     pekerjaanPenjaminData['ketjabatanpenjamin'] =
-        processedAnswers['ketjabatanpenjamin'];
+        flatFormAnswers['ketjabatanpenjamin'];
     pekerjaanPenjaminData['alamatusahapenjamin'] =
-        processedAnswers['alamatusahapenjamin'];
+        flatFormAnswers['alamatusahapenjamin'];
     pekerjaanPenjaminData['kodeposperusahaanpenjamin'] =
-        processedAnswers['kodeposperusahaanpenjamin'];
+        flatFormAnswers['kodeposperusahaanpenjamin'];
     pekerjaanPenjaminData['noteleponusahapenjamin'] =
-        processedAnswers['noteleponusahapenjamin'];
+        flatFormAnswers['noteleponusahapenjamin'];
     pekerjaanPenjaminData['masakerjapenjamin'] =
-        processedAnswers['masakerjapenjamin'];
-    pekerjaanPenjaminData['gajipenjamin'] = processedAnswers['gajipenjamin'];
+        flatFormAnswers['masakerjapenjamin'];
+    pekerjaanPenjaminData['gajipenjamin'] = flatFormAnswers['gajipenjamin'];
     pekerjaanPenjaminData['slipgajipenjamin'] =
-        processedAnswers['slipgajipenjamin'];
+        flatFormAnswers['slipgajipenjamin'];
     pekerjaanPenjaminData['payrollpenjamin'] =
-        processedAnswers['payrollpenjamin'];
+        flatFormAnswers['payrollpenjamin'];
     pekerjaanPenjaminData['bidangusahapenjamin'] =
-        processedAnswers['bidangusahapenjamin'];
+        flatFormAnswers['bidangusahapenjamin'];
     pekerjaanPenjaminData['lamausahapenjamin'] =
-        processedAnswers['lamausahapenjamin'];
+        flatFormAnswers['lamausahapenjamin'];
     pekerjaanPenjaminData['omzetusahapenjamin'] =
-        processedAnswers['omzetusahapenjamin'];
+        flatFormAnswers['omzetusahapenjamin'];
     pekerjaanPenjaminData['profitusahapenjamin'] =
-        processedAnswers['profitusahapenjamin'];
+        flatFormAnswers['profitusahapenjamin'];
     penjaminData['dataPekerjaanPenjamin'] = pekerjaanPenjaminData;
 
     // Mengisi data untuk bagian Pasangan Penjamin (termasuk data pekerjaan)
     pasanganPenjaminData['namapasanganpenjamin'] =
-        processedAnswers['namapasanganpenjamin'];
+        flatFormAnswers['namapasanganpenjamin'];
     pasanganPenjaminData['agamapasanganpenjamin'] =
-        processedAnswers['agamapasanganpenjamin'];
+        flatFormAnswers['agamapasanganpenjamin'];
     pasanganPenjaminData['warganegarapasanganpenjamin'] =
-        processedAnswers['warganegarapasanganpenjamin'];
+        flatFormAnswers['warganegarapasanganpenjamin'];
     pasanganPenjaminData['notelponpasanganpenjamin'] =
-        processedAnswers['notelponpasanganpenjamin'];
+        flatFormAnswers['notelponpasanganpenjamin'];
     pasanganPenjaminData['nowapasanganpenjamin'] =
-        processedAnswers['nowapasanganpenjamin'];
+        flatFormAnswers['nowapasanganpenjamin'];
     // Data pekerjaan/usaha pasangan Penjamin
     pasanganPenjaminData['pekerjaanpasanganpenjamin'] =
-        processedAnswers['pekerjaanpasanganpenjamin'];
+        flatFormAnswers['pekerjaanpasanganpenjamin'];
     pasanganPenjaminData['namaperusahaanpasanganpenjamin'] =
-        processedAnswers['namaperusahaanpasanganpenjamin'];
+        flatFormAnswers['namaperusahaanpasanganpenjamin'];
     pasanganPenjaminData['jabatanpasanganpenjamin'] =
-        processedAnswers['jabatanpasanganpenjamin'];
+        flatFormAnswers['jabatanpasanganpenjamin'];
     pasanganPenjaminData['ketjabatanpasanganpenjamin'] =
-        processedAnswers['ketjabatanpasanganpenjamin'];
+        flatFormAnswers['ketjabatanpasanganpenjamin'];
     pasanganPenjaminData['alamatperusahaanpasanganpenjamin'] =
-        processedAnswers['alamatperusahaanpasanganpenjamin'];
+        flatFormAnswers['alamatperusahaanpasanganpenjamin'];
     pasanganPenjaminData['kodeposperusahaanpasanganpenjamin'] =
-        processedAnswers['kodeposperusahaanpasanganpenjamin'];
+        flatFormAnswers['kodeposperusahaanpasanganpenjamin'];
     pasanganPenjaminData['noteleponusahapasanganpenjamin'] =
-        processedAnswers['noteleponusahapasanganpenjamin'];
+        flatFormAnswers['noteleponusahapasanganpenjamin'];
     pasanganPenjaminData['masakerjapasanganpenjamin'] =
-        processedAnswers['masakerjapasanganpenjamin'];
+        flatFormAnswers['masakerjapasanganpenjamin'];
     pasanganPenjaminData['gajipasanganpenjamin'] =
-        processedAnswers['gajipasanganpenjamin'];
+        flatFormAnswers['gajipasanganpenjamin'];
     pasanganPenjaminData['slipgajipasanganpenjamin'] =
-        processedAnswers['slipgajipasanganpenjamin'];
+        flatFormAnswers['slipgajipasanganpenjamin'];
     pasanganPenjaminData['payrollpasanganpenjamin'] =
-        processedAnswers['payrollpasanganpenjamin'];
+        flatFormAnswers['payrollpasanganpenjamin'];
     pasanganPenjaminData['bidangusahapasanganpenjamin'] =
-        processedAnswers['bidangusahapasanganpenjamin'];
+        flatFormAnswers['bidangusahapasanganpenjamin'];
     pasanganPenjaminData['lamausahapasanganpenjamin'] =
-        processedAnswers['lamausahapasanganpenjamin'];
+        flatFormAnswers['lamausahapasanganpenjamin'];
     pasanganPenjaminData['omzetusahapasanganpenjamin'] =
-        processedAnswers['omzetusahapasanganpenjamin'];
+        flatFormAnswers['omzetusahapasanganpenjamin'];
     pasanganPenjaminData['profitusahapasanganpenjamin'] =
-        processedAnswers['profitusahapasanganpenjamin'];
+        flatFormAnswers['profitusahapasanganpenjamin'];
 
     //==============================================//
     // Helper untuk mengekstrak path dari value yang mungkin berupa Map file
@@ -641,59 +626,56 @@ class FormProcessingService {
     }
 
     // Foto Kendaraan
-    fotoKendaraanData['odometer'] = processedAnswers['odometer'];
-    fotoKendaraanData['fotounitdepan'] = processedAnswers['fotounitdepan'];
-    fotoKendaraanData['fotounitbelakang'] =
-        processedAnswers['fotounitbelakang'];
+    fotoKendaraanData['odometer'] = flatFormAnswers['odometer'];
+    fotoKendaraanData['fotounitdepan'] = flatFormAnswers['fotounitdepan'];
+    fotoKendaraanData['fotounitbelakang'] = flatFormAnswers['fotounitbelakang'];
     fotoKendaraanData['fotounitinteriordepan'] =
-        processedAnswers['fotounitinteriordepan'];
+        flatFormAnswers['fotounitinteriordepan'];
     fotoKendaraanData['fotounitmesinplat'] =
-        processedAnswers['fotounitmesinplat'];
-    fotoKendaraanData['fotomesin'] = processedAnswers['fotomesin'];
+        flatFormAnswers['fotounitmesinplat'];
+    fotoKendaraanData['fotomesin'] = flatFormAnswers['fotomesin'];
     fotoKendaraanData['fotounitselfiecmo'] =
-        processedAnswers['fotounitselfiecmo'];
-    fotoKendaraanData['fotospeedometer'] = processedAnswers['fotospeedometer'];
-    fotoKendaraanData['fotogesekannoka'] = processedAnswers['fotogesekannoka'];
-    fotoKendaraanData['fotostnk'] = processedAnswers['fotostnk'];
-    fotoKendaraanData['fotonoticepajak'] = processedAnswers['fotonoticepajak'];
-    fotoKendaraanData['fotobpkb1'] = processedAnswers['fotobpkb1'];
-    fotoKendaraanData['fotobpkb2'] = processedAnswers['fotobpkb2'];
+        flatFormAnswers['fotounitselfiecmo'];
+    fotoKendaraanData['fotospeedometer'] = flatFormAnswers['fotospeedometer'];
+    fotoKendaraanData['fotogesekannoka'] = flatFormAnswers['fotogesekannoka'];
+    fotoKendaraanData['fotostnk'] = flatFormAnswers['fotostnk'];
+    fotoKendaraanData['fotonoticepajak'] = flatFormAnswers['fotonoticepajak'];
+    fotoKendaraanData['fotobpkb1'] = flatFormAnswers['fotobpkb1'];
+    fotoKendaraanData['fotobpkb2'] = flatFormAnswers['fotobpkb2'];
 
     // Foto Legalitas
-    fotoLegalitasData['fotoktppemohon'] = processedAnswers['fotoktppemohon'];
-    fotoLegalitasData['fotoktppasangan'] = processedAnswers['fotoktppasangan'];
-    fotoLegalitasData['fotokk'] = processedAnswers['fotokk'];
-    fotoLegalitasData['fotosima'] = processedAnswers['fotosima'];
-    fotoLegalitasData['fotonpwp'] = processedAnswers['fotonpwp'];
+    fotoLegalitasData['fotoktppemohon'] = flatFormAnswers['fotoktppemohon'];
+    fotoLegalitasData['fotoktppasangan'] = flatFormAnswers['fotoktppasangan'];
+    fotoLegalitasData['fotokk'] = flatFormAnswers['fotokk'];
+    fotoLegalitasData['fotosima'] = flatFormAnswers['fotosima'];
+    fotoLegalitasData['fotonpwp'] = flatFormAnswers['fotonpwp'];
 
     // Foto Legalitas
-    fotoTempatTinggalData['fotorumah'] = processedAnswers['fotorumah'];
+    fotoTempatTinggalData['fotorumah'] = flatFormAnswers['fotorumah'];
     fotoTempatTinggalData['fotorumahselfiecmo'] =
-        processedAnswers['fotorumahselfiecmo'];
+        flatFormAnswers['fotorumahselfiecmo'];
     fotoTempatTinggalData['fotolingkunganselfiecmo'] =
-        processedAnswers['fotolingkunganselfiecmo'];
+        flatFormAnswers['fotolingkunganselfiecmo'];
     fotoTempatTinggalData['fotobuktimilikrumah'] =
-        processedAnswers['fotobuktimilikrumah'];
+        flatFormAnswers['fotobuktimilikrumah'];
     fotoTempatTinggalData['fotocloseuppemohon'] =
-        processedAnswers['fotocloseuppemohon'];
+        flatFormAnswers['fotocloseuppemohon'];
     fotoTempatTinggalData['fotopemohonttdfpp'] =
-        processedAnswers['fotopemohonttdfpp'];
-    fotoTempatTinggalData['fotofppdepan'] = processedAnswers['fotofppdepan'];
+        flatFormAnswers['fotopemohonttdfpp'];
+    fotoTempatTinggalData['fotofppdepan'] = flatFormAnswers['fotofppdepan'];
     fotoTempatTinggalData['fotofppbelakang'] =
-        processedAnswers['fotofppbelakang'];
+        flatFormAnswers['fotofppbelakang'];
 
     // 3. Gabungkan semua map bagian menjadi satu map akhir yang bertingkat
     final Map<String, dynamic> nestedData = {
-      // foto array
-      'fotoPekerjaan': fotoPekerjaanList,
-      'fotoSimulasi': fotoSimulasiList,
-      'fotoTambahan': fotoTambahanList,
+      'application_id': flatFormAnswers['application_id'],
+      'nik': flatFormAnswers['nik'],
       'fotoKendaraan': fotoKendaraanData,
       'fotoLegalitas': fotoLegalitasData,
       'fotoTempatTinggal': fotoTempatTinggalData,
-      // field form
-      'application_id': processedAnswers['application_id'],
-      'nik': processedAnswers['nik'],
+      'fotoPekerjaan': fotoPekerjaanList,
+      'fotoSimulasi': fotoSimulasiList,
+      'fotoTambahan': fotoTambahanList,
       'dataDealer': dealerData,
       'dataKendaraan': kendaraanData,
       'dataAlamatSurvey': alamatSurveyData,
@@ -702,8 +684,8 @@ class FormProcessingService {
       'dataKontakDarurat': kontakDaruratData,
       'dataPenjamin': penjaminData,
       'dataPasanganPenjamin': pasanganPenjaminData,
-      'isPenjaminExist': processedAnswers['isPenjaminExist'],
-      'analisacmo': processedAnswers['analisacmo'],
+      'isPenjaminExist': flatFormAnswers['isPenjaminExist'],
+      'analisacmo': flatFormAnswers['analisacmo'],
 
       // Anda bisa menambahkan bagian lain seperti dataPasangan, dataPenjamin, dll. dengan pola yang sama
     };

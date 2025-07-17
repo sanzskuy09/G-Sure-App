@@ -42,12 +42,12 @@ class ContohSurveyListPage extends StatelessWidget {
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {
                     // Logika untuk navigasi ke halaman detail
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SurveyDetailPage(survey: survey),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder: (context) => SurveyDetailPage(survey: survey),
+                    //   ),
+                    // );
                   },
                 ),
               );

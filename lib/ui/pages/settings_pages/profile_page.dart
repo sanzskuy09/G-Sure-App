@@ -1,10 +1,32 @@
 // import 'package:accordion/accordion.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/not_found_page.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<AuthBloc>().add(AuthCheckStatus());
+  }
+
+  String capitalizeEachWord(String text) {
+    return text
+        .split(' ')
+        .map((word) => word.isNotEmpty
+            ? '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}'
+            : '')
+        .join(' ');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -12,68 +34,94 @@ class ProfilePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('PROFILE'),
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: <Widget>[
-          // Section for Profile Picture, Name, and Job Title
-          Center(
-            child: Column(
+      body: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthLoading) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (state is AuthSuccess) {
+            final user = state.user;
+
+            return ListView(
+              padding: const EdgeInsets.all(16.0),
               children: [
+                // Section for Profile Picture, Name, and Job Title
+                Center(
+                  child: Column(
+                    children: [
+                      const SizedBox(height: 20),
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: whiteColor,
+                        child:
+                            Icon(Icons.person, color: primaryColor, size: 50),
+                      ),
+                      const SizedBox(height: 10),
+                      Text(
+                        capitalizeEachWord(user.name ?? 'Nama Tidak Tersedia'),
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: primaryColor,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      // --- Job Title ---
+                      const Text(
+                        'CMO - Consumer Finance',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black54,
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 const SizedBox(height: 20),
-                CircleAvatar(
-                  radius: 50,
-                  backgroundColor: whiteColor,
-                  child: Icon(Icons.person, color: primaryColor, size: 50),
+                const Divider(thickness: 1),
+                const SizedBox(height: 20),
+
+                // Section for Profile Details
+                _buildInfoCard(
+                  title: 'Profile Information',
+                  children: [
+                    _buildInfoTile(Icons.person_outline, 'Username',
+                        user.username ?? 'N/A'),
+                    _buildInfoTile(
+                        Icons.email_outlined, 'Email', user.email ?? 'N/A'),
+                    _buildInfoTile(
+                        Icons.location_city_outlined, 'City', 'Jakarta'),
+                  ],
                 ),
-                const SizedBox(height: 10),
-                Text(
-                  'Salman AF',
-                  style: TextStyle(
-                    fontSize: 26,
-                    fontWeight: FontWeight.bold,
-                    color: primaryColor,
-                  ),
+
+                const SizedBox(height: 20),
+
+                // Section for Office Location
+                _buildInfoCard(
+                  title: 'Work Information',
+                  children: [
+                    _buildInfoTile(Icons.work_outline, 'Office Location',
+                        'Jl. Jenderal Sudirman, Jakarta Selatan'),
+                  ],
                 ),
-                const SizedBox(height: 8),
-                // --- Job Title ---
-                const Text(
-                  'CMO - Consumer Finance',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.black54,
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
+                const SizedBox(height: 20),
               ],
-            ),
-          ),
-          const SizedBox(height: 20),
-          const Divider(thickness: 1),
-          const SizedBox(height: 20),
+            );
+          }
 
-          // Section for Profile Details
-          _buildInfoCard(
-            title: 'Profile Information',
-            children: [
-              _buildInfoTile(Icons.person_outline, 'Username', 'salmanaf'),
-              _buildInfoTile(
-                  Icons.email_outlined, 'Email', 'salman.af@example.com'),
-              _buildInfoTile(Icons.location_city_outlined, 'City', 'Jakarta'),
-            ],
-          ),
+          if (state is AuthFailed) {
+            return Center(
+              child: Text(
+                'Failed to load profile data.\n${state.err}',
+                textAlign: TextAlign.center,
+              ),
+            );
+          }
 
-          const SizedBox(height: 20),
-
-          // Section for Office Location
-          _buildInfoCard(
-            title: 'Work Information',
-            children: [
-              _buildInfoTile(Icons.work_outline, 'Office Location',
-                  'Jl. Jenderal Sudirman Kav. 52-53, Jakarta Selatan'),
-            ],
-          ),
-          const SizedBox(height: 20),
-        ],
+          return const NotFoundPage();
+        },
       ),
     );
   }

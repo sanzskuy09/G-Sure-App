@@ -95,9 +95,9 @@ class AplikasiSurvey extends HiveObject {
     this.fotoKendaraan,
     this.fotoLegalitas,
     this.fotoTempatTinggal,
-    this.fotoPekerjaan = const [], // Inisialisasi dengan list kosong
-    this.fotoSimulasi = const [],
-    this.fotoTambahan = const [],
+    this.fotoPekerjaan, // Inisialisasi dengan list kosong
+    this.fotoSimulasi,
+    this.fotoTambahan,
     this.status,
     this.updatedAt,
     this.application_id,
@@ -105,6 +105,12 @@ class AplikasiSurvey extends HiveObject {
   });
 
   Map<String, dynamic> toJson() => {
+        'fotoPekerjaan': fotoPekerjaan?.map((item) => item.toJson()).toList(),
+        'fotoSimulasi': fotoSimulasi?.map((item) => item.toJson()).toList(),
+        'fotoTambahan': fotoTambahan?.map((item) => item.toJson()).toList(),
+        'fotoKendaraan': fotoKendaraan?.toJson(),
+        'fotoLegalitas': fotoLegalitas?.toJson(),
+        'fotoTempatTinggal': fotoTempatTinggal?.toJson(),
         'id': id,
         'status': status,
         'updatedAt': updatedAt,
@@ -120,12 +126,10 @@ class AplikasiSurvey extends HiveObject {
         'dataPenjamin': dataPenjamin?.toJson(),
         'dataPasanganPenjamin': dataPasanganPenjamin?.toJson(),
         'analisacmo': analisacmo,
-        'fotoKendaraan': fotoKendaraan?.toJson(),
-        'fotoLegalitas': fotoLegalitas?.toJson(),
-        'fotoTempatTinggal': fotoTempatTinggal?.toJson(),
-        'fotoPekerjaan': fotoPekerjaan,
-        'fotoSimulasi': fotoSimulasi,
-        'fotoTambahan': fotoTambahan,
+
+        // 'fotoPekerjaan': fotoPekerjaan,
+        // 'fotoSimulasi': fotoSimulasi,
+        // 'fotoTambahan': fotoTambahan,
       };
 
   // --- METODE BARU UNTUK MERATAKAN DATA ---
@@ -174,107 +178,161 @@ class AplikasiSurvey extends HiveObject {
       flatMap.addAll(dataPasanganPenjamin!.toJson());
     }
 
-    // --- Perbaikan Bagian FOTO (objek yang berisi banyak PhotoData) ---
-    // Karena FotoKendaraan, FotoLegalitas, FotoTempatTinggal sudah berisi PhotoData,
-    // kita cukup meratakan hasil toJson() dari masing-masing objek tersebut.
-    // Ini akan menambahkan properti seperti 'odometer', 'fotounitdepan', dll. langsung ke flatMap.
-    if (fotoKendaraan != null) {
-      flatMap.addAll(fotoKendaraan!.toJson());
-    }
-    if (fotoLegalitas != null) {
-      flatMap.addAll(fotoLegalitas!.toJson());
-    }
-    if (fotoTempatTinggal != null) {
-      flatMap.addAll(fotoTempatTinggal!.toJson());
+    // Proses fotoPekerjaan
+    if (fotoPekerjaan!.isNotEmpty) {
+      for (int i = 0; i < fotoPekerjaan!.length; i++) {
+        // Buat key unik yang akan dikenali oleh FormProcessingService
+        final key = 'dokpekerjaan${i + 1}';
+        // Simpan objek PhotoData langsung, karena CameraAndUploadFieldForm sudah bisa menanganinya
+        flatMap[key] = fotoPekerjaan![i];
+      }
     }
 
-    // Untuk List<PhotoData> (fotoPekerjaan, fotoSimulasi, fotoTambahan)
-    // Kita perlu mengubah setiap PhotoData di dalam list menjadi Map menggunakan toJson()
-    // dan menyimpannya sebagai list di dalam flatMap.
-    // if (fotoPekerjaan != null && fotoPekerjaan!.isNotEmpty) {
-    //   flatMap['fotoPekerjaan'] = fotoPekerjaan!.map((e) => e.toJson()).toList();
-    // } else {
-    //   flatMap['fotoPekerjaan'] = []; // Pastikan selalu ada list kosong jika tidak ada foto
-    // }
-    // if (fotoSimulasi != null && fotoSimulasi!.isNotEmpty) {
-    //   flatMap['fotoSimulasi'] = fotoSimulasi!.map((e) => e.toJson()).toList();
-    // } else {
-    //   flatMap['fotoSimulasi'] = [];
-    // }
-    // if (fotoTambahan != null && fotoTambahan!.isNotEmpty) {
-    //   flatMap['fotoTambahan'] = fotoTambahan!.map((e) => e.toJson()).toList();
-    // } else {
-    //   flatMap['fotoTambahan'] = [];
-    // }
+    // Lakukan hal yang sama untuk fotoSimulasi
+    if (fotoSimulasi!.isNotEmpty) {
+      for (int i = 0; i < fotoSimulasi!.length; i++) {
+        final key = 'doksimulasi${i + 1}';
+        flatMap[key] = fotoSimulasi![i];
+      }
+    }
+
+    // Lakukan hal yang sama untuk fotoTambahan
+    if (fotoTambahan!.isNotEmpty) {
+      for (int i = 0; i < fotoTambahan!.length; i++) {
+        final key = 'doktambahan${i + 1}';
+        flatMap[key] = fotoTambahan![i];
+      }
+    }
 
     return flatMap;
   }
 
-  factory AplikasiSurvey.fromJson(Map<String, dynamic> json) => AplikasiSurvey(
-        id: json['id'],
-        status: json['status'],
-        updatedAt: json['updatedAt'],
-        application_id: json['application_id'],
-        nik: json['nik'],
-        // dataDealer: DataDealer.fromJson(json),
-        dataDealer: json['dataDealer'] != null
-            ? DataDealer.fromJson(json['dataDealer'])
-            : null,
-        dataKendaraan: json['dataKendaraan'] != null
-            ? DataKendaraan.fromJson(json['dataKendaraan'])
-            : null,
-        dataAlamatSurvey: json['dataAlamatSurvey'] != null
-            ? DataAlamatSurvey.fromJson(json['dataAlamatSurvey'])
-            : null,
-        dataPemohon: json['dataPemohon'] != null
-            ? DataPemohon.fromJson(json['dataPemohon'])
-            : null,
-        dataPasangan: json['dataPasangan'] != null
-            ? DataPasangan.fromJson(json['dataPasangan'])
-            : null,
-        dataKontakDarurat: json['dataKontakDarurat'] != null
-            ? DataKontakDarurat.fromJson(json['dataKontakDarurat'])
-            : null,
-        isPenjaminExist: json['isPenjaminExist'] ?? 'Tidak',
-        dataPenjamin: json['dataPenjamin'] != null
-            ? DataPenjamin.fromJson(json['dataPenjamin'])
-            : null,
-        dataPasanganPenjamin: json['dataPasanganPenjamin'] != null
-            ? DataPasanganPenjamin.fromJson(json['dataPasanganPenjamin'])
-            : null,
-        analisacmo: json['analisacmo'] ?? '',
-        fotoKendaraan: json['fotoKendaraan'] != null
-            ? FotoKendaraan.fromJson(json['fotoKendaraan'])
-            : null,
-        fotoLegalitas: json['fotoLegalitas'] != null
-            ? FotoLegalitas.fromJson(json['fotoLegalitas'])
-            : null,
-        fotoTempatTinggal: json['fotoTempatTinggal'] != null
-            ? FotoTempatTinggal.fromJson(json['fotoTempatTinggal'])
-            : null,
+  factory AplikasiSurvey.fromJson(Map<String, dynamic> json) {
+    // ✅ LOGIKA BARU UNTUK MEMPROSES LIST
 
-        // Logika untuk mengubah list of map menjadi list of PhotoData object
-        fotoPekerjaan: (json['fotoPekerjaan'] as List<dynamic>?)
-                ?.map(
-                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
-                .toList() ??
-            [],
+    // Proses fotoPekerjaan
+    final pekerjaanListJson = json['fotoPekerjaan'] as List?;
+    final List<PhotoData> pekerjaanList = pekerjaanListJson != null
+        ? pekerjaanListJson
+            .map((item) => PhotoData.fromJson(item as Map<String, dynamic>))
+            .toList()
+        : []; // Jika null, buat list kosong
 
-        fotoSimulasi: (json['fotoSimulasi'] as List<dynamic>?)
-                ?.map(
-                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
-                .toList() ??
-            [],
+    // Proses fotoSimulasi
+    final simulasiListJson = json['fotoSimulasi'] as List?;
+    final List<PhotoData> simulasiList = simulasiListJson != null
+        ? simulasiListJson
+            .map((item) => PhotoData.fromJson(item as Map<String, dynamic>))
+            .toList()
+        : [];
 
-        fotoTambahan: (json['fotoTambahan'] as List<dynamic>?)
-                ?.map(
-                    (item) => PhotoData.fromJson(item as Map<String, dynamic>))
-                .toList() ??
-            [],
-        // fotoPekerjaanPaths: json['fotoPekerjaanPaths'] ?? [],
-        // fotoSimulasiPaths: json['fotoSimulasiPaths'] ?? [],
-        // fotoTambahanPaths: json['fotoTambahanPaths'] ?? [],
-      );
+    // Proses fotoTambahan
+    final tambahanListJson = json['fotoTambahan'] as List?;
+    final List<PhotoData> tambahanList = tambahanListJson != null
+        ? tambahanListJson
+            .map((item) => PhotoData.fromJson(item as Map<String, dynamic>))
+            .toList()
+        : [];
+
+    // Setelah semua list diproses, panggil constructor dengan `return`
+    return AplikasiSurvey(
+      id: json['id'],
+      status: json['status'],
+      updatedAt: json['updatedAt'],
+      application_id: json['application_id'],
+      nik: json['nik'],
+      dataDealer: json['dataDealer'] != null
+          ? DataDealer.fromJson(json['dataDealer'])
+          : null,
+      dataKendaraan: json['dataKendaraan'] != null
+          ? DataKendaraan.fromJson(json['dataKendaraan'])
+          : null,
+      dataAlamatSurvey: json['dataAlamatSurvey'] != null
+          ? DataAlamatSurvey.fromJson(json['dataAlamatSurvey'])
+          : null,
+      dataPemohon: json['dataPemohon'] != null
+          ? DataPemohon.fromJson(json['dataPemohon'])
+          : null,
+      dataPasangan: json['dataPasangan'] != null
+          ? DataPasangan.fromJson(json['dataPasangan'])
+          : null,
+      dataKontakDarurat: json['dataKontakDarurat'] != null
+          ? DataKontakDarurat.fromJson(json['dataKontakDarurat'])
+          : null,
+      isPenjaminExist: json['isPenjaminExist'] ?? 'Tidak',
+      dataPenjamin: json['dataPenjamin'] != null
+          ? DataPenjamin.fromJson(json['dataPenjamin'])
+          : null,
+      dataPasanganPenjamin: json['dataPasanganPenjamin'] != null
+          ? DataPasanganPenjamin.fromJson(json['dataPasanganPenjamin'])
+          : null,
+      analisacmo: json['analisacmo'] ?? '',
+      fotoKendaraan: json['fotoKendaraan'] != null
+          ? FotoKendaraan.fromJson(json['fotoKendaraan'])
+          : null,
+      fotoLegalitas: json['fotoLegalitas'] != null
+          ? FotoLegalitas.fromJson(json['fotoLegalitas'])
+          : null,
+      fotoTempatTinggal: json['fotoTempatTinggal'] != null
+          ? FotoTempatTinggal.fromJson(json['fotoTempatTinggal'])
+          : null,
+
+      // ✅ GUNAKAN LIST YANG SUDAH DIPROSES DI SINI
+      fotoPekerjaan: pekerjaanList,
+      fotoSimulasi: simulasiList,
+      fotoTambahan: tambahanList,
+    );
+  }
+
+  // factory AplikasiSurvey.fromJson(Map<String, dynamic> json) => AplikasiSurvey(
+  //       id: json['id'],
+  //       status: json['status'],
+  //       updatedAt: json['updatedAt'],
+  //       application_id: json['application_id'],
+  //       nik: json['nik'],
+  //       // dataDealer: DataDealer.fromJson(json),
+  //       dataDealer: json['dataDealer'] != null
+  //           ? DataDealer.fromJson(json['dataDealer'])
+  //           : null,
+  //       dataKendaraan: json['dataKendaraan'] != null
+  //           ? DataKendaraan.fromJson(json['dataKendaraan'])
+  //           : null,
+  //       dataAlamatSurvey: json['dataAlamatSurvey'] != null
+  //           ? DataAlamatSurvey.fromJson(json['dataAlamatSurvey'])
+  //           : null,
+  //       dataPemohon: json['dataPemohon'] != null
+  //           ? DataPemohon.fromJson(json['dataPemohon'])
+  //           : null,
+  //       dataPasangan: json['dataPasangan'] != null
+  //           ? DataPasangan.fromJson(json['dataPasangan'])
+  //           : null,
+  //       dataKontakDarurat: json['dataKontakDarurat'] != null
+  //           ? DataKontakDarurat.fromJson(json['dataKontakDarurat'])
+  //           : null,
+  //       isPenjaminExist: json['isPenjaminExist'] ?? 'Tidak',
+  //       dataPenjamin: json['dataPenjamin'] != null
+  //           ? DataPenjamin.fromJson(json['dataPenjamin'])
+  //           : null,
+  //       dataPasanganPenjamin: json['dataPasanganPenjamin'] != null
+  //           ? DataPasanganPenjamin.fromJson(json['dataPasanganPenjamin'])
+  //           : null,
+  //       analisacmo: json['analisacmo'] ?? '',
+  //       fotoKendaraan: json['fotoKendaraan'] != null
+  //           ? FotoKendaraan.fromJson(json['fotoKendaraan'])
+  //           : null,
+  //       fotoLegalitas: json['fotoLegalitas'] != null
+  //           ? FotoLegalitas.fromJson(json['fotoLegalitas'])
+  //           : null,
+  //       fotoTempatTinggal: json['fotoTempatTinggal'] != null
+  //           ? FotoTempatTinggal.fromJson(json['fotoTempatTinggal'])
+  //           : null,
+
+  //       // ✅ LOGIKA BARU UNTUK MEMPROSES LIST
+
+  //       // fotoPekerjaanPaths: json['fotoPekerjaanPaths'] ?? [],
+  //       // fotoSimulasiPaths: json['fotoSimulasiPaths'] ?? [],
+  //       // fotoTambahanPaths: json['fotoTambahanPaths'] ?? [],
+  //     );
 
   AplikasiSurvey copyWith({
     String? id,

@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/camera_and_upload_field.dart';
@@ -32,8 +35,6 @@ class FieldBuilder extends StatelessWidget {
     // ✅ TAMBAHKAN BLOK INI
     // Ambil nilai terbaru dari `formAnswers`
     final dynamic storedValue = formAnswers?[field.key];
-
-    // Sinkronisasi nilai untuk Dropdown, Radio, dll.
     field.value = storedValue;
 
     // Sinkronisasi nilai untuk TextField via controller.
@@ -274,8 +275,6 @@ class FieldBuilder extends StatelessWidget {
             onChanged: (val) {
               field.value = val;
               formAnswers?[field.key!] = val;
-              // onChanged?.call(() {});
-              // setState?.call(() {}); // 🟢 trigger rebuild agar sub-section muncul
             },
           ),
         );
@@ -319,11 +318,6 @@ class FieldBuilder extends StatelessWidget {
               field.value = val;
               formAnswers?[field.key!] = val;
               onValueChanged?.call(val);
-              // onChanged?.call(() {});
-              // ini akan trigger rebuild di SectionFieldContent (state lokal)
-              // jika kamu pakai onValueChanged juga, bisa panggil di sini
-              // onValueChanged?.call(val);
-              // setState?.call(() {}); // 🟢 trigger rebuild agar sub-section muncul
             },
           ),
         );
@@ -373,23 +367,6 @@ class FieldBuilder extends StatelessWidget {
             },
           ),
         );
-
-      // case 'cameraAndUpload':
-      //   return CameraAndUploadFieldForm(
-      //     index: index,
-      //     label: field.label,
-      //     controller: field.controller,
-      //     value: field.value, // penting agar tetap muncul saat rebuild
-      //     onFilePicked: (val, ts, pos) {
-      //       field.value = val; // Simpan ke parent state
-      //       field.timestamp = ts; // Simpan ke parent state
-      //       field.latitude = pos?.latitude;
-      //       field.longitude = pos?.longitude;
-      //     },
-      //     timestamp: field.timestamp,
-      //     latitude: field.latitude,
-      //     longitude: field.longitude,
-      //   );
 
       case 'cameraAndUpload':
         return CameraAndUploadFieldForm(

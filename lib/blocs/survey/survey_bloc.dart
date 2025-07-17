@@ -22,7 +22,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
     emit(LoadingListDataFromOrder());
 
     try {
-      final List<OrderModel> data = await _surveyService.getDataListOrder();
+      final List<OrderModel> data =
+          await _surveyService.getDataListOrder(event.username);
 
       final List<OrderModel> filteredData =
           data.where((item) => item.is_survey == 1).toList();

@@ -1,0 +1,101 @@
+[
+  {
+    "id": 1,
+    "name": "Salman Afarisi",
+    "email": "salman.af@example.com",
+    "nik": "3171234567890001",
+    "username": "cmo_salman",
+    "password": "admin123",
+    "role": "cmo",
+    "photoUrl": "https://i.pravatar.cc/150?u=admin",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkJ1ZGkgU2FudG9zbyIsImlhdCI6MTUxNjIzOTAyMn0.dummy_token_admin"
+  },
+   {
+    "id": 3,
+    "name": "agus setiawan",
+    "email": "",
+    "nik": "",
+    "username": "agus_setiawan",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=agus_setiawan",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIzIiwibmFtZSI6ImFndXMgc2V0aWF3YW4ifQ.dummy_token_agus"
+  },
+  {
+    "id": 4,
+    "name": "benny ferdhian saputra",
+    "email": "",
+    "nik": "",
+    "username": "benny_f",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=benny_f",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI0IiwibmFtZSI6ImJlbm55IGZlcmRoaWFuIHNhcHV0cmEifQ.dummy_token_benny"
+  },
+  {
+    "id": 5,
+    "name": "lembar firdillah kurniawan",
+    "email": "",
+    "nik": "",
+    "username": "lembar_f",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=lembar_f",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1IiwibmFtZSI6ImxlbWJhciBmaXJkaWxsYWgga3Vybmlhd2FuIn0.dummy_token_lembar"
+  },
+  {
+    "id": 6,
+    "name": "hendrik maulana",
+    "email": "",
+    "nik": "",
+    "username": "hendrik_m",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=hendrik_m",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2IiwibmFtZSI6ImhlbmRyaWsgbWF1bGFuYSJ9.dummy_token_hendrik"
+  },
+  {
+    "id": 7,
+    "name": "m tauhid rinaldi",
+    "email": "",
+    "nik": "",
+    "username": "tauhid_rinaldi",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=tauhid_rinaldi",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3IiwibmFtZSI6Im0gdGF1aGlkIHJpbmFsZGkifQ.dummy_token_tauhid"
+  },
+  {
+    "id": 8,
+    "name": "muhammad resnu aditya",
+    "email": "",
+    "nik": "",
+    "username": "resnu_aditya",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=resnu_aditya",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4IiwibmFtZSI6Im11aGFtbWFkIHJlc251IGFkaXR5YSJ9.dummy_token_resnu"
+  },
+  {
+    "id": 9,
+    "name": "khazairin",
+    "email": "",
+    "nik": "",
+    "username": "iing",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=iing",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5IiwibmFtZSI6ImtoYXphaXJpbiJ9.dummy_token_iing"
+  },
+  {
+    "id": 10,
+    "name": "markel sasun",
+    "email": "",
+    "nik": "",
+    "username": "markel_sasun",
+    "password": "Gratama2025@",
+    "role": "CMO",
+    "photoUrl": "https://i.pravatar.cc/150?u=markel_sasun",
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMCIsIm5hbWUiOiJtYXJrZWwgc2FzdW4ifQ.dummy_token_markel"
+  }
+]

@@ -1,5 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/data_alamat_survey_model.dart';
 import 'package:gsure/models/data_dealer_model.dart';
@@ -94,9 +95,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        // BlocProvider<AuthBloc>(
-        //   create: (context) => AuthBloc(),
-        // ),
+        BlocProvider<AuthBloc>(
+          create: (context) => AuthBloc(),
+        ),
         BlocProvider<SurveyBloc>(
           create: (context) => SurveyBloc(SurveyService()),
         ),

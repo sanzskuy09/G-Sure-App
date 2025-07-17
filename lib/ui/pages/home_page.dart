@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/task_list.dart';
 
@@ -20,6 +22,16 @@ class _HomePageState extends State<HomePage> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _scrollController.jumpTo(0); // atau .animateTo() untuk animasi
     });
+    context.read<AuthBloc>().add(AuthCheckStatus());
+  }
+
+  String capitalizeEachWord(String text) {
+    return text
+        .split(' ')
+        .map((word) => word.isNotEmpty
+            ? '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}'
+            : '')
+        .join(' ');
   }
 
   @override
@@ -100,6 +112,91 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget profileSection() {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        if (state is AuthSuccess) {
+          return Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),
+            decoration: BoxDecoration(
+              shape: BoxShape.rectangle,
+              color: whiteColor,
+              borderRadius: BorderRadius.circular(10),
+              border: Border.all(color: lightBackgorundColor, width: 1),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  capitalizeEachWord(state.user.name ?? 'Nama Tidak Tersedia'),
+                  style: primaryTextStyle.copyWith(
+                    fontSize: 20,
+                    fontWeight: semiBold,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                // WIDGET EXPANDED SUDAH DIHAPUS DARI SINI
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(
+                      width: 80,
+                      height: 80,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: lightBackgorundColor,
+                      ),
+                      child: Icon(Icons.person, color: blackColor, size: 40),
+                    ),
+                    const SizedBox(width: 20),
+                    // Gunakan Expanded di sini untuk mengisi sisa ruang di dalam Row
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'CONSUMER FINANCE',
+                            style: blackTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold),
+                          ),
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          Text(
+                            'Credit Marketing Officer',
+                            softWrap: true,
+                            overflow:
+                                TextOverflow.visible, // ✅ biar tidak dipotong
+                            style: greyTextStyle.copyWith(
+                                fontSize: 12, fontWeight: light),
+                          ),
+                          const SizedBox(
+                            height: 2,
+                          ),
+                          Text(
+                            'JAKARTA',
+                            style: blackTextStyle.copyWith(
+                                fontSize: 16, fontWeight: semiBold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        }
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      },
+    );
+  }
+
+  Widget profileSection1() {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 30),

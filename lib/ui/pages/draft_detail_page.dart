@@ -70,13 +70,17 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
 
   void _showConfirmationDialog() {
     // 1. Lakukan pemisahan data di sini
-    final Map<String, dynamic> jsonData = formAnswers;
+    final Map<String, dynamic> jsonData = {};
     final Map<String, Map<String, dynamic>> fileData = {};
 
-    final formService = FormProcessingServiceAPI();
-    final Map<String, dynamic> finalForm =
-        formService.processFormToAPI(formAnswers);
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
 
+    final formService = FormProcessingService();
+
+    final Map<String, dynamic> finalForm =
+        formService.processFormToNestedMap(formAnswers);
     // printPrettyJson(finalForm);
 
     finalForm.forEach((section, value) {
@@ -101,6 +105,12 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     final String fileString = encoder.convert(fileData.map((key, value) =>
         MapEntry(
             key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+
+    String prettyprint = encoder.convert(finalForm);
+    print("--- ISI FINALFORM ---");
+    print(prettyprint);
+    print("---------------------");
+    // ==========================================================
 
     // 3. Tampilkan dialog
     showDialog(
@@ -151,9 +161,9 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
   void _showInputConfirmDialog() async {
     final bool? isConfirmed = await showLottieConfirmationDialog(
       context: context,
-      title: 'Lanjutkan Proses?',
+      title: 'Simpan Kembali Proses?',
       message:
-          'Proses akan dilanjutkan ke tahap survey lapangan. Pastikan semua data sudah benar.',
+          'Data akan disimpan di data lokal kemabli. Pastikan semua data sudah benar.',
       lottieAsset: 'assets/animations/success.json', // Ganti dengan path Anda
       confirmButtonColor: successColor,
       confirmButtonText: 'Lanjutkan',
@@ -171,6 +181,17 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
 
       final Map<String, dynamic> finalForm =
           formService.processFormToNestedMap(formAnswers);
+
+      // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
+      // JsonEncoder encoder =
+      //     JsonEncoder.withIndent('  '); // '  ' untuk 2 spasi indentasi
+      // String prettyprint = encoder.convert(finalForm);
+      // print("--- ISI FINALFORM ---");
+      // print(prettyprint);
+      // print("---------------------");
+      // // ==========================================================
+
+      finalForm.addAll({'status': 'DRAFT'});
 
       final box = Hive.box<AplikasiSurvey>('survey_apps');
       final aplikasi = AplikasiSurvey.fromJson(finalForm);
@@ -420,8 +441,8 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                     title: "Kirim",
                     // onPressed: () {},
                     // isDisabled: true,
-                    onPressed: _showConfirmDialogSendData,
-                    // onPressed: _showConfirmationDialog,
+                    // onPressed: _showConfirmDialogSendData,
+                    onPressed: _showConfirmationDialog,
                   ),
                   BuildButton(
                     iconData: Icons.arrow_forward_ios,

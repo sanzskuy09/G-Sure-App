@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:hive/hive.dart';
 
@@ -10,6 +13,48 @@ class SettingsPage extends StatelessWidget {
     // await Hive.deleteFromDisk();
   }
 
+  Future<void> clearAllStorage() async {
+    const storage = FlutterSecureStorage();
+    await storage.deleteAll();
+
+    final data = await storage.readAll();
+    print('Storage setelah logout: $data');
+  }
+
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text("Konfirmasi"),
+        content: const Text("Yakin ingin logout?"),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text("Batal"),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.pop(context); // Tutup dialog
+              await clearAllStorage(); // Hapus token
+              Navigator.pushNamedAndRemoveUntil(
+                  context, '/login', (_) => false);
+            },
+            child: const Text("Logout"),
+          ),
+        ],
+      ),
+    );
+  }
+
+  String capitalizeEachWord(String text) {
+    return text
+        .split(' ')
+        .map((word) => word.isNotEmpty
+            ? '${word[0].toUpperCase()}${word.substring(1).toLowerCase()}'
+            : '')
+        .join(' ');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,34 +64,55 @@ class SettingsPage extends StatelessWidget {
         children: [
           SizedBox(
             height: 160,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: 65,
-                  height: 65,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: whiteColor,
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                // ✅ 2. CEK APAKAH STATE ADALAH AUTHSUCCESS
+                if (state is AuthSuccess) {
+                  // Jika berhasil, tampilkan data user
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        width: 65,
+                        height: 65,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: whiteColor,
+                        ),
+                        child:
+                            Icon(Icons.person, color: primaryColor, size: 30),
+                      ),
+                      const SizedBox(height: 10),
+                      // ✅ 3. AMBIL NAMA DINAMIS DARI STATE
+                      Text(
+                        capitalizeEachWord(state.user.name ??
+                            'Nama Tidak Tersedia'), // Ganti di sini
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 20,
+                          fontWeight: semiBold,
+                        ),
+                      ),
+                      // Anda juga bisa mengganti role jika ada di model
+                      Text(
+                        state.user.role?.toUpperCase() ??
+                            'Jabatan', // Ganti juga di sini
+                        style: whiteTextStyle.copyWith(
+                          fontSize: 12,
+                          fontWeight: medium,
+                        ),
+                      ),
+                    ],
+                  );
+                }
+
+                // ✅ 4. TAMPILKAN LOADING JIKA STATE BELUM SIAP
+                // Ini akan ditampilkan saat AuthCheckStatus berjalan
+                return const Center(
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
                   ),
-                  child: Icon(Icons.person, color: primaryColor, size: 30),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  'Salman AF',
-                  style: whiteTextStyle.copyWith(
-                    fontSize: 20,
-                    fontWeight: semiBold,
-                  ),
-                ),
-                Text(
-                  'CMO - Consumer Finance',
-                  style: whiteTextStyle.copyWith(
-                    fontSize: 12,
-                    fontWeight: medium,
-                  ),
-                ),
-              ],
+                );
+              },
             ),
           ),
           // SizedBox(height: 20),
@@ -131,11 +197,12 @@ class SettingsPage extends StatelessWidget {
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 2),
                     onTap: () {
-                      Navigator.pushNamedAndRemoveUntil(
-                        context,
-                        '/login',
-                        (_) => false,
-                      );
+                      // Navigator.pushNamedAndRemoveUntil(
+                      //   context,
+                      //   '/login',
+                      //   (_) => false,
+                      // );
+                      _showLogoutDialog(context);
                     }, // Action here
                   ),
                   Divider(height: 1, color: lightBackgorundColor),

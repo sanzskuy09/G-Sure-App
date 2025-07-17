@@ -7,7 +7,14 @@ sealed class SurveyEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class GetDataSurveyFromOrder extends SurveyEvent {}
+class GetDataSurveyFromOrder extends SurveyEvent {
+  final String username;
+
+  const GetDataSurveyFromOrder(this.username);
+
+  @override
+  List<Object> get props => [username];
+}
 
 // EVENT BARU
 class SendSurveyData extends SurveyEvent {

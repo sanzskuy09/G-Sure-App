@@ -27,45 +27,9 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
 
   @override
   void initState() {
+    // TODO: implement initState
     super.initState();
-    // 1. Salin field statis dari template awal
     _fields = List<FieldModel>.from(widget.item.fields);
-
-    // ✅ LOGIKA BARU UNTUK MEMUAT FIELD DINAMIS DARI DRAFT
-    _loadDynamicFieldsFromDraft();
-  }
-
-  void _loadDynamicFieldsFromDraft() {
-    // 2. Tentukan awalan key yang akan dicari berdasarkan judul section
-    String keyPrefix;
-    if (widget.item.title.contains("Pekerjaan")) {
-      keyPrefix = 'dokpekerjaan';
-    } else if (widget.item.title.contains("Simulasi")) {
-      keyPrefix = 'doksimulasi';
-    } else if (widget.item.title.contains("Tambahan")) {
-      keyPrefix = 'doktambahan';
-    } else {
-      // Jika bukan section dinamis, tidak perlu lanjut
-      return;
-    }
-
-    // 3. Cari semua key di formAnswers yang cocok dengan pola
-    widget.formAnswers.forEach((key, value) {
-      if (key.startsWith(keyPrefix)) {
-        // Pastikan kita tidak menambahkan field yang sudah ada dari template
-        if (!_fields.any((field) => field.key == key)) {
-          print('key ditemukan: $key');
-          // 4. Jika ditemukan key dinamis, buat FieldModel baru dan tambahkan ke list
-          _fields.add(FieldModel(
-            key: key,
-            type: 'cameraAndUpload',
-            label:
-                'Foto & Dokumen ${key.substring(keyPrefix.length)}', // Label bisa dibuat lebih dinamis jika perlu
-            value: value, // PENTING: Sertakan value yang sudah ada dari draft
-          ));
-        }
-      }
-    });
   }
 
   @override
@@ -143,8 +107,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8.0),
                 child: FieldBuilder(
-                  // field: field,
-                  field: field..value = widget.formAnswers[field.key],
+                  field: field,
                   index: fIdx + 1,
                   formAnswers: widget.formAnswers,
                   setState: setState,
@@ -193,43 +156,47 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
         }),
 
         // ✅ Langkah 4: Perbaiki logika "Tambah Dokumen"
-        // ✅ PERBAIKAN KECIL: TAMBAHKAN setState AGAR UI LANGSUNG UPDATE
         if (widget.item.title == "Foto & Dokumen Pekerjaan / Usaha" ||
             widget.item.title == "Foto & Dokumen Simulasi Perhitungan" ||
             widget.item.title == "Foto & Dokumen Tambahan")
           Align(
             alignment: Alignment.centerRight,
-            child: TextButton.icon(
+            child: TextButton(
               onPressed: () {
-                // Panggil setState agar UI langsung me-render field baru
-                setState(() {
-                  String keyPrefix;
-                  if (widget.item.title.contains("Pekerjaan")) {
-                    keyPrefix = 'dokpekerjaan';
-                  } else if (widget.item.title.contains("Simulasi")) {
-                    keyPrefix = 'doksimulasi';
-                  } else {
-                    keyPrefix = 'doktambahan';
-                  }
+                String keyPrefix;
 
-                  // ✅ HITUNG FIELD YANG SUDAH ADA DENGAN PREFIX YANG SAMA
-                  final count = _fields
-                      .where((f) => f.key?.startsWith(keyPrefix) ?? false)
-                      .length;
+                // Tentukan awalan key berdasarkan judul section
+                if (widget.item.title.contains("Pekerjaan")) {
+                  keyPrefix = 'dokpekerjaan';
+                } else if (widget.item.title.contains("Simulasi")) {
+                  keyPrefix = 'doksimulasi';
+                } else {
+                  // Asumsikan sisanya adalah "Tambahan"
+                  keyPrefix = 'doktambahan';
+                }
 
-                  // ✅ BUAT KEY DAN LABEL BARU SESUAI FORMAT
-                  final newKey = '$keyPrefix${count + 1}';
-                  final newLabel = 'Foto & Dokumen ${count + 1}';
+                // Buat key yang unik, contohnya dengan timestamp
+                final uniqueKey =
+                    '${keyPrefix}_${DateTime.now().millisecondsSinceEpoch}';
 
-                  _fields.add(FieldModel(
-                    key: newKey, // <-- Gunakan key baru
-                    type: "cameraAndUpload",
-                    label: newLabel, // <-- Gunakan label baru
-                  ));
-                });
+                final count =
+                    _fields.where((f) => f.type == "cameraAndUpload").length;
+
+                // ✅ PENTING: Sertakan `key: uniqueKey` saat membuat FieldModel baru
+                _fields.add(FieldModel(
+                  key: uniqueKey,
+                  type: "cameraAndUpload",
+                  label: "Foto & Dokumen ${count + 1}",
+                ));
               },
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text("Tambah Dokumen"),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: const [
+                  Icon(Icons.add, size: 16),
+                  SizedBox(width: 4),
+                  Text("Tambah Dokumen"),
+                ],
+              ),
             ),
           ),
       ],
