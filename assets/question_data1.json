@@ -360,7 +360,7 @@
         "type": "dropdown",
         "label": "Hubungan Keluarga",
         "key": "hubungankeluarga",
-        "options": ["ORANG TUA", "SAUDARA KANDUNG", "ANAK", "SAUDARA KANDUNG DARI ORANG TUA", "LAINNYA"]
+        "options": ["ORANG TUA", "SAUDARA KANDUNG", "ANAK", "SAUDARA KANDUNG ORANG TUA", "LAINNYA"]
       },
       { "type": "number", "label": "Nomor Telepon", "key": "nohpkontak" },
       { "type": "text", "label": "Alamat Lengkap", "key": "alamatkontak" },

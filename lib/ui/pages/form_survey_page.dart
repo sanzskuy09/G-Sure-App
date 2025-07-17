@@ -5,6 +5,9 @@ import 'package:accordion/accordion.dart';
 import 'package:accordion/controllers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
+import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/order_model.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
@@ -97,9 +100,9 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     final Map<String, dynamic> jsonData = {};
     final Map<String, Map<String, dynamic>> fileData = {};
 
-    // final formService = FormProcessingServiceAPI();
-    // final Map<String, dynamic> finalForm =
-    //     formService.processFormToAPI(formAnswers);
+    final formService = FormProcessingServiceAPI();
+    final Map<String, dynamic> finalForm =
+        formService.processFormToAPI(formAnswers);
 
     // // printPrettyJson(finalForm);
 
@@ -107,10 +110,10 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     //   print('[$section]: ${jsonEncode(value)}');
     // });
 
-    final formService = FormProcessingService();
+    // final formService = FormProcessingService();
 
-    final Map<String, dynamic> finalForm =
-        formService.processFormToNestedMap(formAnswers);
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToNestedMap(formAnswers);
 
     // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
     // JsonEncoder encoder =
@@ -135,10 +138,10 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         MapEntry(
             key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
 
-    String prettyprint = encoder.convert(finalForm);
-    print("--- ISI FINALFORM ---");
-    print(prettyprint);
-    print("---------------------");
+    // String prettyprint = encoder.convert(finalForm);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
     // ==========================================================
 
     // 3. Tampilkan dialog
@@ -161,9 +164,9 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
                 const Text("File yang akan di-upload:",
                     style: TextStyle(fontWeight: FontWeight.bold)),
                 const SizedBox(height: 8),
-                Text(fileString,
-                    style:
-                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                // Text(fileString,
+                //     style:
+                //         const TextStyle(fontFamily: 'monospace', fontSize: 12)),
               ],
             ),
           ),
@@ -175,6 +178,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
             FilledButton(
               child: const Text("Kirim"),
               onPressed: () {
+                // _sendAplikasiToAPI();
                 // _saveAplikasiToHive();
                 // Navigator.of(context).pop(); // Tutup dialog
                 // _submitSurvey(jsonData,
@@ -185,6 +189,43 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
         );
       },
     );
+  }
+
+  void _sendAplikasiToAPI() {
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
+
+    // const encoder = JsonEncoder.withIndent('  ');
+    // String prettyprint = encoder.convert(formAnswers);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
+
+    // Cukup panggil event. Biarkan BlocListener yang menangani sisanya.
+    context.read<SurveyBloc>().add(
+          SendSurveyData(
+            uniqueId: '${widget.order.application_id}', // <-- PASS ID DARI SINI
+            formAnswers: formAnswers,
+          ),
+        );
+  }
+
+  void _showInputConfirmDialogToAPI() async {
+    final bool? isConfirmed = await showLottieConfirmationDialog(
+      context: context,
+      title: 'Kirim Data?',
+      message:
+          'Proses akan dikirim dan tidak bisa dikembalikan. Pastikan semua data sudah benar.',
+      lottieAsset: 'assets/animations/success.json', // Ganti dengan path Anda
+      confirmButtonColor: successColor,
+      confirmButtonText: 'Lanjutkan',
+    );
+
+    if (isConfirmed == true) {
+      if (!context.mounted) return;
+      _sendAplikasiToAPI();
+    }
   }
 
   void _saveAplikasiToHive() {
@@ -262,6 +303,20 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
     formAnswers = order.toJson();
 
+// ✅ 1. AMBIL STATE DARI AUTHBLOC
+    // `context.read<T>()` digunakan untuk membaca state sekali saja tanpa me-rebuild widget
+    final authState = context.read<AuthBloc>().state;
+
+    // ✅ 2. CEK JIKA LOGIN BERHASIL DAN AMBIL USERNAME
+    if (authState is AuthSuccess) {
+      // Ambil username dari user yang sedang login dan tambahkan ke map
+      formAnswers['created_by'] = authState.user.username;
+      formAnswers['updated_by'] = authState.user.username;
+    } else {
+      // Fallback jika karena suatu alasan user tidak ditemukan di state
+      formAnswers['created_by'] = 'unknown_user';
+      formAnswers['updated_by'] = 'unknown_user';
+    }
     // formAnswers = {
     //   'application_id': order.application_id,
     //   'katpemohon': 'PERORANGAN', // Contoh nilai default
@@ -316,89 +371,115 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
           Navigator.of(context).pop();
         }
       },
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text('FORM SURVEY'),
-        ),
-        body: Accordion(
-          headerBackgroundColor: secondaryColor,
-          headerBorderColor: secondaryColor,
-          headerBorderColorOpened: Colors.transparent,
-          headerBackgroundColorOpened: primaryColor,
-          contentBackgroundColor: Colors.white,
-          contentBorderColor: primaryColor,
-          contentBorderWidth: 2,
-          contentHorizontalPadding: 10,
-          scaleWhenAnimating: true,
-          openAndCloseAnimation: true,
-          headerPadding:
-              const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-          sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
-          sectionClosingHapticFeedback: SectionHapticFeedback.light,
-          children: List.generate(visibleSectionIndexes.length, (index) {
-            final actualIndex = visibleSectionIndexes[index];
-            final item = _question[actualIndex];
-
-            return AccordionSection(
-              isOpen: index == visibleSectionIndexes.length - 1,
-              contentVerticalPadding: 10,
-              leftIcon: const Icon(
-                Icons.question_answer_outlined,
-                color: Colors.white,
-              ),
-              header: Text(
-                item.title,
-                style: whiteTextStyle.copyWith(
-                  fontSize: 16,
-                  fontWeight: semiBold,
-                ),
-              ),
-              content: SectionFieldContent(
-                item: item,
-                formAnswers: formAnswers,
-                onFieldChanged: () {
-                  setState(() {});
-                },
+      child: BlocListener<SurveyBloc, SurveyState>(
+        listener: (context, state) {
+          // ✅ TAMPILKAN SNACKBAR JIKA SUKSES
+          if (state is SendSurveySuccess) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('✅ Data berhasil dikirim ke server!'),
+                backgroundColor: Colors.green,
               ),
             );
-          }),
-        ),
-        bottomNavigationBar: SafeArea(
-          child: Container(
-            padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 18),
-            decoration: BoxDecoration(
-              color: whiteColor,
-              border: Border(
-                top: BorderSide(
-                  color: lightBackgorundColor, // Warna border
+            // Pindah halaman setelah notifikasi muncul
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/list-survey', (_) => false);
+          }
 
-                  width: 1.0, // Ketebalan border
+          // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
+          if (state is SendSurveyFailure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('❌ Gagal mengirim data: ${state.error}'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+        },
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text('FORM SURVEY'),
+          ),
+          body: Accordion(
+            headerBackgroundColor: secondaryColor,
+            headerBorderColor: secondaryColor,
+            headerBorderColorOpened: Colors.transparent,
+            headerBackgroundColorOpened: primaryColor,
+            contentBackgroundColor: Colors.white,
+            contentBorderColor: primaryColor,
+            contentBorderWidth: 2,
+            contentHorizontalPadding: 10,
+            scaleWhenAnimating: true,
+            openAndCloseAnimation: true,
+            headerPadding:
+                const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+            sectionOpeningHapticFeedback: SectionHapticFeedback.heavy,
+            sectionClosingHapticFeedback: SectionHapticFeedback.light,
+            children: List.generate(visibleSectionIndexes.length, (index) {
+              final actualIndex = visibleSectionIndexes[index];
+              final item = _question[actualIndex];
+
+              return AccordionSection(
+                isOpen: index == visibleSectionIndexes.length - 1,
+                contentVerticalPadding: 10,
+                leftIcon: const Icon(
+                  Icons.question_answer_outlined,
+                  color: Colors.white,
+                ),
+                header: Text(
+                  item.title,
+                  style: whiteTextStyle.copyWith(
+                    fontSize: 16,
+                    fontWeight: semiBold,
+                  ),
+                ),
+                content: SectionFieldContent(
+                  item: item,
+                  formAnswers: formAnswers,
+                  onFieldChanged: () {
+                    setState(() {});
+                  },
+                ),
+              );
+            }),
+          ),
+          bottomNavigationBar: SafeArea(
+            child: Container(
+              padding: const EdgeInsets.symmetric(vertical: 2, horizontal: 18),
+              decoration: BoxDecoration(
+                color: whiteColor,
+                border: Border(
+                  top: BorderSide(
+                    color: lightBackgorundColor, // Warna border
+
+                    width: 1.0, // Ketebalan border
+                  ),
                 ),
               ),
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                BuildButton(
-                  iconData: Icons.save_as,
-                  title: "Simpan",
-                  // onPressed: _showConfirmationDialog,
-                  onPressed: _showInputConfirmDialog,
-                ),
-                BuildButton(
-                  iconData: Icons.send,
-                  title: "Kirim",
-                  // isDisabled: true,
-                  // onPressed: () {},
-                  onPressed: _showConfirmationDialog,
-                ),
-                BuildButton(
-                  iconData: Icons.arrow_forward_ios,
-                  title: "Berikutnya",
-                  isDisabled: visibleSectionCount == _question.length,
-                  onPressed: _showNextSection,
-                )
-              ],
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  BuildButton(
+                    iconData: Icons.save_as,
+                    title: "Simpan",
+                    // onPressed: _showConfirmationDialog,
+                    onPressed: _showInputConfirmDialog,
+                  ),
+                  BuildButton(
+                    iconData: Icons.send,
+                    title: "Kirim",
+                    // isDisabled: true,
+                    // onPressed: () {},
+                    onPressed: _showInputConfirmDialogToAPI,
+                  ),
+                  BuildButton(
+                    iconData: Icons.arrow_forward_ios,
+                    title: "Berikutnya",
+                    isDisabled: visibleSectionCount == _question.length,
+                    onPressed: _showNextSection,
+                  )
+                ],
+              ),
             ),
           ),
         ),

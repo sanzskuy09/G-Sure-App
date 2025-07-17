@@ -25,7 +25,7 @@ class ProgressSurveyPage extends StatelessWidget {
           // --- MODIFIKASI DI SINI ---
           // 1. Filter semua data untuk mendapatkan yang statusnya 'DRAFT'
           final List<AplikasiSurvey> draftSurveys =
-              box.values.where((survey) => survey.status != 'DONE').toList();
+              box.values.where((survey) => survey.status != 'APP').toList();
           // final List<AplikasiSurvey> draftSurveys =
           //     box.values.where((survey) => survey.status == 'DONE').toList();
 
@@ -189,14 +189,21 @@ class DraftSurveyCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
       decoration: BoxDecoration(
-        color: const Color(0xFFFFF3E0), // Oranye muda
+        color: status == "DRAFT"
+            ? Color(0xFFFFF3E0)
+            : Colors.green.shade100, // Oranye muda
         borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: const Color(0xFFE65100), width: 1),
+        border: Border.all(
+            color:
+                status == "DRAFT" ? Color(0xFFE65100) : Colors.green.shade800,
+            width: 1),
       ),
       child: Text(
         status.toUpperCase(),
-        style: const TextStyle(
-          color: Color(0xFFE65100), // Oranye tua
+        style: TextStyle(
+          color: status == "DRAFT"
+              ? Color(0xFFE65100)
+              : Colors.green.shade800, // Oranye tua
           fontWeight: FontWeight.bold,
           fontSize: 11,
         ),
@@ -239,6 +246,7 @@ class DraftSurveyCard extends StatelessWidget {
                     color: Colors.orange,
                     fontWeight: FontWeight.bold,
                     fontSize: 18,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),

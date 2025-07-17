@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gsure/models/order_model.dart';
+import 'package:gsure/models/survey_app_model.dart';
+import 'package:gsure/services/form_processing_service.dart';
 import 'package:gsure/services/survey_service.dart';
 import 'package:hive/hive.dart';
 
@@ -46,15 +50,51 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
     SendSurveyData event,
     Emitter<SurveyState> emit,
   ) async {
-    emit(SendingSurvey()); // 1. Emit state loading
     try {
-      // 2. Panggil service untuk mengirim data
-      await _surveyService.sendSurveyData(event.surveyData);
-      emit(SendSurveySuccess(event.uniqueId)); // 3. Emit state sukses
+      emit(SendingSurvey()); // Tampilkan loading
+
+      // --- PROSES UNTUK API ---
+      // 1. Masak data menggunakan resep API
+      final apiService = FormProcessingServiceAPI();
+      final Map<String, dynamic> apiData =
+          apiService.processFormToAPI(event.formAnswers);
+
+      // 2. Kirim data ke API
+      await _surveyService.sendSurveyData(apiData);
+
+      // --- PROSES UNTUK HIVE (HANYA JIKA API SUKSES) ---
+      // 3. Masak data LAGI menggunakan resep Hive
+      final hiveService = FormProcessingService();
+      final Map<String, dynamic> hiveData =
+          hiveService.processFormToNestedMap(event.formAnswers);
+
+      // 4. Ubah status menjadi 'DONE'
+      hiveData['status'] = 'DONE';
+
+      // 5. Simpan data yang sudah sesuai format Hive
+      final box = Hive.box<AplikasiSurvey>('survey_apps');
+      final aplikasi = AplikasiSurvey.fromJson(hiveData);
+      await box.put(event.uniqueId, aplikasi);
+
+      // 6. Emit state sukses
+      emit(SendSurveySuccess(event.uniqueId));
     } catch (e) {
-      emit(
-        SendSurveyFailure(e.toString()),
-      ); // 4. Emit state gagal jika ada error
+      emit(SendSurveyFailure(e.toString()));
     }
   }
+  // Future<void> _sendSurveyData(
+  //   SendSurveyData event,
+  //   Emitter<SurveyState> emit,
+  // ) async {
+  //   emit(SendingSurvey()); // 1. Emit state loading
+  //   try {
+  //     // 2. Panggil service untuk mengirim data
+  //     await _surveyService.sendSurveyData(event.surveyData);
+  //     emit(SendSurveySuccess(event.uniqueId)); // 3. Emit state sukses
+  //   } catch (e) {
+  //     emit(
+  //       SendSurveyFailure(e.toString()),
+  //     ); // 4. Emit state gagal jika ada error
+  //   }
+  // }
 }

@@ -26,6 +26,8 @@ class FormProcessingServiceAPI {
     final Map<String, dynamic> fotoTempatTinggalData = {};
 
     // Mengisi data untuk bagian Dealer
+    dealerData['created_by'] = flatFormAnswers['created_by'];
+    dealerData['updated_by'] = flatFormAnswers['updated_by'];
     dealerData['application_id'] = flatFormAnswers['application_id'];
     dealerData['nik'] = flatFormAnswers['nik'];
     dealerData['kddealer'] = flatFormAnswers['kddealer'];
@@ -63,6 +65,8 @@ class FormProcessingServiceAPI {
     dealerData['provinsisurvey'] = flatFormAnswers['provinsisurvey'];
 
     // Data Pemohon
+    pemohonData['created_by'] = flatFormAnswers['created_by'];
+    pemohonData['updated_by'] = flatFormAnswers['updated_by'];
     pemohonData['application_id'] = flatFormAnswers['application_id'];
     pemohonData['nik'] = flatFormAnswers['nik'];
     pemohonData['katpemohon'] = flatFormAnswers['katpemohon'];
@@ -85,6 +89,8 @@ class FormProcessingServiceAPI {
     pemohonData['lamatinggalpemohon'] = flatFormAnswers['lamatinggalpemohon'];
 
     // Data pekerjaan/usaha pemohon
+    pekerjaanData['created_by'] = flatFormAnswers['created_by'];
+    pekerjaanData['updated_by'] = flatFormAnswers['updated_by'];
     pekerjaanData['application_id'] = flatFormAnswers['application_id'];
     pekerjaanData['nik'] = flatFormAnswers['nik'];
     pekerjaanData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
@@ -104,6 +110,8 @@ class FormProcessingServiceAPI {
     pekerjaanData['profitusahapemohon'] = flatFormAnswers['profitusahapemohon'];
 
     // Mengisi data untuk bagian Pasangan Pemohon (termasuk data pekerjaan)
+    pasanganData['created_by'] = flatFormAnswers['created_by'];
+    pasanganData['updated_by'] = flatFormAnswers['updated_by'];
     pasanganData['application_id'] = flatFormAnswers['application_id'];
     pasanganData['nik'] = flatFormAnswers['nik'];
     pasanganData['namapasangan'] = flatFormAnswers['namapasangan'];
@@ -117,6 +125,8 @@ class FormProcessingServiceAPI {
     pasanganData['nohppasangan'] = flatFormAnswers['nohppasangan'];
 
     // Data pekerjaan/usaha pasangan pemohon
+    pasanganPekerjaanData['created_by'] = flatFormAnswers['created_by'];
+    pasanganPekerjaanData['updated_by'] = flatFormAnswers['updated_by'];
     pasanganPekerjaanData['application_id'] = flatFormAnswers['application_id'];
     pasanganPekerjaanData['nik'] = flatFormAnswers['nik'];
     pasanganPekerjaanData['pekerjaanpasangan'] =
@@ -150,6 +160,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['profitusahapasangan'];
 
     // Mengisi data untuk bagian Penjamin (termasuk data pekerjaan)
+    penjaminData['created_by'] = flatFormAnswers['created_by'];
+    penjaminData['updated_by'] = flatFormAnswers['updated_by'];
     penjaminData['application_id'] = flatFormAnswers['application_id'];
     penjaminData['nik'] = flatFormAnswers['nik'];
     penjaminData['jnspenjamin'] = flatFormAnswers['jnspenjamin'];
@@ -179,6 +191,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['lamatinggalpenjamin'];
 
     // Data pekerjaan/usaha Penjamin
+    pekerjaanPenjaminData['created_by'] = flatFormAnswers['created_by'];
+    pekerjaanPenjaminData['updated_by'] = flatFormAnswers['updated_by'];
     pekerjaanPenjaminData['application_id'] = flatFormAnswers['application_id'];
     pekerjaanPenjaminData['nik'] = flatFormAnswers['nik'];
     pekerjaanPenjaminData['pekerjaanpenjamin'] =
@@ -212,6 +226,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['profitusahapenjamin'];
 
     // Mengisi data untuk bagian Pasangan Penjamin (termasuk data pekerjaan)
+    pasanganPenjaminData['created_by'] = flatFormAnswers['created_by'];
+    pasanganPenjaminData['updated_by'] = flatFormAnswers['updated_by'];
     pasanganPenjaminData['application_id'] = flatFormAnswers['application_id'];
     pasanganPenjaminData['nik'] = flatFormAnswers['nik'];
     pasanganPenjaminData['namapasanganpenjamin'] =
@@ -226,6 +242,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['nowapasanganpenjamin'];
 
     // Data pekerjaan/usaha pasangan Penjamin
+    pasanganPekerjaanPenjaminData['created_by'] = flatFormAnswers['created_by'];
+    pasanganPekerjaanPenjaminData['updated_by'] = flatFormAnswers['updated_by'];
     pasanganPekerjaanPenjaminData['application_id'] =
         flatFormAnswers['application_id'];
     pasanganPekerjaanPenjaminData['nik'] = flatFormAnswers['nik'];
@@ -261,6 +279,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['profitusahapasanganpenjamin'];
 
     // Mengisi data untuk bagian Kontak Darurat
+    kontakDaruratData['created_by'] = flatFormAnswers['created_by'];
+    kontakDaruratData['updated_by'] = flatFormAnswers['updated_by'];
     kontakDaruratData['application_id'] = flatFormAnswers['application_id'];
     kontakDaruratData['nik'] = flatFormAnswers['nik'];
     kontakDaruratData['namakontak'] = flatFormAnswers['namakontak'];

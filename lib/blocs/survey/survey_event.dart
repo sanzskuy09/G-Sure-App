@@ -17,15 +17,28 @@ class GetDataSurveyFromOrder extends SurveyEvent {
 }
 
 // EVENT BARU
+// class SendSurveyData extends SurveyEvent {
+//   final String uniqueId; // <-- TAMBAHKAN INI
+//   final Map<String, dynamic> surveyData;
+
+//   const SendSurveyData({
+//     required this.uniqueId, // <-- TAMBAHKAN INI
+//     required this.surveyData,
+//   });
+
+//   @override
+//   List<Object> get props => [uniqueId, surveyData];
+// }
 class SendSurveyData extends SurveyEvent {
-  final String uniqueId; // <-- TAMBAHKAN INI
-  final Map<String, dynamic> surveyData;
+  final String uniqueId;
+  // ✅ UBAH INI: Kirim formAnswers yang belum diproses
+  final Map<String, dynamic> formAnswers;
 
   const SendSurveyData({
-    required this.uniqueId, // <-- TAMBAHKAN INI
-    required this.surveyData,
+    required this.uniqueId,
+    required this.formAnswers, // <-- Ubah di sini
   });
 
   @override
-  List<Object> get props => [uniqueId, surveyData];
+  List<Object> get props => [uniqueId, formAnswers];
 }

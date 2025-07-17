@@ -218,12 +218,12 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
         formService.processFormToAPI(formAnswers);
 
     // Cukup panggil event. Biarkan BlocListener yang menangani sisanya.
-    context.read<SurveyBloc>().add(
-          SendSurveyData(
-            uniqueId: widget.surveyKey, // <-- PASS ID DARI SINI
-            surveyData: finalForm,
-          ),
-        );
+    // context.read<SurveyBloc>().add(
+    //       SendSurveyData(
+    //         uniqueId: widget.surveyKey, // <-- PASS ID DARI SINI
+    //         surveyData: finalForm,
+    //       ),
+    //     );
   }
 
 // Fungsi _showConfirmDialogSendData Anda sudah benar, tidak perlu diubah.

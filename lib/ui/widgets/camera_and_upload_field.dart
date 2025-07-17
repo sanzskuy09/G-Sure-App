@@ -13,6 +13,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter_image_compress/flutter_image_compress.dart';
 
 class CameraAndUploadFieldForm extends StatefulWidget {
   final int index;
@@ -68,6 +69,56 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     final appDir = await getApplicationDocumentsDirectory();
     final newPath = p.join(appDir.path, newFileName);
     return await sourceFile.copy(newPath);
+  }
+
+  Future<File?> _compressImage(File file, {int targetSizeInMB = 1}) async {
+    final int targetSizeInBytes = targetSizeInMB * 1024 * 1024;
+    final initialSize = await file.length();
+
+    // Jika ukuran file sudah di bawah target, langsung kembalikan file asli
+    if (initialSize <= targetSizeInBytes) {
+      print(
+          'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
+      return file;
+    }
+
+    // Siapkan path untuk file hasil kompresi
+    final tempDir = await getTemporaryDirectory();
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final targetPath = p.join(tempDir.path, '${timestamp}_compressed.jpg');
+
+    int quality = 85; // Mulai dengan kualitas 85%
+
+    // Kompres file
+    XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
+      file.absolute.path,
+      targetPath,
+      quality: quality,
+    );
+
+    if (compressedXFile == null) {
+      print('Kompresi gagal.');
+      return null; // Gagal kompresi
+    }
+
+    // Cek ukuran hasil kompresi, jika masih terlalu besar, kurangi kualitas
+    // (Looping sederhana untuk menurunkan kualitas jika perlu)
+    int compressedSize = await compressedXFile.length();
+    while (compressedSize > targetSizeInBytes && quality > 10) {
+      quality -= 5; // Kurangi kualitas
+      compressedXFile = await FlutterImageCompress.compressAndGetFile(
+        file.absolute.path,
+        targetPath,
+        quality: quality,
+      );
+      if (compressedXFile == null) break;
+      compressedSize = await compressedXFile.length();
+    }
+
+    print(
+        'Kompresi selesai. Ukuran: ${(initialSize / 1024).toStringAsFixed(2)} KB -> ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+
+    return File(compressedXFile!.path);
   }
 
   Future<void> _checkFakeGPS() async {
@@ -348,8 +399,21 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       return;
     }
 
-    final now = DateTime.now();
+    final originalFile = File(pickedFile.path);
 
+    // ✅ PANGGIL FUNGSI KOMPRESI DI SINI
+    final compressedFile =
+        await _compressImage(originalFile, targetSizeInMB: 1);
+
+    // Jika kompresi gagal, hentikan proses
+    if (compressedFile == null) {
+      if (mounted) Navigator.of(context).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Gagal memproses gambar.")));
+      return;
+    }
+
+    final now = DateTime.now();
     Position? currentPosition;
     try {
       currentPosition = await Geolocator.getLastKnownPosition();
@@ -361,11 +425,11 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       currentPosition = null;
     }
 
-    final capturedFile = File(pickedFile.path);
-    final timestamp = now.millisecondsSinceEpoch;
-    final newFileName = '${widget.fieldKey ?? 'camera_image'}_$timestamp.jpg';
+    final newFileName =
+        '${widget.fieldKey ?? 'camera_image'}_${now.millisecondsSinceEpoch}.jpg';
 
-    final newFile = await _copyFileToAppDir(capturedFile, newFileName);
+    // ✅ GUNAKAN FILE HASIL KOMPRESI UNTUK DISALIN
+    final newFile = await _copyFileToAppDir(compressedFile, newFileName);
 
     if (!mounted) return;
 

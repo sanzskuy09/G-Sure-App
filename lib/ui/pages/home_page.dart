@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:gsure/blocs/auth/auth_bloc.dart';
+import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/task_list.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/adapters.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -279,37 +282,53 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget sisaTaskSection() {
-    return Container(
-      margin: const EdgeInsets.only(top: 20),
-      padding: EdgeInsets.symmetric(vertical: 15, horizontal: 15),
-      decoration: BoxDecoration(
-        shape: BoxShape.rectangle,
-        color: secondaryColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            'Sisa Task',
-            style: whiteTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
+    final String boxName = 'survey_apps';
+    // Asumsi model Anda adalah AplikasiSurvey, sesuaikan jika berbeda
+    final Box<AplikasiSurvey> box = Hive.box<AplikasiSurvey>(boxName);
+
+    return ValueListenableBuilder(
+      valueListenable: box.listenable(),
+      builder: (context, Box<AplikasiSurvey> box, _) {
+        // ✅ TERAPKAN FILTER DAN HITUNG JUMLAHNYA DI SINI
+        final int sisaTaskCount =
+            box.values.where((survey) => survey.status != 'DONE').length;
+
+        return Container(
+          margin: const EdgeInsets.only(top: 20),
+          padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 15),
+          decoration: BoxDecoration(
+            shape: BoxShape.rectangle,
+            color: secondaryColor,
+            borderRadius: BorderRadius.circular(10),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-            decoration: BoxDecoration(
-              shape: BoxShape.rectangle,
-              border: Border.all(color: whiteColor, width: 2),
-              borderRadius: BorderRadius.all(Radius.circular(5)),
-            ),
-            child: Center(
-              child: Text(
-                '12',
-                style: whiteTextStyle.copyWith(fontWeight: semiBold),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Sisa Task',
+                style:
+                    whiteTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
               ),
-            ),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                decoration: BoxDecoration(
+                  shape: BoxShape.rectangle,
+                  border: Border.all(color: whiteColor, width: 2),
+                  borderRadius: const BorderRadius.all(Radius.circular(5)),
+                ),
+                child: Center(
+                  child: Text(
+                    // ✅ GUNAKAN HASIL HITUNGAN DI SINI
+                    sisaTaskCount.toString(),
+                    style: whiteTextStyle.copyWith(fontWeight: semiBold),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
