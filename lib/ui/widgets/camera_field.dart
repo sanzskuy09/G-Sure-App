@@ -433,7 +433,7 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
               controller: _displayController,
               readOnly: true,
               decoration: InputDecoration(
-                hintText: 'Upload or Take a photo...',
+                hintText: 'Take a photo...',
                 border: const UnderlineInputBorder(),
                 contentPadding: const EdgeInsets.only(
                   left: 12,

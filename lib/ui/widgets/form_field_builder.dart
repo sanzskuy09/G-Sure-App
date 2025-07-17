@@ -372,6 +372,7 @@ class FieldBuilder extends StatelessWidget {
         return CameraAndUploadFieldForm(
           index: index,
           label: field.label,
+          fieldKey: field.key,
           value: field.value,
           onFilePicked: (val, ts, pos) {
             // 1. Update state lokal field (ini sudah benar)

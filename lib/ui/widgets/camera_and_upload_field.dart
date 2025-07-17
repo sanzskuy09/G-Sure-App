@@ -11,8 +11,12 @@ import 'package:gsure/shared/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+
 class CameraAndUploadFieldForm extends StatefulWidget {
   final int index;
+  final String? fieldKey;
   final String label;
   final dynamic value; // Ini akan menerima Map dari formAnswers
   final Function(dynamic, DateTime, Position?) onFilePicked;
@@ -21,6 +25,7 @@ class CameraAndUploadFieldForm extends StatefulWidget {
     super.key,
     required this.index,
     required this.label,
+    this.fieldKey,
     required this.value,
     required this.onFilePicked,
   });
@@ -57,6 +62,12 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     // 3. Logika utama: Proses 'widget.value' saat pertama kali widget dibuat
     _processInitialValue();
     _checkFakeGPS();
+  }
+
+  Future<File> _copyFileToAppDir(File sourceFile, String newFileName) async {
+    final appDir = await getApplicationDocumentsDirectory();
+    final newPath = p.join(appDir.path, newFileName);
+    return await sourceFile.copy(newPath);
   }
 
   Future<void> _checkFakeGPS() async {
@@ -127,15 +138,27 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       final initialData = widget.value as Map;
       final file = initialData['file'];
 
+      // if (file != null) {
+      //   if (file is File) {
+      //     _fileData = file.path;
+      //     _displayController.text = file.path.split('/').last;
+      //   } else if (file is String) {
+      //     _fileData = file;
+      //     _displayController.text = file.split('/').last;
+      //   }
+      // }
       if (file != null) {
-        if (file is File) {
-          _fileData = file.path;
-          _displayController.text = file.path.split('/').last;
-        } else if (file is String) {
-          _fileData = file;
-          _displayController.text = file.split('/').last;
-        }
+        // Dapatkan path baik dari objek File maupun String
+        final String path = (file is File) ? file.path : file.toString();
+
+        // ✅ LOGIKA BARU UNTUK NAMA FILE (SAMA SEPERTI DI FUNGSI PICKER)
+        final extension = path.split('.').last;
+        final newFileName = '${widget.fieldKey ?? 'file'}.$extension';
+
+        _fileData = path;
+        _displayController.text = newFileName; // <-- GUNAKAN NAMA BARU
       }
+
       _dateTime = initialData['timestamp'];
       final lat = initialData['latitude'] as double?;
       final lon = initialData['longitude'] as double?;
@@ -161,8 +184,11 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
 
       if (path != null) {
         // Set state lokal sama seperti di _pickFile
-        _fileData = path; // <-- Simpan path sebagai String
-        _displayController.text = path.split('/').last;
+        final extension = path.split('.').last;
+        final newFileName = '${widget.fieldKey ?? 'file'}.$extension';
+
+        _fileData = path;
+        _displayController.text = newFileName; // <-- GUNAKAN NAMA BARU
         _dateTime = photoData.timestamp;
 
         // Buat ulang objek Position dari data yang ada
@@ -242,26 +268,34 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
   }
 
   Future<void> _pickFile() async {
-    // final now = DateTime.now();
-    // _isFilePicked = true;
-
     final result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
-      withData: true,
     );
 
     if (result != null && result.files.isNotEmpty) {
-      final file = result.files.first;
-      final pickedFileData = File(file.path!); // Kita butuh object File
+      final originalFile = File(result.files.first.path!);
+      final now = DateTime.now();
 
+      // ✅ LOGIKA BARU UNTUK NAMA FILE UNIK
+      final extension = result.files.first.name.split('.').last;
+      final timestamp = now.millisecondsSinceEpoch;
+      final newFileName = '${widget.fieldKey ?? 'file'}_$timestamp.$extension';
+
+      // Salin file dengan nama baru
+      final newFile = await _copyFileToAppDir(originalFile, newFileName);
+      if (!mounted) return;
+
+      // Gunakan file dan nama baru untuk state & callback
       setState(() {
-        _fileData = pickedFileData.path; // Simpan path untuk preview
-        _displayController.text = file.name; // Update controller LOKAL
+        _fileData = newFile.path;
+        _displayController.text = newFileName;
         _isFileFromPicker = true;
+        _dateTime = now; // Set waktu saat file dipilih
+        _photoPosition = null; // Tidak ada data lokasi
       });
-      // Panggil callback ke parent dengan object File
-      widget.onFilePicked(pickedFileData, DateTime.now(), null);
+
+      widget.onFilePicked(newFile, now, null);
     }
   }
 
@@ -269,34 +303,36 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
       source: ImageSource.gallery,
-      imageQuality: 80, // Kualitas bisa disesuaikan
+      imageQuality: 60,
     );
 
-    if (pickedFile == null) {
-      return; // Pengguna membatalkan pemilihan
-    }
+    if (pickedFile == null) return;
 
-    // --- Gunakan logika yang hampir sama dengan fungsi lainnya ---
+    final originalFile = File(pickedFile.path);
     final now = DateTime.now();
-    final galleryFile = File(pickedFile.path);
 
+    // ✅ LOGIKA BARU UNTUK NAMA FILE UNIK
+    final extension = originalFile.path.split('.').last;
+    final timestamp = now.millisecondsSinceEpoch;
+    final newFileName = '${widget.fieldKey ?? 'gallery'}_$timestamp.$extension';
+
+    // Salin file dengan nama baru
+    final newFile = await _copyFileToAppDir(originalFile, newFileName);
     if (!mounted) return;
 
+    // Gunakan file dan nama baru untuk state & callback
     setState(() {
-      _fileData = galleryFile.path;
+      _fileData = newFile.path;
       _dateTime = now;
-      _photoPosition = null; // Tidak ada data lokasi dari galeri
-      _isFileFromPicker =
-          true; // Anggap dari picker agar metadata lokasi tidak tampil
-      _displayController.text = galleryFile.path.split('/').last;
+      _photoPosition = null;
+      _isFileFromPicker = true;
+      _displayController.text = newFileName;
     });
 
-    // Panggil callback ke parent dengan data yang relevan
-    widget.onFilePicked(galleryFile, now, null);
+    widget.onFilePicked(newFile, now, null);
   }
 
   void _captureImage() async {
-    // _isFilePicked = false;
     if (_isMockLocation) return;
 
     _showLoadingDialog(); // ⏳ Tampilkan loading SEBELUM buka kamera
@@ -325,21 +361,23 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       currentPosition = null;
     }
 
-    // final fileData = kIsWeb ? await pickedFile.readAsBytes() : pickedFile.path;
     final capturedFile = File(pickedFile.path);
+    final timestamp = now.millisecondsSinceEpoch;
+    final newFileName = '${widget.fieldKey ?? 'camera_image'}_$timestamp.jpg';
+
+    final newFile = await _copyFileToAppDir(capturedFile, newFileName);
 
     if (!mounted) return;
 
     setState(() {
-      _fileData =
-          capturedFile.path; // State lokal tetap simpan path untuk preview
+      _fileData = newFile.path; // <-- Gunakan path dari file baru
       _dateTime = now;
       _photoPosition = currentPosition;
       _displayController.text =
-          '${widget.label}_${now.year}${now.month}${now.day}_${now.hour}${now.minute}${now.second}.jpg';
+          newFileName; // <-- Teks display juga pakai nama baru
     });
 
-    widget.onFilePicked(capturedFile, now, currentPosition);
+    widget.onFilePicked(newFile, now, currentPosition);
 
     if (mounted) Navigator.of(context).pop(); // ✅ Tutup loading
   }
@@ -500,7 +538,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
                 border: const UnderlineInputBorder(),
                 contentPadding: const EdgeInsets.only(
                   left: 12,
-                  right: 100,
+                  right: 120,
                   top: 14,
                   bottom: 14,
                 ),
