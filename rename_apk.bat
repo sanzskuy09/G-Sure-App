@@ -29,7 +29,7 @@ set "apk_armeabi=%apk_base%\app-armeabi-v7a-release.apk"
 set "apk_x86=%apk_base%\app-x86_64-release.apk"
 
 if exist "!apk_arm64!" (
-    copy /Y "!apk_arm64!" "!app_name!-v!app_version!-arm64.apk"
+    copy /Y "!apk_arm64!" "build-arm\!app_name!-v!app_version!-arm64.apk"
 )
 
 @REM if exist "!apk_armeabi!" (
