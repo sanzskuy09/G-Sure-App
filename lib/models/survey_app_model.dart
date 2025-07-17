@@ -178,6 +178,18 @@ class AplikasiSurvey extends HiveObject {
       flatMap.addAll(dataPasanganPenjamin!.toJson());
     }
 
+    if (fotoKendaraan != null) {
+      flatMap.addAll(fotoKendaraan!.toJson());
+    }
+
+    if (fotoLegalitas != null) {
+      flatMap.addAll(fotoLegalitas!.toJson());
+    }
+
+    if (fotoTempatTinggal != null) {
+      flatMap.addAll(fotoTempatTinggal!.toJson());
+    }
+
     // Proses fotoPekerjaan
     if (fotoPekerjaan!.isNotEmpty) {
       for (int i = 0; i < fotoPekerjaan!.length; i++) {

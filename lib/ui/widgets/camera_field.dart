@@ -11,9 +11,13 @@ import 'package:gsure/shared/theme.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as p;
+
 class CameraFieldForm extends StatefulWidget {
   final int index;
   final String label;
+  final String? fieldKey;
   final dynamic value; // Ini akan menerima Map dari formAnswers
   final Function(dynamic, DateTime, Position?) onFilePicked;
 
@@ -21,6 +25,7 @@ class CameraFieldForm extends StatefulWidget {
     super.key,
     required this.index,
     required this.label,
+    this.fieldKey,
     required this.value,
     required this.onFilePicked,
   });
@@ -56,6 +61,17 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
     // 3. Logika utama: Proses 'widget.value' saat pertama kali widget dibuat
     _processInitialValue();
     _checkFakeGPS();
+  }
+
+  Future<File> _copyFileToAppDir(File sourceFile, String newFileName) async {
+    // Dapatkan direktori dokumen aplikasi yang permanen
+    final appDir = await getApplicationDocumentsDirectory();
+
+    // Buat path tujuan yang baru
+    final newPath = p.join(appDir.path, newFileName);
+
+    // Salin file dari sumber (cache) ke tujuan baru
+    return await sourceFile.copy(newPath);
   }
 
   Future<void> _checkFakeGPS() async {
@@ -126,15 +142,27 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
       final initialData = widget.value as Map;
       final file = initialData['file'];
 
+      // if (file != null) {
+      //   if (file is File) {
+      //     _fileData = file.path;
+      //     _displayController.text = file.path.split('/').last;
+      //   } else if (file is String) {
+      //     _fileData = file;
+      //     _displayController.text = file.split('/').last;
+      //   }
+      // }
       if (file != null) {
-        if (file is File) {
-          _fileData = file.path;
-          _displayController.text = file.path.split('/').last;
-        } else if (file is String) {
-          _fileData = file;
-          _displayController.text = file.split('/').last;
-        }
+        // Dapatkan path baik dari objek File maupun String
+        final String path = (file is File) ? file.path : file.toString();
+
+        // ✅ LOGIKA BARU UNTUK NAMA FILE (SAMA SEPERTI DI FUNGSI PICKER)
+        final extension = path.split('.').last;
+        final newFileName = '${widget.fieldKey ?? 'file'}.$extension';
+
+        _fileData = path;
+        _displayController.text = newFileName; // <-- GUNAKAN NAMA BARU
       }
+
       _dateTime = initialData['timestamp'];
       final lat = initialData['latitude'] as double?;
       final lon = initialData['longitude'] as double?;
@@ -160,8 +188,11 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
 
       if (path != null) {
         // Set state lokal sama seperti di _pickFile
-        _fileData = path; // <-- Simpan path sebagai String
-        _displayController.text = path.split('/').last;
+        final extension = path.split('.').last;
+        final newFileName = '${widget.fieldKey ?? 'file'}.$extension';
+
+        _fileData = path;
+        _displayController.text = newFileName; // <-- GUNAKAN NAMA BARU
         _dateTime = photoData.timestamp;
 
         // Buat ulang objek Position dari data yang ada
@@ -187,111 +218,11 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
     }
   }
 
-  // void _processInitialValue() {
-  //   // Jika value dari parent adalah Map (sesuai desain kita)
-  //   if (widget.value != null && widget.value is Map) {
-  //     final initialData = widget.value as Map;
-  //     final file = initialData['file'];
-
-  //     if (file != null) {
-  //       if (file is File) {
-  //         _fileData = file.path;
-  //         _displayController.text = file.path.split('/').last;
-  //       } else if (file is String) {
-  //         _fileData = file;
-  //         _displayController.text = file.split('/').last;
-  //       }
-  //     }
-
-  //     _dateTime = initialData['timestamp'];
-  //     final lat = initialData['latitude'] as double?;
-  //     final lon = initialData['longitude'] as double?;
-  //     if (lat != null && lon != null) {
-  //       _photoPosition = Position(
-  //           latitude: lat,
-  //           longitude: lon,
-  //           timestamp: DateTime.now(),
-  //           accuracy: 0,
-  //           altitude: 0,
-  //           altitudeAccuracy: 0,
-  //           heading: 0,
-  //           headingAccuracy: 0,
-  //           speed: 0,
-  //           speedAccuracy: 0);
-  //     }
-  //   }
-  //   // Fallback jika value hanya String
-  //   else if (widget.value != null) {
-  //     _fileData = widget.value;
-  //     _displayController.text = widget.value.toString().split('/').last;
-
-  //     print('_fileData');
-  //     print(_fileData);
-  //     print('===============================');
-  //     print('_displayController');
-  //     print(_displayController);
-  //   }
-  // }
-
   @override
   void dispose() {
     // 4. Jangan lupa dispose controller lokal
     _displayController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickFile() async {
-    // final now = DateTime.now();
-    // _isFilePicked = true;
-
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf'],
-      withData: true,
-    );
-
-    if (result != null && result.files.isNotEmpty) {
-      final file = result.files.first;
-      final pickedFileData = File(file.path!); // Kita butuh object File
-
-      setState(() {
-        _fileData = pickedFileData.path; // Simpan path untuk preview
-        _displayController.text = file.name; // Update controller LOKAL
-        _isFileFromPicker = true;
-      });
-      // Panggil callback ke parent dengan object File
-      widget.onFilePicked(pickedFileData, DateTime.now(), null);
-    }
-  }
-
-  Future<void> _pickFromGallery() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80, // Kualitas bisa disesuaikan
-    );
-
-    if (pickedFile == null) {
-      return; // Pengguna membatalkan pemilihan
-    }
-
-    // --- Gunakan logika yang hampir sama dengan fungsi lainnya ---
-    final now = DateTime.now();
-    final galleryFile = File(pickedFile.path);
-
-    if (!mounted) return;
-
-    setState(() {
-      _fileData = galleryFile.path;
-      _dateTime = now;
-      _photoPosition = null; // Tidak ada data lokasi dari galeri
-      _isFileFromPicker =
-          true; // Anggap dari picker agar metadata lokasi tidak tampil
-      _displayController.text = galleryFile.path.split('/').last;
-    });
-
-    // Panggil callback ke parent dengan data yang relevan
-    widget.onFilePicked(galleryFile, now, null);
   }
 
   void _captureImage() async {
@@ -326,19 +257,26 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
 
     // final fileData = kIsWeb ? await pickedFile.readAsBytes() : pickedFile.path;
     final capturedFile = File(pickedFile.path);
+    // ✅ LOGIKA BARU UNTUK MENYALIN DAN MENGGANTI NAMA FILE
+    // 1. Buat nama file baru yang diinginkan
+    final timestamp = now.millisecondsSinceEpoch;
+    final newFileName = '${widget.fieldKey ?? 'camera_image'}_$timestamp.jpg';
+
+    // 2. Salin file ke direktori aplikasi dengan nama baru
+    final newFile = await _copyFileToAppDir(capturedFile, newFileName);
 
     if (!mounted) return;
 
+    // 3. Gunakan file baru untuk state dan callback
     setState(() {
-      _fileData =
-          capturedFile.path; // State lokal tetap simpan path untuk preview
+      _fileData = newFile.path; // <-- Gunakan path dari file baru
       _dateTime = now;
       _photoPosition = currentPosition;
       _displayController.text =
-          '${widget.label}_${now.year}${now.month}${now.day}_${now.hour}${now.minute}${now.second}.jpg';
+          newFileName; // <-- Teks display juga pakai nama baru
     });
 
-    widget.onFilePicked(capturedFile, now, currentPosition);
+    widget.onFilePicked(newFile, now, currentPosition);
 
     if (mounted) Navigator.of(context).pop(); // ✅ Tutup loading
   }
