@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:gsure/models/order_model.dart';
+import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/services/form_processing_service.dart';
 import 'package:gsure/services/survey_service.dart';
 import 'package:hive/hive.dart';
+import 'package:logger/logger.dart';
 
 part 'survey_event.dart';
 part 'survey_state.dart';
@@ -17,6 +19,8 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
   SurveyBloc(this._surveyService) : super(SurveyInitial()) {
     on<GetDataSurveyFromOrder>(_getDataSurveyFromOrder);
     on<SendSurveyData>(_sendSurveyData);
+    on<UploadSurveyFiles>(_onUploadSurveyFiles);
+    // on<UploadTambahanSurveyFiles>(_onUploadTambahanSurveyFiles);
   }
 
   Future<void> _getDataSurveyFromOrder(
@@ -59,22 +63,22 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       final Map<String, dynamic> apiData =
           apiService.processFormToAPI(event.formAnswers);
 
-      // 2. Kirim data ke API
+      // // 2. Kirim data ke API
       await _surveyService.sendSurveyData(apiData);
 
       // --- PROSES UNTUK HIVE (HANYA JIKA API SUKSES) ---
       // 3. Masak data LAGI menggunakan resep Hive
-      final hiveService = FormProcessingService();
-      final Map<String, dynamic> hiveData =
-          hiveService.processFormToNestedMap(event.formAnswers);
+      // final hiveService = FormProcessingService();
+      // final Map<String, dynamic> hiveData =
+      //     hiveService.processFormToNestedMap(event.formAnswers);
 
-      // 4. Ubah status menjadi 'DONE'
-      hiveData['status'] = 'DONE';
+      // // 4. Ubah status menjadi 'DONE'
+      // hiveData['status'] = 'DONE';
 
-      // 5. Simpan data yang sudah sesuai format Hive
-      final box = Hive.box<AplikasiSurvey>('survey_apps');
-      final aplikasi = AplikasiSurvey.fromJson(hiveData);
-      await box.put(event.uniqueId, aplikasi);
+      // // 5. Simpan data yang sudah sesuai format Hive
+      // final box = Hive.box<AplikasiSurvey>('survey_apps');
+      // final aplikasi = AplikasiSurvey.fromJson(hiveData);
+      // await box.put(event.uniqueId, aplikasi);
 
       // 6. Emit state sukses
       emit(SendSurveySuccess(event.uniqueId));
@@ -82,6 +86,147 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       emit(SendSurveyFailure(e.toString()));
     }
   }
+
+// Di dalam SurveyBloc
+  Future<void> _onUploadSurveyFiles(
+    UploadSurveyFiles event,
+    Emitter<SurveyState> emit,
+  ) async {
+    try {
+      emit(UploadingFiles()); // State untuk progress bar
+      final logger = Logger();
+
+      final apiService = FormProcessingServiceAPI();
+
+      // 1. Dapatkan daftar file (Map<String, String>)
+      final Map<String, String> filesToUpload =
+          apiService.processImageFormToAPI(event.formAnswers);
+
+      // 2. Dapatkan daftar tambahan file
+
+      // logger.i(JsonEncoder.withIndent('  ').convert(filesToUpload));
+      // print(filesToUpload);
+
+      // 2. Siapkan data teks
+      final textData = {
+        'application_id': event.uniqueId,
+        'nik': event.formAnswers['nik'],
+        'odometer': event.formAnswers['odometer'],
+        'created_by': event.formAnswers['created_by'],
+        'updated_by': event.formAnswers['created_by'],
+        // Tambahkan field teks lain yang dibutuhkan API di sini
+      };
+      final Map<String, dynamic> fileData = {};
+
+      // 2. Pisahkan data dari event.formAnswers
+      event.formAnswers.forEach((key, value) {
+        // Anda perlu kriteria untuk membedakan mana data teks dan mana data file.
+        // Contoh sederhana: jika kunci mengandung kata 'dok' atau 'foto', anggap itu file.
+        if (key.startsWith('dok')) {
+          fileData[key] = value;
+        }
+      });
+
+      // 3. Panggil groupFiles HANYA dengan data file
+      final Map<String, List<String>> groupedFilesToUpload =
+          apiService.groupFiles(fileData);
+
+      // logger.i(JsonEncoder.withIndent('  ').convert(fileData));
+      // print(fileData);
+      // logger.i(JsonEncoder.withIndent('  ').convert(groupedFilesToUpload));
+      // 4. Sekarang data Anda sudah benar dan siap dikirim
+
+      // --- TAMBAHKAN DEBUG PRINT DI SINI ---
+      print("🔍 DATA TEKS YANG AKAN DIKIRIM:");
+      print(event.formAnswers);
+      print(textData);
+// ------------------------------------
+
+      await _surveyService.uploadSurveyFiles(
+        filesToUpload: filesToUpload,
+        textData: textData,
+      );
+
+      await _surveyService.uploadTambahanSurveyFiles(
+        filesToUpload: groupedFilesToUpload,
+        textData: textData,
+      );
+
+      // logger.i(JsonEncoder.withIndent('  ').convert(filesToUpload));
+      // 3. Panggil service yang mengirim file aktual
+
+      // final filesTambahanToUpload = apiService.groupFiles(event.formAnswers);
+
+      // 3. Setelah semua file berhasil, update data di Hive dengan status DONE
+      final hiveService = FormProcessingService();
+      final Map<String, dynamic> hiveData =
+          hiveService.processFormToNestedMap(event.formAnswers);
+
+      hiveData['status'] = 'DONE';
+
+      final box = Hive.box<AplikasiSurvey>('survey_apps');
+      final aplikasi = AplikasiSurvey.fromJson(hiveData);
+      await box.put(event.uniqueId, aplikasi);
+
+      emit(UploadFilesSuccess());
+    } catch (e) {
+      emit(UploadFilesFailed(e.toString()));
+    }
+  }
+
+  // Future<void> _onUploadTambahanSurveyFiles(
+  //   UploadTambahanSurveyFiles event,
+  //   Emitter<SurveyState> emit,
+  // ) async {
+  //   try {
+  //     emit(UploadingFiles()); // State untuk progress bar
+  //     final logger = Logger();
+
+  //     final apiService = FormProcessingServiceAPI();
+  //     // final Map<String, dynamic> apiData =
+  //     //     apiService.processImageFormToAPI(event.formAnswers);
+  //     // print(event.formAnswers);
+
+  //     logger.i(JsonEncoder.withIndent('  ').convert(event.formAnswers));
+
+  //     // 1. Dapatkan daftar file (Map<String, String>)
+  //     final Map<String, String> filesToUpload =
+  //         apiService.processImageFormToAPI(event.formAnswers);
+
+  //     // 2. Siapkan data teks
+  //     final textData = {
+  //       'application_id': event.uniqueId,
+  //       'nik': event.formAnswers['nik'],
+  //       'odometer': event.formAnswers['odometer'],
+  //       'created_by': event.formAnswers['created_by'],
+  //       'updated_by': event.formAnswers['created_by'],
+  //       // Tambahkan field teks lain yang dibutuhkan API di sini
+  //     };
+
+  //     // logger.i(JsonEncoder.withIndent('  ').convert(filesToUpload));
+  //     // 3. Panggil service yang mengirim file aktual
+  //     await _surveyService.uploadSurveyFiles(
+  //       filesToUpload: filesToUpload,
+  //       textData: textData,
+  //     );
+
+  //     // 3. Setelah semua file berhasil, update data di Hive dengan status DONE
+  //     final hiveService = FormProcessingService();
+  //     final Map<String, dynamic> hiveData =
+  //         hiveService.processFormToNestedMap(event.formAnswers);
+
+  //     hiveData['status'] = 'DONE';
+
+  //     final box = Hive.box<AplikasiSurvey>('survey_apps');
+  //     final aplikasi = AplikasiSurvey.fromJson(hiveData);
+  //     await box.put(event.uniqueId, aplikasi);
+
+  //     emit(UploadFilesSuccess());
+  //   } catch (e) {
+  //     emit(UploadFilesFailed(e.toString()));
+  //   }
+  // }
+
   // Future<void> _sendSurveyData(
   //   SendSurveyData event,
   //   Emitter<SurveyState> emit,

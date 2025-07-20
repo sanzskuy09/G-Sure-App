@@ -6,6 +6,7 @@ import 'package:accordion/controllers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
@@ -213,17 +214,40 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
 
   // HANYA MENGIRIM EVENT, TIDAK LEBIH
   void _sendAplikasiToAPI() {
-    final formService = FormProcessingServiceAPI();
-    final Map<String, dynamic> finalForm =
-        formService.processFormToAPI(formAnswers);
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
+
+    // const encoder = JsonEncoder.withIndent('  ');
+    // String prettyprint = encoder.convert(formAnswers);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
 
     // Cukup panggil event. Biarkan BlocListener yang menangani sisanya.
-    // context.read<SurveyBloc>().add(
-    //       SendSurveyData(
-    //         uniqueId: widget.surveyKey, // <-- PASS ID DARI SINI
-    //         surveyData: finalForm,
-    //       ),
-    //     );
+    context.read<SurveyBloc>().add(
+          SendSurveyData(
+            uniqueId: '${widget.surveyKey}', // <-- PASS ID DARI SINI
+            formAnswers: formAnswers,
+          ),
+        );
+  }
+
+  void _showInputConfirmDialogToAPI() async {
+    final bool? isConfirmed = await showLottieConfirmationDialog(
+      context: context,
+      title: 'Kirim Data?',
+      message:
+          'Proses akan dikirim dan tidak bisa dikembalikan. Pastikan semua data sudah benar.',
+      lottieAsset: 'assets/animations/success.json', // Ganti dengan path Anda
+      confirmButtonColor: successColor,
+      confirmButtonText: 'Lanjutkan',
+    );
+
+    if (isConfirmed == true) {
+      if (!context.mounted) return;
+      _sendAplikasiToAPI();
+    }
   }
 
 // Fungsi _showConfirmDialogSendData Anda sudah benar, tidak perlu diubah.
@@ -248,7 +272,20 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
   void _initializeFormAnswers(AplikasiSurvey survey) {
     formAnswers = survey.toFlatJson();
 
-    // print(survey);
+    final authState = context.read<AuthBloc>().state;
+
+    // ✅ 2. CEK JIKA LOGIN BERHASIL DAN AMBIL USERNAME
+    if (authState is AuthSuccess) {
+      // Ambil username dari user yang sedang login dan tambahkan ke map
+      formAnswers['created_by'] = authState.user.username;
+      formAnswers['updated_by'] = authState.user.username;
+    } else {
+      // Fallback jika karena suatu alasan user tidak ditemukan di state
+      formAnswers['created_by'] = 'unknown_user';
+      formAnswers['updated_by'] = 'unknown_user';
+    }
+
+    formAnswers['nik'] = _currentSurvey?.nik;
 
     // print(jsonEncode(formAnswers));
     // formAnswers = {
@@ -316,7 +353,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       child: BlocListener<SurveyBloc, SurveyState>(
         listener: (context, state) {
           // Logika untuk bereaksi terhadap perubahan state BLoC
-          if (state is SendingSurvey) {
+          if (state is SendingSurvey || state is UploadingFiles) {
             showDialog(
               context: context,
               barrierDismissible: false,
@@ -325,48 +362,107 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
             );
           }
 
-          if (state is SendSurveySuccess) {
-            // JIKA PENGIRIMAN API SUKSES...
-            try {
-              // 1. Buka box Hive
-              final box = Hive.box<AplikasiSurvey>('survey_apps');
+          // // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
+          if (state is SendSurveyFailure) {
+            // PENTING: Tutup dialog loading
+            Navigator.pop(context);
 
-              // 2. Ambil data yang ada menggunakan ID dari state
-              final surveyToUpdate = box.get(state.uniqueId);
-
-              if (surveyToUpdate != null) {
-                // 3. Buat objek baru dengan status yang sudah diubah
-                final updatedSurvey = surveyToUpdate.copyWith(status: 'DONE');
-
-                // 4. Simpan kembali objek yang sudah diupdate ke Hive
-                box.put(state.uniqueId, updatedSurvey);
-
-                print(
-                    'Status survei ID: ${state.uniqueId} berhasil diupdate ke DONE');
-              }
-            } catch (e) {
-              print('Gagal mengupdate status di Hive: $e');
-            }
-
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop(); // Tutup dialog loading
-            }
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('✅ Data berhasil dikirim!')),
+              SnackBar(
+                // content: Text('❌ Gagal mengirim data: ${state.error}'),
+                content: Text(
+                    '❌ Gagal mengirim data: Data ini sudah pernah dikirim'),
+                backgroundColor: Colors.red.shade300,
+              ),
             );
-            // Contoh navigasi setelah sukses
+
+            // context.read<SurveyBloc>().add(
+            //       UploadSurveyFiles(
+            //         uniqueId: widget.surveyKey,
+            //         formAnswers: formAnswers, // Kirim lagi formAnswers
+            //       ),
+            //     );
+          }
+
+          // Langkah 1: Metadata sukses
+          if (state is SendSurveySuccess) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                    '✅ Data form berhasil dikirim. Memulai upload file...')));
+            // Langkah 2: Langsung picu event upload file
+            context.read<SurveyBloc>().add(
+                  UploadSurveyFiles(
+                    uniqueId: state.uniqueId,
+                    formAnswers: formAnswers, // Kirim lagi formAnswers
+                  ),
+                );
+          }
+
+          // Hasil akhir dari upload file
+          if (state is UploadFilesSuccess) {
+            // PENTING: Tutup dialog loading
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('🎉 Semua file berhasil diunggah!'),
+                backgroundColor: Colors.green));
+
             Navigator.pushNamedAndRemoveUntil(
                 context, '/list-survey', (_) => false);
           }
 
-          if (state is SendSurveyFailure) {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop(); // Tutup dialog loading
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('❌ Gagal: ${state.error}')),
-            );
+          if (state is UploadFilesFailed) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('❌ Gagal upload file : ${state.error}'),
+                backgroundColor: Colors.red));
           }
+
+          // if (state is SendSurveySuccess) {
+          //   // JIKA PENGIRIMAN API SUKSES...
+          //   try {
+          //     // 1. Buka box Hive
+          //     final box = Hive.box<AplikasiSurvey>('survey_apps');
+
+          //     // 2. Ambil data yang ada menggunakan ID dari state
+          //     final surveyToUpdate = box.get(state.uniqueId);
+
+          //     if (surveyToUpdate != null) {
+          //       // 3. Buat objek baru dengan status yang sudah diubah
+          //       final updatedSurvey = surveyToUpdate.copyWith(status: 'DONE');
+
+          //       // 4. Simpan kembali objek yang sudah diupdate ke Hive
+          //       box.put(state.uniqueId, updatedSurvey);
+
+          //       print(
+          //           'Status survei ID: ${state.uniqueId} berhasil diupdate ke DONE');
+          //     }
+          //   } catch (e) {
+          //     print('Gagal mengupdate status di Hive: $e');
+          //   }
+
+          //   if (Navigator.of(context).canPop()) {
+          //     Navigator.of(context).pop(); // Tutup dialog loading
+          //   }
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text('✅ Data berhasil dikirim!')),
+          //   );
+          //   // Contoh navigasi setelah sukses
+          //   Navigator.pushNamedAndRemoveUntil(
+          //       context, '/list-survey', (_) => false);
+          // }
+
+          // if (state is SendSurveyFailure) {
+          //   if (Navigator.of(context).canPop()) {
+          //     Navigator.of(context).pop(); // Tutup dialog loading
+          //   }
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(content: Text('❌ Gagal: ${state.error}')),
+          //   );
+          // }
         },
         child: Scaffold(
           appBar: AppBar(
@@ -441,8 +537,8 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                     title: "Kirim",
                     // onPressed: () {},
                     // isDisabled: true,
-                    // onPressed: _showConfirmDialogSendData,
-                    onPressed: _showConfirmationDialog,
+                    onPressed: _showInputConfirmDialogToAPI,
+                    // onPressed: _showConfirmationDialog,
                   ),
                   BuildButton(
                     iconData: Icons.arrow_forward_ios,

@@ -54,7 +54,8 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       catatan: fields[32] as String?,
       is_survey: fields[35] as int?,
       isActived: fields[36] as bool?,
-    )..application_id = fields[37] as String?;
+      application_id: fields[37] as String?,
+    );
   }
 
   @override

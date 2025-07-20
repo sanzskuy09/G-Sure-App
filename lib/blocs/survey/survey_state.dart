@@ -25,8 +25,7 @@ class ErrorListDataFromOrder extends SurveyState {
 class SendingSurvey extends SurveyState {}
 
 class SendSurveySuccess extends SurveyState {
-  final String uniqueId; // <-- TAMBAHKAN INI
-
+  final String uniqueId;
   const SendSurveySuccess(this.uniqueId);
 
   @override
@@ -40,4 +39,22 @@ class SendSurveyFailure extends SurveyState {
 
   @override
   List<Object> get props => [error];
+}
+
+// =============== Send Upload Image To API =============== //
+class UploadingFiles extends SurveyState {} // Untuk menampilkan progress
+
+class UploadFilesSuccess extends SurveyState {}
+
+class UploadFilesFailed extends SurveyState {
+  final String error;
+  const UploadFilesFailed(this.error);
+}
+
+// =============== Send Upload Image Tambahan To API =============== //
+class UploadTambahanFilesSuccess extends SurveyState {}
+
+class UploadTambahanFilesFailed extends SurveyState {
+  final String error;
+  const UploadTambahanFilesFailed(this.error);
 }

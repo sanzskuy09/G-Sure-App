@@ -291,48 +291,48 @@ class FormProcessingServiceAPI {
     kontakDaruratData['alamatkontak'] = flatFormAnswers['alamatkontak'];
     kontakDaruratData['kodeposkontak'] = flatFormAnswers['kodeposkontak'];
 
-    // Foto Kendaraan
-    fotoKendaraanData['odometer'] = flatFormAnswers['odometer'];
-    // fotoKendaraanData['fotounitdepan'] =
-    //     PhotoData.fromJson(flatFormAnswers['fotounitdepan']!);
-    fotoKendaraanData['fotounitdepan'] = flatFormAnswers['fotounitdepan'];
-    fotoKendaraanData['fotounitbelakang'] = flatFormAnswers['fotounitbelakang'];
-    fotoKendaraanData['fotounitinteriordepan'] =
-        flatFormAnswers['fotounitinteriordepan'];
-    fotoKendaraanData['fotounitmesinplat'] =
-        flatFormAnswers['fotounitmesinplat'];
-    fotoKendaraanData['fotomesin'] = flatFormAnswers['fotomesin'];
-    fotoKendaraanData['fotounitselfiecmo'] =
-        flatFormAnswers['fotounitselfiecmo'];
-    fotoKendaraanData['fotospeedometer'] = flatFormAnswers['fotospeedometer'];
-    fotoKendaraanData['fotogesekannoka'] = flatFormAnswers['fotogesekannoka'];
-    fotoKendaraanData['fotostnk'] = flatFormAnswers['fotostnk'];
-    fotoKendaraanData['fotonoticepajak'] = flatFormAnswers['fotonoticepajak'];
-    fotoKendaraanData['fotobpkb1'] = flatFormAnswers['fotobpkb1'];
-    fotoKendaraanData['fotobpkb2'] = flatFormAnswers['fotobpkb2'];
+    // // Foto Kendaraan
+    // fotoKendaraanData['odometer'] = flatFormAnswers['odometer'];
+    // // fotoKendaraanData['fotounitdepan'] =
+    // //     PhotoData.fromJson(flatFormAnswers['fotounitdepan']!);
+    // fotoKendaraanData['fotounitdepan'] = flatFormAnswers['fotounitdepan'];
+    // fotoKendaraanData['fotounitbelakang'] = flatFormAnswers['fotounitbelakang'];
+    // fotoKendaraanData['fotounitinteriordepan'] =
+    //     flatFormAnswers['fotounitinteriordepan'];
+    // fotoKendaraanData['fotounitmesinplat'] =
+    //     flatFormAnswers['fotounitmesinplat'];
+    // fotoKendaraanData['fotomesin'] = flatFormAnswers['fotomesin'];
+    // fotoKendaraanData['fotounitselfiecmo'] =
+    //     flatFormAnswers['fotounitselfiecmo'];
+    // fotoKendaraanData['fotospeedometer'] = flatFormAnswers['fotospeedometer'];
+    // fotoKendaraanData['fotogesekannoka'] = flatFormAnswers['fotogesekannoka'];
+    // fotoKendaraanData['fotostnk'] = flatFormAnswers['fotostnk'];
+    // fotoKendaraanData['fotonoticepajak'] = flatFormAnswers['fotonoticepajak'];
+    // fotoKendaraanData['fotobpkb1'] = flatFormAnswers['fotobpkb1'];
+    // fotoKendaraanData['fotobpkb2'] = flatFormAnswers['fotobpkb2'];
 
-    // Foto Legalitas
-    fotoLegalitasData['fotoktppemohon'] = flatFormAnswers['fotoktppemohon'];
-    fotoLegalitasData['fotoktppasangan'] = flatFormAnswers['fotoktppasangan'];
-    fotoLegalitasData['fotokk'] = flatFormAnswers['fotokk'];
-    fotoLegalitasData['fotosima'] = flatFormAnswers['fotosima'];
-    fotoLegalitasData['fotonpwp'] = flatFormAnswers['fotonpwp'];
+    // // Foto Legalitas
+    // fotoLegalitasData['fotoktppemohon'] = flatFormAnswers['fotoktppemohon'];
+    // fotoLegalitasData['fotoktppasangan'] = flatFormAnswers['fotoktppasangan'];
+    // fotoLegalitasData['fotokk'] = flatFormAnswers['fotokk'];
+    // fotoLegalitasData['fotosima'] = flatFormAnswers['fotosima'];
+    // fotoLegalitasData['fotonpwp'] = flatFormAnswers['fotonpwp'];
 
-    // Foto Legalitas
-    fotoTempatTinggalData['fotorumah'] = flatFormAnswers['fotorumah'];
-    fotoTempatTinggalData['fotorumahselfiecmo'] =
-        flatFormAnswers['fotorumahselfiecmo'];
-    fotoTempatTinggalData['fotolingkunganselfiecmo'] =
-        flatFormAnswers['fotolingkunganselfiecmo'];
-    fotoTempatTinggalData['fotobuktimilikrumah'] =
-        flatFormAnswers['fotobuktimilikrumah'];
-    fotoTempatTinggalData['fotocloseuppemohon'] =
-        flatFormAnswers['fotocloseuppemohon'];
-    fotoTempatTinggalData['fotopemohonttdfpp'] =
-        flatFormAnswers['fotopemohonttdfpp'];
-    fotoTempatTinggalData['fotofppdepan'] = flatFormAnswers['fotofppdepan'];
-    fotoTempatTinggalData['fotofppbelakang'] =
-        flatFormAnswers['fotofppbelakang'];
+    // // Foto Legalitas
+    // fotoTempatTinggalData['fotorumah'] = flatFormAnswers['fotorumah'];
+    // fotoTempatTinggalData['fotorumahselfiecmo'] =
+    //     flatFormAnswers['fotorumahselfiecmo'];
+    // fotoTempatTinggalData['fotolingkunganselfiecmo'] =
+    //     flatFormAnswers['fotolingkunganselfiecmo'];
+    // fotoTempatTinggalData['fotobuktimilikrumah'] =
+    //     flatFormAnswers['fotobuktimilikrumah'];
+    // fotoTempatTinggalData['fotocloseuppemohon'] =
+    //     flatFormAnswers['fotocloseuppemohon'];
+    // fotoTempatTinggalData['fotopemohonttdfpp'] =
+    //     flatFormAnswers['fotopemohonttdfpp'];
+    // fotoTempatTinggalData['fotofppdepan'] = flatFormAnswers['fotofppdepan'];
+    // fotoTempatTinggalData['fotofppbelakang'] =
+    //     flatFormAnswers['fotofppbelakang'];
 
     final Map<String, dynamic> nestedData = {
       'dealer': dealerData,
@@ -358,6 +358,144 @@ class FormProcessingServiceAPI {
 
     return nestedData;
   }
+
+  Map<String, String> processImageFormToAPI(Map<String, dynamic> formAnswers) {
+    final Map<String, String> allFiles = {};
+
+    // Helper untuk mengekstrak path dari berbagai kemungkinan tipe data
+    String? _extractPath(dynamic value) {
+      if (value is Map && value['file'] is File) {
+        return (value['file'] as File).path;
+      }
+      if (value is PhotoData) {
+        return value.path;
+      }
+      return null;
+    }
+
+    // Lakukan iterasi pada semua data di formAnswers
+    formAnswers.forEach((key, value) {
+      // Coba ekstrak path dari setiap value
+      final path = _extractPath(value);
+
+      // Jika path valid (tidak null dan tidak kosong), tambahkan ke hasil akhir
+      if (path != null && path.isNotEmpty) {
+        allFiles[key] = path;
+      }
+    });
+
+    return allFiles;
+  }
+
+  Map<String, List<String>> groupFiles(Map<String, dynamic> formAnswers) {
+    final Map<String, List<String>> groupedResult = {};
+
+    final Map<String, String> prefixToGroupKey = {
+      'dokpekerjaan': 'docpekerjaanimage',
+      'doksimulasi': 'docsimulasiimage',
+      'doktambahan': 'doctambahanimage',
+    };
+
+    formAnswers.forEach((key, value) {
+      // --- PERUBAHAN DI SINI ---
+      // Cek apakah value adalah Map dan di dalamnya ada 'file' yang bertipe File
+      if (value is Map && value['file'] is File) {
+        // Ambil path dari objek File
+        final String path = (value['file'] as File).path;
+
+        // Sisa logika di bawah ini sama persis, karena kita sudah mendapatkan path-nya
+        if (path.isNotEmpty) {
+          String? targetGroupKey;
+
+          for (var entry in prefixToGroupKey.entries) {
+            if (key.startsWith(entry.key)) {
+              targetGroupKey = entry.value;
+              break;
+            }
+          }
+
+          if (targetGroupKey != null) {
+            (groupedResult[targetGroupKey] ??= []).add(path);
+          } else {
+            groupedResult[key] = [path];
+          }
+        }
+      }
+    });
+
+    return groupedResult;
+  }
+
+  // Map<String, dynamic> processImageFormToAPI(
+  //     Map<String, dynamic> flatFormAnswers) {
+  //   // ✅ GANTI FUNGSI HELPER LAMA DENGAN YANG INI
+  //   String? _extractPath(dynamic value) {
+  //     // Kasus 1: Value adalah Map (dari file picker baru)
+  //     if (value is Map) {
+  //       final fileObject = value['file'];
+  //       if (fileObject is File) {
+  //         // Ambil properti .path dari objek File
+  //         return fileObject.path;
+  //       }
+  //     }
+  //     // Kasus 2: Value adalah objek PhotoData (dari draft yang dimuat)
+  //     else if (value is PhotoData) {
+  //       return value.path;
+  //     }
+  //     // Jika null atau tipe lain, kembalikan null
+  //     return null;
+  //   }
+
+  //   final Map<String, dynamic> fotoKendaraanData = {
+  //     // odometer mungkin bukan path, jadi kita ambil nilainya langsung
+  //     'odometer': flatFormAnswers['odometer'],
+
+  //     // ✅ PANGGIL HELPER UNTUK SEMUA FIELD FOTO
+  //     'fotounitdepan': _extractPath(flatFormAnswers['fotounitdepan']),
+  //     'fotounitbelakang': _extractPath(flatFormAnswers['fotounitbelakang']),
+  //     'fotounitinteriordepan':
+  //         _extractPath(flatFormAnswers['fotounitinteriordepan']),
+  //     'fotounitmesinplat': _extractPath(flatFormAnswers['fotounitmesinplat']),
+  //     'fotomesin': _extractPath(flatFormAnswers['fotomesin']),
+  //     'fotounitselfiecmo': _extractPath(flatFormAnswers['fotounitselfiecmo']),
+  //     'fotospeedometer': _extractPath(flatFormAnswers['fotospeedometer']),
+  //     'fotogesekannoka': _extractPath(flatFormAnswers['fotogesekannoka']),
+  //     'fotostnk': _extractPath(flatFormAnswers['fotostnk']),
+  //     'fotonoticepajak': _extractPath(flatFormAnswers['fotonoticepajak']),
+  //     'fotobpkb1': _extractPath(flatFormAnswers['fotobpkb1']),
+  //     'fotobpkb2': _extractPath(flatFormAnswers['fotobpkb2']),
+  //   };
+
+  //   final Map<String, dynamic> fotoLegalitasData = {
+  //     'fotoktppemohon': _extractPath(flatFormAnswers['fotoktppemohon']),
+  //     'fotoktppasangan': _extractPath(flatFormAnswers['fotoktppasangan']),
+  //     'fotokk': _extractPath(flatFormAnswers['fotokk']),
+  //     'fotosima': _extractPath(flatFormAnswers['fotosima']),
+  //     'fotonpwp': _extractPath(flatFormAnswers['fotonpwp']),
+  //   };
+
+  //   final Map<String, dynamic> fotoTempatTinggalData = {
+  //     'fotorumah': _extractPath(flatFormAnswers['fotorumah']),
+  //     'fotorumahselfiecmo': _extractPath(flatFormAnswers['fotorumahselfiecmo']),
+  //     'fotolingkunganselfiecmo':
+  //         _extractPath(flatFormAnswers['fotolingkunganselfiecmo']),
+  //     'fotobuktimilikrumah':
+  //         _extractPath(flatFormAnswers['fotobuktimilikrumah']),
+  //     'fotocloseuppemohon': _extractPath(flatFormAnswers['fotocloseuppemohon']),
+  //     'fotopemohonttdfpp': _extractPath(flatFormAnswers['fotopemohonttdfpp']),
+  //     'fotofppdepan': _extractPath(flatFormAnswers['fotofppdepan']),
+  //     'fotofppbelakang': _extractPath(flatFormAnswers['fotofppbelakang']),
+  //   };
+
+  //   // Gabungkan semua map menjadi satu map datar
+  //   final Map<String, dynamic> flatApiData = {
+  //     ...fotoKendaraanData,
+  //     ...fotoLegalitasData,
+  //     ...fotoTempatTinggalData,
+  //   };
+
+  //   return flatApiData;
+  // }
 }
 
 class FormProcessingService {

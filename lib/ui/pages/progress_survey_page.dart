@@ -226,7 +226,8 @@ class DraftSurveyCard extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (_) => DraftDetailPage(surveyKey: hiveKey)),
+              builder: (_) => DraftDetailPage(surveyKey: hiveKey),
+            ),
             // builder: (_) => ContohDraftDetailPage(surveyKey: hiveKey)),
           );
         },
@@ -269,6 +270,13 @@ class DraftSurveyCard extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       'ID: $appId',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    Text(
+                      'NIK: ${survey.nik ?? '-'}',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[600],

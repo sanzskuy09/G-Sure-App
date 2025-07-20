@@ -34,15 +34,17 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       fotoPekerjaan: (fields[14] as List?)?.cast<PhotoData>(),
       fotoSimulasi: (fields[15] as List?)?.cast<PhotoData>(),
       fotoTambahan: (fields[16] as List?)?.cast<PhotoData>(),
-    )
-      ..status = fields[17] as String?
-      ..updatedAt = fields[18] as String?;
+      status: fields[17] as String?,
+      updatedAt: fields[18] as String?,
+      application_id: fields[19] as String?,
+      nik: fields[20] as String?,
+    );
   }
 
   @override
   void write(BinaryWriter writer, AplikasiSurvey obj) {
     writer
-      ..writeByte(19)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -80,7 +82,11 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       ..writeByte(17)
       ..write(obj.status)
       ..writeByte(18)
-      ..write(obj.updatedAt);
+      ..write(obj.updatedAt)
+      ..writeByte(19)
+      ..write(obj.application_id)
+      ..writeByte(20)
+      ..write(obj.nik);
   }
 
   @override

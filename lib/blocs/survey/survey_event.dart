@@ -42,3 +42,23 @@ class SendSurveyData extends SurveyEvent {
   @override
   List<Object> get props => [uniqueId, formAnswers];
 }
+
+class UploadSurveyFiles extends SurveyEvent {
+  final String uniqueId;
+  final Map<String, dynamic> formAnswers;
+
+  const UploadSurveyFiles({
+    required this.uniqueId,
+    required this.formAnswers,
+  });
+}
+
+class UploadTambahanSurveyFiles extends SurveyEvent {
+  final String uniqueId;
+  final Map<String, dynamic> formAnswers;
+
+  const UploadTambahanSurveyFiles({
+    required this.uniqueId,
+    required this.formAnswers,
+  });
+}

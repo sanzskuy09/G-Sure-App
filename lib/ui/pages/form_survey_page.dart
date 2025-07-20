@@ -317,6 +317,9 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       formAnswers['created_by'] = 'unknown_user';
       formAnswers['updated_by'] = 'unknown_user';
     }
+
+    formAnswers['nik'] = order.nik;
+
     // formAnswers = {
     //   'application_id': order.application_id,
     //   'katpemohon': 'PERORANGAN', // Contoh nilai default
@@ -374,26 +377,81 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       child: BlocListener<SurveyBloc, SurveyState>(
         listener: (context, state) {
           // ✅ TAMPILKAN SNACKBAR JIKA SUKSES
-          if (state is SendSurveySuccess) {
+          // if (state is SendSurveySuccess) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(
+          //       content: Text('✅ Data berhasil dikirim ke server!'),
+          //       backgroundColor: Colors.green,
+          //     ),
+          //   );
+          //   // Pindah halaman setelah notifikasi muncul
+          //   Navigator.pushNamedAndRemoveUntil(
+          //       context, '/list-survey', (_) => false);
+          // }
+
+          // // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
+
+          if (state is SendingSurvey || state is UploadingFiles) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+          }
+
+          if (state is SendSurveyFailure) {
+            Navigator.pop(context);
+
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('✅ Data berhasil dikirim ke server!'),
-                backgroundColor: Colors.green,
+              SnackBar(
+                // content: Text('❌ Gagal mengirim data: ${state.error}'),
+                content: Text(
+                    '❌ Gagal mengirim data: Data ini sudah pernah dikirim'),
+                backgroundColor: Colors.red.shade300,
               ),
             );
-            // Pindah halaman setelah notifikasi muncul
+
+            // context.read<SurveyBloc>().add(
+            //       UploadSurveyFiles(
+            //         uniqueId: '${widget.order.application_id}',
+            //         formAnswers: formAnswers, // Kirim lagi formAnswers
+            //       ),
+            //     );
+          }
+
+          // Langkah 1: Metadata sukses
+          if (state is SendSurveySuccess) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                    '✅ Data form berhasil dikirim. Memulai upload file...')));
+            // Langkah 2: Langsung picu event upload file
+            context.read<SurveyBloc>().add(UploadSurveyFiles(
+                  uniqueId: state.uniqueId,
+                  formAnswers: formAnswers, // Kirim lagi formAnswers
+                ));
+          }
+
+          // Hasil akhir dari upload file
+          if (state is UploadFilesSuccess) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('🎉 Semua file berhasil diunggah!'),
+                backgroundColor: Colors.green));
+
             Navigator.pushNamedAndRemoveUntil(
                 context, '/list-survey', (_) => false);
           }
 
-          // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
-          if (state is SendSurveyFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('❌ Gagal mengirim data: ${state.error}'),
-                backgroundColor: Colors.red,
-              ),
-            );
+          if (state is UploadFilesFailed) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                content: Text('❌ Gagal upload file: ${state.error}'),
+                backgroundColor: Colors.red));
           }
         },
         child: Scaffold(
