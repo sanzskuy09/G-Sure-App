@@ -4,7 +4,6 @@ import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/blocs/form/form_bloc.dart';
 import 'package:gsure/blocs/survey/survey_bloc.dart';
 import 'package:gsure/models/order_model.dart';
-import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/form_survey_page.dart';
 import 'package:hive/hive.dart';
@@ -15,9 +14,7 @@ class SurveyListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Buka kedua box yang dibutuhkan
-    final ordersBox = Hive.box<OrderModel>('orders');
-    final surveysBox = Hive.box<AplikasiSurvey>('survey_apps');
+    final box = Hive.box<OrderModel>('orders');
 
     return Scaffold(
       appBar: AppBar(
@@ -79,37 +76,29 @@ class SurveyListPage extends StatelessWidget {
             );
           }
         },
-        child: ValueListenableBuilder<Box<OrderModel>>(
-          valueListenable: ordersBox.listenable(),
-          builder: (context, box, _) {
-            // 2. Buat "lookup set" dari survei yang sudah ada untuk pengecekan cepat.
-            //    Kita gabungkan appId dan nik menjadi satu kunci unik.
-            final Set<String> existingSurveyKeys =
-                surveysBox.values.map((survey) {
-              return '${survey.application_id}-${survey.nik}';
-            }).toSet();
+        child: ValueListenableBuilder(
+          valueListenable: box.listenable(),
+          builder: (context, Box<OrderModel> box, _) {
+            final orders = box.values.toList(); // Ambil semua data sebagai list
 
-            // 3. Filter daftar order.
-            //    Hanya tampilkan order yang kuncinya TIDAK ADA di dalam `existingSurveyKeys`.
-            final List<OrderModel> filteredOrders = box.values.where((order) {
-              final orderKey = '${order.application_id}-${order.nik}';
-              return !existingSurveyKeys.contains(orderKey);
-            }).toList();
-
-            // 4. Tampilkan UI berdasarkan hasil filter
-            if (filteredOrders.isEmpty) {
-              return const Center(
-                child: Text(
-                  'Tidak ada order baru yang tersedia.',
-                  style: TextStyle(fontSize: 16, color: Colors.grey),
-                ),
+            if (orders.isEmpty) {
+              // Jika box kosong, cek state BLoC
+              return BlocBuilder<SurveyBloc, SurveyState>(
+                builder: (context, state) {
+                  // Tampilkan loading besar jika sedang sinkronisasi pertama kali
+                  if (state is LoadingListDataFromOrder) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
+                  // Tampilkan pesan jika tidak ada data sama sekali
+                  return const Center(child: Text('Belum ada data survey.'));
+                },
               );
             }
 
             return ListView.builder(
-              itemCount: filteredOrders.length,
+              itemCount: orders.length,
               itemBuilder: (context, index) {
-                final order = filteredOrders[index];
+                final order = orders[index];
                 // Gantikan widget lama dengan kartu baru yang lebih menarik
                 return SurveyOrderCard(order: order);
               },
@@ -145,7 +134,7 @@ class SurveyOrderCard extends StatelessWidget {
   Widget _buildInfoRow(BuildContext context,
       {required IconData icon, required String text}) {
     return Padding(
-      padding: const EdgeInsets.only(top: 4.0),
+      padding: const EdgeInsets.only(top: 8.0),
       child: Row(
         children: [
           Icon(icon, color: Colors.grey[600], size: 16),
@@ -185,7 +174,7 @@ class SurveyOrderCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 2,
+      elevation: 4,
       shadowColor: Colors.black.withOpacity(0.3),
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

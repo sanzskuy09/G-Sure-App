@@ -105,6 +105,8 @@ class SurveyService {
     required Map<String, dynamic> textData,
   }) async {
     try {
+      print('filesToUpload $filesToUpload');
+
       // Ganti 'POST' dan endpoint sesuai kebutuhan API Anda
       var uri = Uri.parse('$baseUrlSurvey/foto-dokumen/upload/multiple');
       var request = http.MultipartRequest('POST', uri);
@@ -133,39 +135,39 @@ class SurveyService {
         request.files.add(multipartFile);
       }
 
-      // // ✅ TAMBAHKAN BLOK DEBUGGING INI
-      // // =================================================================
-      // print("===================================");
-      // print("🔍 DETAIL REQUEST SEBELUM DIKIRIM");
-      // print("===================================");
-      // print("URL: ${request.method} ${request.url}");
-      // print("Headers: ${request.headers}");
+      // ✅ TAMBAHKAN BLOK DEBUGGING INI
+      // =================================================================
+      print("===================================");
+      print("🔍 DETAIL REQUEST SEBELUM DIKIRIM");
+      print("===================================");
+      print("URL: ${request.method} ${request.url}");
+      print("Headers: ${request.headers}");
 
-      // print("\n--- Fields (Data Teks) ---");
-      // request.fields.forEach((key, value) {
-      //   print("  $key: $value");
-      // });
+      print("\n--- Fields (Data Teks) ---");
+      request.fields.forEach((key, value) {
+        print("  $key: $value");
+      });
 
-      // print("\n--- Files (Data Gambar/File) ---");
-      // for (var file in request.files) {
-      //   print("  Field Name: ${file.field}");
-      //   print("    Filename: ${file.filename}");
-      //   print("    Length: ${file.length} bytes");
-      //   print("    Content-Type: ${file.contentType}");
-      // }
-      // print("===================================");
-      // // =================================================================
+      print("\n--- Files (Data Gambar/File) ---");
+      for (var file in request.files) {
+        print("  Field Name: ${file.field}");
+        print("    Filename: ${file.filename}");
+        print("    Length: ${file.length} bytes");
+        print("    Content-Type: ${file.contentType}");
+      }
+      print("===================================");
+      // =================================================================
 
       // --- 3. Kirim request ---
       print('Mengirim ${request.files.length} file ke server...');
-      // var response = await request.send();
+      var response = await request.send();
 
-      // if (response.statusCode == 200 || response.statusCode == 201) {
-      //   print('✅ File-file berhasil di-upload!');
-      // } else {
-      //   final respStr = await response.stream.bytesToString();
-      //   throw Exception('Gagal upload file: ${response.statusCode} - $respStr');
-      // }
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        print('✅ File-file berhasil di-upload!');
+      } else {
+        final respStr = await response.stream.bytesToString();
+        throw Exception('Gagal upload file: ${response.statusCode} - $respStr');
+      }
     } catch (e) {
       print('❌ Error saat upload file: $e');
       rethrow;

@@ -69,6 +69,20 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     return isConfirmed ?? false;
   }
 
+  Future<bool> _showAlertDialog(BuildContext context) async {
+    final bool? isConfirmed = await showLottieConfirmationDialog(
+      context: context,
+      title: 'Peringatan?',
+      message:
+          'Data ini sudah dikirim dan tidak dapat diedit kembali. silahkan hubungi admin.',
+      lottieAsset: 'assets/animations/warning.json', // Ganti dengan path Anda
+      confirmButtonColor: redColor,
+      confirmButtonText: 'Ya, paham',
+    );
+
+    return isConfirmed ?? false;
+  }
+
   void _showConfirmationDialog() {
     // 1. Lakukan pemisahan data di sini
     final Map<String, dynamic> jsonData = {};
@@ -319,6 +333,12 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     if (_currentSurvey != null) {
       _initializeFormAnswers(_currentSurvey!);
     }
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted && _currentSurvey?.status == 'DONE') {
+        _showAlertDialog(context);
+      }
+    });
   }
 
   @override
@@ -466,7 +486,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
         },
         child: Scaffold(
           appBar: AppBar(
-            title: Text('DRAFT SURVEY'),
+            title: Text('DRAFT ID : ${widget.surveyKey}'),
           ),
           body: Accordion(
             headerBackgroundColor: secondaryColor,
@@ -530,21 +550,32 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                   BuildButton(
                     iconData: Icons.save_as,
                     title: "Simpan",
-                    onPressed: _showInputConfirmDialog,
+                    // onPressed: _showInputConfirmDialog,
+                    isDisabled: _currentSurvey?.status == 'DONE' ?? true,
+                    onPressed: _currentSurvey?.status == 'DONE'
+                        ? () {}
+                        : _showInputConfirmDialog,
                   ),
                   BuildButton(
                     iconData: Icons.send,
                     title: "Kirim",
-                    // onPressed: () {},
-                    // isDisabled: true,
-                    onPressed: _showInputConfirmDialogToAPI,
-                    // onPressed: _showConfirmationDialog,
+                    isDisabled: _currentSurvey?.status == 'DONE' ?? true,
+                    onPressed: _currentSurvey?.status == 'DONE'
+                        ? () {}
+                        : _showInputConfirmDialogToAPI,
+                    // onPressed: _showInputConfirmDialogToAPI,
                   ),
                   BuildButton(
                     iconData: Icons.arrow_forward_ios,
                     title: "Berikutnya",
-                    isDisabled: visibleSectionCount == _question.length,
-                    onPressed: _showNextSection,
+                    // isDisabled: visibleSectionCount == _question.length,
+                    // onPressed: _showNextSection,
+                    // isDisabled: _currentSurvey?.status == 'DONE' ?? true,
+                    // onPressed: _currentSurvey?.status == 'DONE'
+                    //     ? () {}
+                    //     : _showNextSection,
+                    isDisabled: true,
+                    onPressed: () {},
                   )
                 ],
               ),

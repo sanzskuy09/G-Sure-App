@@ -102,9 +102,13 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
       final Map<String, String> filesToUpload =
           apiService.processImageFormToAPI(event.formAnswers);
 
+      final Map<String, String> dokumenFilesOnly = Map.fromEntries(
+        filesToUpload.entries.where((entry) => !entry.key.startsWith('dok')),
+      );
+
       // 2. Dapatkan daftar tambahan file
 
-      // logger.i(JsonEncoder.withIndent('  ').convert(filesToUpload));
+      logger.i(JsonEncoder.withIndent('  ').convert(dokumenFilesOnly));
       // print(filesToUpload);
 
       // 2. Siapkan data teks
@@ -138,12 +142,12 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
 
       // --- TAMBAHKAN DEBUG PRINT DI SINI ---
       print("🔍 DATA TEKS YANG AKAN DIKIRIM:");
-      print(event.formAnswers);
-      print(textData);
+      print('fileData: $fileData');
+      print('groupedFilesToUpload: $groupedFilesToUpload');
 // ------------------------------------
 
       await _surveyService.uploadSurveyFiles(
-        filesToUpload: filesToUpload,
+        filesToUpload: dokumenFilesOnly,
         textData: textData,
       );
 
@@ -151,11 +155,6 @@ class SurveyBloc extends Bloc<SurveyEvent, SurveyState> {
         filesToUpload: groupedFilesToUpload,
         textData: textData,
       );
-
-      // logger.i(JsonEncoder.withIndent('  ').convert(filesToUpload));
-      // 3. Panggil service yang mengirim file aktual
-
-      // final filesTambahanToUpload = apiService.groupFiles(event.formAnswers);
 
       // 3. Setelah semua file berhasil, update data di Hive dengan status DONE
       final hiveService = FormProcessingService();

@@ -396,35 +396,85 @@ class FormProcessingServiceAPI {
       'doktambahan': 'doctambahanimage',
     };
 
-    formAnswers.forEach((key, value) {
-      // --- PERUBAHAN DI SINI ---
-      // Cek apakah value adalah Map dan di dalamnya ada 'file' yang bertipe File
+    // 1. BUAT FUNGSI HELPER UNTUK EKSTRAK PATH
+    //    Fungsi ini bisa menangani berbagai jenis objek file
+    String? _extractPath(dynamic value) {
       if (value is Map && value['file'] is File) {
-        // Ambil path dari objek File
-        final String path = (value['file'] as File).path;
+        return (value['file'] as File).path;
+      }
+      if (value is PhotoData) {
+        // Asumsi kelas PhotoData memiliki properti 'path'
+        return value.path;
+      }
+      return null; // Kembalikan null jika bukan tipe data yang dikenal
+    }
 
-        // Sisa logika di bawah ini sama persis, karena kita sudah mendapatkan path-nya
-        if (path.isNotEmpty) {
-          String? targetGroupKey;
+    // 2. LOOPING PADA SEMUA DATA
+    formAnswers.forEach((key, value) {
+      // Gunakan helper untuk mendapatkan path, apa pun bentuk datanya
+      final String? path = _extractPath(value);
 
-          for (var entry in prefixToGroupKey.entries) {
-            if (key.startsWith(entry.key)) {
-              targetGroupKey = entry.value;
-              break;
-            }
+      // 3. JIKA PATH DITEMUKAN, LANJUTKAN LOGIKA GROUPING
+      //    Logika di bawah ini tidak perlu diubah sama sekali
+      if (path != null && path.isNotEmpty) {
+        String? targetGroupKey;
+
+        for (var entry in prefixToGroupKey.entries) {
+          if (key.startsWith(entry.key)) {
+            targetGroupKey = entry.value;
+            break;
           }
+        }
 
-          if (targetGroupKey != null) {
-            (groupedResult[targetGroupKey] ??= []).add(path);
-          } else {
-            groupedResult[key] = [path];
-          }
+        if (targetGroupKey != null) {
+          (groupedResult[targetGroupKey] ??= []).add(path);
+        } else {
+          groupedResult[key] = [path];
         }
       }
     });
 
     return groupedResult;
   }
+
+  // Map<String, List<String>> groupFiles(Map<String, dynamic> formAnswers) {
+  //   final Map<String, List<String>> groupedResult = {};
+
+  //   final Map<String, String> prefixToGroupKey = {
+  //     'dokpekerjaan': 'docpekerjaanimage',
+  //     'doksimulasi': 'docsimulasiimage',
+  //     'doktambahan': 'doctambahanimage',
+  //   };
+
+  //   formAnswers.forEach((key, value) {
+  //     // --- PERUBAHAN DI SINI ---
+  //     // Cek apakah value adalah Map dan di dalamnya ada 'file' yang bertipe File
+  //     if (value is Map && value['file'] is File) {
+  //       // Ambil path dari objek File
+  //       final String path = (value['file'] as File).path;
+
+  //       // Sisa logika di bawah ini sama persis, karena kita sudah mendapatkan path-nya
+  //       if (path.isNotEmpty) {
+  //         String? targetGroupKey;
+
+  //         for (var entry in prefixToGroupKey.entries) {
+  //           if (key.startsWith(entry.key)) {
+  //             targetGroupKey = entry.value;
+  //             break;
+  //           }
+  //         }
+
+  //         if (targetGroupKey != null) {
+  //           (groupedResult[targetGroupKey] ??= []).add(path);
+  //         } else {
+  //           groupedResult[key] = [path];
+  //         }
+  //       }
+  //     }
+  //   });
+
+  //   return groupedResult;
+  // }
 
   // Map<String, dynamic> processImageFormToAPI(
   //     Map<String, dynamic> flatFormAnswers) {
