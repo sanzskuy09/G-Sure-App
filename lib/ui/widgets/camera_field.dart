@@ -65,6 +65,46 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
     _checkFakeGPS();
   }
 
+  void _showImageDialog(BuildContext context, dynamic fileData) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.8),
+      builder: (BuildContext context) {
+        return Dialog(
+          backgroundColor: Colors.transparent,
+          insetPadding: const EdgeInsets.all(10),
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Hero(
+                // Match the tag from the preview
+                tag: 'imagePreview_${widget.fieldKey ?? widget.index}',
+                child: InteractiveViewer(
+                  panEnabled: true,
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: kIsWeb
+                      ? Image.memory(fileData as Uint8List)
+                      : Image.file(File(fileData as String)),
+                ),
+              ),
+              Positioned(
+                top: 0,
+                right: 0,
+                child: IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close_rounded,
+                      color: Colors.white, size: 30),
+                  tooltip: 'Close',
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<File> _copyFileToAppDir(File sourceFile, String newFileName) async {
     // Dapatkan direktori dokumen aplikasi yang permanen
     final appDir = await getApplicationDocumentsDirectory();
@@ -367,17 +407,38 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
             // [MODIFIKASI] Tambahkan pengecekan isImage di sini
             if (isImage)
               // Jika file adalah gambar, tampilkan seperti biasa
-              kIsWeb
-                  ? Image.memory(
-                      _fileData as Uint8List,
-                      height: 160,
-                      fit: BoxFit.cover,
-                    )
-                  : Image.file(
-                      File(_fileData),
-                      height: 160,
-                      fit: BoxFit.cover,
-                    )
+              // kIsWeb
+              //     ? Image.memory(
+              //         _fileData as Uint8List,
+              //         height: 160,
+              //         fit: BoxFit.cover,
+              //       )
+              //     : Image.file(
+              //         File(_fileData),
+              //         height: 160,
+              //         fit: BoxFit.cover,
+              //       )
+              GestureDetector(
+                onTap: () {
+                  if (_fileData != null) {
+                    _showImageDialog(context, _fileData);
+                  }
+                },
+                child: Hero(
+                  tag: 'imagePreview_${widget.fieldKey ?? widget.index}',
+                  child: kIsWeb
+                      ? Image.memory(
+                          _fileData as Uint8List,
+                          height: 160,
+                          fit: BoxFit.cover,
+                        )
+                      : Image.file(
+                          File(_fileData),
+                          height: 160,
+                          fit: BoxFit.cover,
+                        ),
+                ),
+              )
             else
               // ✅ Jika file adalah PDF, tampilkan preview khusus PDF
               Container(
@@ -517,9 +578,10 @@ class _CameraFieldFormState extends State<CameraFieldForm> {
                     constraints:
                         const BoxConstraints(minWidth: 32, minHeight: 32),
                     icon: const Icon(Icons.camera_alt_rounded),
-                    onPressed: _fileData == null && !_isMockLocation
-                        ? _captureImage
-                        : null,
+                    onPressed: _captureImage,
+                    // onPressed: _fileData == null && !_isMockLocation
+                    //     ? _captureImage
+                    //     : null,
                   ),
                 ],
               ),

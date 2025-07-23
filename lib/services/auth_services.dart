@@ -10,71 +10,72 @@ import 'package:http/http.dart' as http;
 class AuthServices {
   // Register
 
-  // Future<UserModel> login(LoginModel data) async {
-  //   try {
-  //     final res = await http.post(
-  //       Uri.parse('$baseUrl/auth/login'),
-  //       body: data.toJson(),
-  //       // headers: {
-  //       //   'Content-Type': 'application/json',
-  //       // },
-  //       // body: jsonEncode(data.toJson()),
-  //     );
-
-  //     if (res.statusCode == 200) {
-  //       final body = jsonDecode(res.body);
-  //       final user = UserModel.fromJson(body['data']['user']);
-  //       await storeCredential(user);
-
-  //       return user;
-  //     } else {
-  //       throw Exception(jsonDecode(res.body)['message']);
-  //     }
-  //   } catch (e) {
-  //     rethrow;
-  //   }
-  // }
-
   Future<UserModel> login(LoginModel data) async {
     try {
-      // 1. Muat file JSON dari assets
-      final String response = await rootBundle.loadString('assets/user.json');
-      final List<dynamic> userList = json.decode(response);
-
-      // 2. Cari user yang cocok berdasarkan username dan password
-      final userFound = userList.firstWhere(
-        (user) =>
-            user['username'] == data.username &&
-            user['password'] == data.password,
-        // Jika tidak ada user yang cocok, `orElse` akan dieksekusi
-        orElse: () => null,
+      final res = await http.post(
+        Uri.parse('$baseUrl/user/login'),
+        body: data.toJson(),
+        // headers: {
+        //   'Content-Type': 'application/json',
+        // },
+        // body: jsonEncode(data.toJson()),
       );
 
-      // 3. Proses hasilnya
-      if (userFound != null) {
-        // Jika user ditemukan, konversi ke UserModel
-        final user = UserModel.fromJson(userFound);
-
-        // Simpan kredensial (token & username) seperti sebelumnya
+      if (res.statusCode == 200) {
+        final body = jsonDecode(res.body);
+        final user = UserModel.fromJson(body['data']['user']);
         await storeCredential(user);
 
-        // Kembalikan data user yang berhasil login
         return user;
       } else {
-        // Jika tidak ditemukan, lempar Exception
-        // Ini akan ditangkap oleh BLoC dan diubah menjadi AuthFailed
-        throw Exception('Username atau Password Salah');
+        throw Exception(jsonDecode(res.body)['message']);
       }
     } catch (e) {
-      rethrow; // Lempar kembali error untuk ditangani BLoC
+      rethrow;
     }
   }
+
+  // Future<UserModel> login(LoginModel data) async {
+  //   try {
+  //     // 1. Muat file JSON dari assets
+  //     final String response = await rootBundle.loadString('assets/user.json');
+  //     final List<dynamic> userList = json.decode(response);
+
+  //     // 2. Cari user yang cocok berdasarkan username dan password
+  //     final userFound = userList.firstWhere(
+  //       (user) =>
+  //           user['username'] == data.username &&
+  //           user['password'] == data.password,
+  //       // Jika tidak ada user yang cocok, `orElse` akan dieksekusi
+  //       orElse: () => null,
+  //     );
+
+  //     // 3. Proses hasilnya
+  //     if (userFound != null) {
+  //       // Jika user ditemukan, konversi ke UserModel
+  //       final user = UserModel.fromJson(userFound);
+
+  //       // Simpan kredensial (token & username) seperti sebelumnya
+  //       await storeCredential(user);
+
+  //       // Kembalikan data user yang berhasil login
+  //       return user;
+  //     } else {
+  //       // Jika tidak ditemukan, lempar Exception
+  //       // Ini akan ditangkap oleh BLoC dan diubah menjadi AuthFailed
+  //       throw Exception('Username atau Password Salah');
+  //     }
+  //   } catch (e) {
+  //     rethrow; // Lempar kembali error untuk ditangani BLoC
+  //   }
+  // }
 
   Future<void> storeCredential(UserModel user) async {
     try {
       const storage = FlutterSecureStorage();
 
       await storage.write(key: 'username', value: user.username);
+      await storage.write(key: 'password', value: user.password);
       await storage.write(key: 'token', value: user.token);
       // await storage.write(key: 'password', value: user.password);
     } catch (e) {
@@ -87,7 +88,7 @@ class AuthServices {
       const storage = FlutterSecureStorage();
 
       Map<String, String> values = await storage.readAll();
-      if (values['username'] != null && values['token'] != null) {
+      if (values['username'] == null && values['token'] == null) {
         throw 'Silahkan login terlebih dahulu';
       } else {
         // return LoginModel(username: values['username'], password: values['password']);

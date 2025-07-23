@@ -45,10 +45,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
           try {
             emit(AuthLoading());
-            final UserModel user = await AuthServices().getUserFromStorage();
+            // final UserModel user = await AuthServices().getUserFromStorage();
+            final LoginModel data = await AuthServices().loginFromCredential();
+
+            final UserModel user = await AuthServices().login(data);
             emit(AuthSuccess(user));
           } catch (e) {
-            emit(AuthInitial());
+            emit(AuthFailed(e.toString()));
           }
         }
       } catch (e) {
