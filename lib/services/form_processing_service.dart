@@ -87,13 +87,13 @@ class FormProcessingServiceAPI {
     pemohonData['buktimilikrumahpemohon'] =
         flatFormAnswers['buktimilikrumahpemohon'];
     pemohonData['lamatinggalpemohon'] = flatFormAnswers['lamatinggalpemohon'];
+    pemohonData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
 
     // Data pekerjaan/usaha pemohon
     pekerjaanData['created_by'] = flatFormAnswers['created_by'];
     pekerjaanData['updated_by'] = flatFormAnswers['updated_by'];
     pekerjaanData['application_id'] = flatFormAnswers['application_id'];
     pekerjaanData['nik'] = flatFormAnswers['nik'];
-    pekerjaanData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
     pekerjaanData['namaperusahaan'] = flatFormAnswers['namaperusahaan'];
     pekerjaanData['jabatan'] = flatFormAnswers['jabatan'];
     pekerjaanData['ketjabatan'] = flatFormAnswers['ketjabatan'];
@@ -123,14 +123,14 @@ class FormProcessingServiceAPI {
     pasanganData['notelppasangan'] = flatFormAnswers['notelppasangan'];
     pasanganData['nomortelepon'] = flatFormAnswers['nomortelepon'];
     pasanganData['nohppasangan'] = flatFormAnswers['nohppasangan'];
+    pasanganData['pekerjaanpasangan'] = flatFormAnswers['pekerjaanpasangan'];
 
     // Data pekerjaan/usaha pasangan pemohon
     pasanganPekerjaanData['created_by'] = flatFormAnswers['created_by'];
     pasanganPekerjaanData['updated_by'] = flatFormAnswers['updated_by'];
     pasanganPekerjaanData['application_id'] = flatFormAnswers['application_id'];
     pasanganPekerjaanData['nik'] = flatFormAnswers['nik'];
-    pasanganPekerjaanData['pekerjaanpasangan'] =
-        flatFormAnswers['pekerjaanpasangan'];
+
     pasanganPekerjaanData['namaperusahaanpasangan'] =
         flatFormAnswers['namaperusahaanpasangan'];
     pasanganPekerjaanData['jabatanpasangan'] =
@@ -189,14 +189,14 @@ class FormProcessingServiceAPI {
         flatFormAnswers['buktimilikrumahpenjamin'];
     penjaminData['lamatinggalpenjamin'] =
         flatFormAnswers['lamatinggalpenjamin'];
+    penjaminData['pekerjaanpenjamin'] = flatFormAnswers['pekerjaanpenjamin'];
 
     // Data pekerjaan/usaha Penjamin
     pekerjaanPenjaminData['created_by'] = flatFormAnswers['created_by'];
     pekerjaanPenjaminData['updated_by'] = flatFormAnswers['updated_by'];
     pekerjaanPenjaminData['application_id'] = flatFormAnswers['application_id'];
     pekerjaanPenjaminData['nik'] = flatFormAnswers['nik'];
-    pekerjaanPenjaminData['pekerjaanpenjamin'] =
-        flatFormAnswers['pekerjaanpenjamin'];
+
     pekerjaanPenjaminData['namaperusahaanpenjamin'] =
         flatFormAnswers['namaperusahaanpenjamin'];
     pekerjaanPenjaminData['jabatanpenjamin'] =
@@ -240,6 +240,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['notelponpasanganpenjamin'];
     pasanganPenjaminData['nowapasanganpenjamin'] =
         flatFormAnswers['nowapasanganpenjamin'];
+    pasanganPenjaminData['pekerjaanpasanganpenjamin'] =
+        flatFormAnswers['pekerjaanpasanganpenjamin'];
 
     // Data pekerjaan/usaha pasangan Penjamin
     pasanganPekerjaanPenjaminData['created_by'] = flatFormAnswers['created_by'];
@@ -247,8 +249,7 @@ class FormProcessingServiceAPI {
     pasanganPekerjaanPenjaminData['application_id'] =
         flatFormAnswers['application_id'];
     pasanganPekerjaanPenjaminData['nik'] = flatFormAnswers['nik'];
-    pasanganPekerjaanPenjaminData['pekerjaanpasanganpenjamin'] =
-        flatFormAnswers['pekerjaanpasanganpenjamin'];
+
     pasanganPekerjaanPenjaminData['namaperusahaanpasanganpenjamin'] =
         flatFormAnswers['namaperusahaanpasanganpenjamin'];
     pasanganPekerjaanPenjaminData['jabatanpasanganpenjamin'] =
