@@ -88,14 +88,14 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     final Map<String, dynamic> jsonData = {};
     final Map<String, Map<String, dynamic>> fileData = {};
 
-    // final formService = FormProcessingServiceAPI();
-    // final Map<String, dynamic> finalForm =
-    //     formService.processFormToAPI(formAnswers);
-
-    final formService = FormProcessingService();
-
+    final formService = FormProcessingServiceAPI();
     final Map<String, dynamic> finalForm =
-        formService.processFormToNestedMap(formAnswers);
+        formService.processFormToAPI(formAnswers);
+
+    // final formService = FormProcessingService();
+
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToNestedMap(formAnswers);
     // printPrettyJson(finalForm);
 
     finalForm.forEach((section, value) {

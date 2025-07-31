@@ -55,13 +55,14 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       is_survey: fields[35] as int?,
       isActived: fields[36] as bool?,
       application_id: fields[37] as String?,
+      created_date: fields[38] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, OrderModel obj) {
     writer
-      ..writeByte(38)
+      ..writeByte(39)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -137,7 +138,9 @@ class OrderModelAdapter extends TypeAdapter<OrderModel> {
       ..writeByte(36)
       ..write(obj.isActived)
       ..writeByte(37)
-      ..write(obj.application_id);
+      ..write(obj.application_id)
+      ..writeByte(38)
+      ..write(obj.created_date);
   }
 
   @override

@@ -8,6 +8,7 @@ import 'package:gsure/models/login_model.dart';
 import 'package:gsure/models/user_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/buttons.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 class LoginUserPage extends StatefulWidget {
   const LoginUserPage({super.key});
@@ -20,7 +21,19 @@ class _LoginUserPageState extends State<LoginUserPage> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  //
+  String appName = '';
+  String version = '';
+  String buildNumber = '';
+  final int currentYear = DateTime.now().year;
+
+  Future<void> loadAppInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      appName = info.appName;
+      version = info.version;
+      buildNumber = info.buildNumber;
+    });
+  }
 
   UserModel? _loggedInUser;
 
@@ -45,6 +58,12 @@ class _LoginUserPageState extends State<LoginUserPage> {
     }
 
     return false;
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadAppInfo();
   }
 
   @override
@@ -191,6 +210,16 @@ class _LoginUserPageState extends State<LoginUserPage> {
                             );
                       },
                       // onPressed: login,
+                    ),
+
+                    const SizedBox(height: 30),
+
+                    Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Versi $version (Build $buildNumber)',
+                        style: TextStyle(color: Colors.grey[600]),
+                      ),
                     ),
 
                     // SizedBox(

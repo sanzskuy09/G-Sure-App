@@ -80,6 +80,9 @@ class AplikasiSurvey extends HiveObject {
   @HiveField(20)
   String? nik;
 
+  @HiveField(21)
+  String? created_date;
+
   AplikasiSurvey({
     this.id,
     this.dataDealer,
@@ -102,6 +105,7 @@ class AplikasiSurvey extends HiveObject {
     this.updatedAt,
     this.application_id,
     this.nik,
+    this.created_date,
   });
 
   Map<String, dynamic> toJson() => {
@@ -126,6 +130,7 @@ class AplikasiSurvey extends HiveObject {
         'dataPenjamin': dataPenjamin?.toJson(),
         'dataPasanganPenjamin': dataPasanganPenjamin?.toJson(),
         'analisacmo': analisacmo,
+        'created_date': created_date,
 
         // 'fotoPekerjaan': fotoPekerjaan,
         // 'fotoSimulasi': fotoSimulasi,
@@ -144,6 +149,7 @@ class AplikasiSurvey extends HiveObject {
     if (nik != null) flatMap['nik'] = nik;
     if (isPenjaminExist != null) flatMap['isPenjaminExist'] = isPenjaminExist;
     if (analisacmo != null) flatMap['analisacmo'] = analisacmo;
+    if (created_date != null) flatMap['created_date'] = created_date;
 
     // Tambahkan properti dari sub-objek DataDealer
     if (dataDealer != null) {
@@ -253,6 +259,7 @@ class AplikasiSurvey extends HiveObject {
       updatedAt: json['updatedAt'],
       application_id: json['application_id'],
       nik: json['nik'],
+      created_date: json['created_date'],
       dataDealer: json['dataDealer'] != null
           ? DataDealer.fromJson(json['dataDealer'])
           : null,
@@ -368,6 +375,7 @@ class AplikasiSurvey extends HiveObject {
     String? updatedAt,
     String? application_id,
     String? nik,
+    String? created_date,
   }) {
     return AplikasiSurvey(
       id: id ?? this.id,
@@ -391,6 +399,7 @@ class AplikasiSurvey extends HiveObject {
       updatedAt: updatedAt ?? this.updatedAt,
       application_id: application_id ?? this.application_id,
       nik: nik ?? this.nik,
+      created_date: created_date ?? this.created_date,
     );
   }
 }

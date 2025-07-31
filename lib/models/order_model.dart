@@ -119,6 +119,9 @@ class OrderModel extends HiveObject {
   @HiveField(37)
   String? application_id;
 
+  @HiveField(38)
+  String? created_date;
+
   OrderModel({
     this.id,
     this.cabang,
@@ -158,6 +161,7 @@ class OrderModel extends HiveObject {
     this.is_survey,
     this.isActived,
     this.application_id,
+    this.created_date,
   });
 
   // Method toJson yang lebih lengkap
@@ -196,6 +200,7 @@ class OrderModel extends HiveObject {
       'is_survey': is_survey,
       'isActived': isActived,
       'application_id': application_id,
+      'created_date': created_date,
       // Foto biasanya di-handle terpisah (misalnya di-upload sebagai multipart/form-data)
     };
   }
@@ -240,6 +245,7 @@ class OrderModel extends HiveObject {
       is_survey: json['is_survey'],
       isActived: true,
       application_id: json['application_id'],
+      created_date: json['created_date'],
     );
   }
 
@@ -286,6 +292,7 @@ class OrderModel extends HiveObject {
     int? is_survey,
     bool? isActived,
     String? application_id,
+    String? created_date,
   }) {
     return OrderModel(
       id: id ?? this.id,
@@ -326,6 +333,7 @@ class OrderModel extends HiveObject {
       is_survey: is_survey ?? this.is_survey,
       isActived: isActived ?? this.isActived,
       application_id: application_id ?? this.application_id,
+      created_date: created_date ?? this.created_date,
     );
   }
 }

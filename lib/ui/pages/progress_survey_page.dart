@@ -6,6 +6,7 @@ import 'package:gsure/ui/pages/draft_detail_page.dart';
 import 'package:gsure/ui/pages/progress_detail_page.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
 
 class ProgressSurveyPage extends StatelessWidget {
   const ProgressSurveyPage({super.key});
@@ -216,6 +217,17 @@ class DraftSurveyCard extends StatelessWidget {
     final namaPemohon = survey.dataPemohon?.nama ?? 'Tanpa Nama';
     final appId = hiveKey.toString();
 
+    String formatTanggal(String? isoDate) {
+      if (isoDate == null) return '-';
+      try {
+        final date = DateTime.parse(isoDate);
+        final formatter = DateFormat("d MMMM yyyy", "id_ID");
+        return formatter.format(date);
+      } catch (e) {
+        return '-';
+      }
+    }
+
     return Card(
       elevation: 2.5,
       shadowColor: Colors.black.withOpacity(0.3),
@@ -277,6 +289,13 @@ class DraftSurveyCard extends StatelessWidget {
                     ),
                     Text(
                       'NIK: ${survey.nik ?? '-'}',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey[600],
+                      ),
+                    ),
+                    Text(
+                      'UPDATE: ${formatTanggal(survey.created_date) ?? '-'}',
                       style: TextStyle(
                         fontSize: 13,
                         color: Colors.grey[600],

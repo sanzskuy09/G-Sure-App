@@ -100,9 +100,9 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     final Map<String, dynamic> jsonData = {};
     final Map<String, Map<String, dynamic>> fileData = {};
 
-    final formService = FormProcessingServiceAPI();
-    final Map<String, dynamic> finalForm =
-        formService.processFormToAPI(formAnswers);
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
 
     // // printPrettyJson(finalForm);
 
@@ -110,10 +110,10 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     //   print('[$section]: ${jsonEncode(value)}');
     // });
 
-    // final formService = FormProcessingService();
+    final formService = FormProcessingService();
 
-    // final Map<String, dynamic> finalForm =
-    //     formService.processFormToNestedMap(formAnswers);
+    final Map<String, dynamic> finalForm =
+        formService.processFormToNestedMap(formAnswers);
 
     // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
     // JsonEncoder encoder =

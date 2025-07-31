@@ -38,13 +38,14 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       updatedAt: fields[18] as String?,
       application_id: fields[19] as String?,
       nik: fields[20] as String?,
+      created_date: fields[21] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, AplikasiSurvey obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class AplikasiSurveyAdapter extends TypeAdapter<AplikasiSurvey> {
       ..writeByte(19)
       ..write(obj.application_id)
       ..writeByte(20)
-      ..write(obj.nik);
+      ..write(obj.nik)
+      ..writeByte(21)
+      ..write(obj.created_date);
   }
 
   @override

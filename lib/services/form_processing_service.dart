@@ -88,6 +88,8 @@ class FormProcessingServiceAPI {
         flatFormAnswers['buktimilikrumahpemohon'];
     pemohonData['lamatinggalpemohon'] = flatFormAnswers['lamatinggalpemohon'];
     pemohonData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
+    pemohonData['analisacmo'] = flatFormAnswers['analisacmo'];
+    pemohonData['status'] = 'CRA';
 
     // Data pekerjaan/usaha pemohon
     pekerjaanData['created_by'] = flatFormAnswers['created_by'];
@@ -672,6 +674,8 @@ class FormProcessingService {
     pemohonData['buktimilikrumahpemohon'] =
         processedAnswers['buktimilikrumahpemohon'];
     pemohonData['lamatinggalpemohon'] = processedAnswers['lamatinggalpemohon'];
+    pemohonData['jenispekerjaan'] = processedAnswers['jenispekerjaan'];
+    pemohonData['analisacmo'] = processedAnswers['analisacmo'];
     // Data pekerjaan/usaha pemohon
     pekerjaanData['jenispekerjaan'] = processedAnswers['jenispekerjaan'];
     pekerjaanData['namaperusahaan'] = processedAnswers['namaperusahaan'];
@@ -894,6 +898,7 @@ class FormProcessingService {
     // 3. Gabungkan semua map bagian menjadi satu map akhir yang bertingkat
     final Map<String, dynamic> nestedData = {
       // foto array
+      'created_date': DateTime.now().toString(),
       'fotoPekerjaan': fotoPekerjaanList,
       'fotoSimulasi': fotoSimulasiList,
       'fotoTambahan': fotoTambahanList,

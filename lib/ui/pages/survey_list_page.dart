@@ -9,6 +9,7 @@ import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/pages/form_survey_page.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
+import 'package:intl/intl.dart';
 
 class SurveyListPage extends StatelessWidget {
   const SurveyListPage({super.key});
@@ -184,6 +185,17 @@ class SurveyOrderCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String formatTanggal(String? isoDate) {
+      if (isoDate == null) return '-';
+      try {
+        final date = DateTime.parse(isoDate);
+        final formatter = DateFormat("d MMMM yyyy", "id_ID");
+        return formatter.format(date);
+      } catch (e) {
+        return '-';
+      }
+    }
+
     return Card(
       elevation: 2,
       shadowColor: Colors.black.withOpacity(0.3),
@@ -250,9 +262,15 @@ class SurveyOrderCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 6),
                     Divider(color: Colors.grey[400], height: 1),
+                    _buildInfoRow(
+                      context,
+                      icon: Icons.date_range_outlined,
+                      text:
+                          'ORDER : ${formatTanggal(order.created_date) ?? '-'}',
+                    ),
                     _buildInfoRow(context,
                         icon: Icons.person_pin_outlined,
-                        text: 'NIK: ${order.nik ?? '-'}'),
+                        text: 'NIK : ${order.nik ?? '-'}'),
                     _buildInfoRow(context,
                         icon: Icons.location_on_outlined,
                         text: order.alamat ?? '-'),
