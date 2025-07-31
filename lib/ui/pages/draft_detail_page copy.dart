@@ -33,21 +33,21 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
   AplikasiSurvey? _currentSurvey;
   Map<String, dynamic> formAnswers = {};
   List<QuestionSection> _question = [];
-  List<bool> openStates = [];
+  // List<bool> openStates = [];
   int openIndex = 0;
   DateTime? selectedDate;
   int visibleSectionCount = 1; // hanya tampilkan satu section di awal
   // bool _isFormDirty = false;
 
-  // void _showNextSection() {
-  //   final nextCount = visibleSectionCount + 1;
-  //   final totalVisible = _question.length;
-  //   if (nextCount <= totalVisible) {
-  //     setState(() {
-  //       visibleSectionCount = nextCount;
-  //     });
-  //   }
-  // }
+  void _showNextSection() {
+    final nextCount = visibleSectionCount + 1;
+    final totalVisible = _question.length;
+    if (nextCount <= totalVisible) {
+      setState(() {
+        visibleSectionCount = nextCount;
+      });
+    }
+  }
 
   Future<List<QuestionSection>> loadQuestionData() async {
     final String jsonStr =
@@ -83,6 +83,96 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     return isConfirmed ?? false;
   }
 
+  void _showConfirmationDialog() {
+    // 1. Lakukan pemisahan data di sini
+    final Map<String, dynamic> jsonData = {};
+    final Map<String, Map<String, dynamic>> fileData = {};
+
+    final formService = FormProcessingServiceAPI();
+    final Map<String, dynamic> finalForm =
+        formService.processFormToAPI(formAnswers);
+
+    // final formService = FormProcessingService();
+
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToNestedMap(formAnswers);
+    // printPrettyJson(finalForm);
+
+    finalForm.forEach((section, value) {
+      print('[$section]: ${jsonEncode(value)}');
+    });
+
+    for (final entry in formAnswers.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (value is Map && value.containsKey('file')) {
+        fileData[key] = Map<String, dynamic>.from(value);
+      } else if (value != null) {
+        jsonData[key] = value;
+      }
+    }
+
+    // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
+    const encoder = JsonEncoder.withIndent('  ');
+    // final String jsonString = encoder.convert(jsonData);
+    final String jsonString = encoder.convert(finalForm);
+    // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
+    final String fileString = encoder.convert(fileData.map((key, value) =>
+        MapEntry(
+            key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+
+    String prettyprint = encoder.convert(finalForm);
+    print("--- ISI FINALFORM ---");
+    print(prettyprint);
+    print("---------------------");
+    // ==========================================================
+
+    // 3. Tampilkan dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi Pengiriman"),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Data JSON yang akan dikirim:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(jsonString,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                const SizedBox(height: 16),
+                const Text("File yang akan di-upload:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(fileString,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Batal"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FilledButton(
+              child: const Text("Kirim"),
+              onPressed: () {
+                // _saveAplikasiToHive();
+                // Navigator.of(context).pop(); // Tutup dialog
+                // _submitSurvey(jsonData,
+                //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   void _showInputConfirmDialog() async {
     final bool? isConfirmed = await showLottieConfirmationDialog(
       context: context,
@@ -107,6 +197,15 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       final Map<String, dynamic> finalForm =
           formService.processFormToNestedMap(formAnswers);
 
+      // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
+      // JsonEncoder encoder =
+      //     JsonEncoder.withIndent('  '); // '  ' untuk 2 spasi indentasi
+      // String prettyprint = encoder.convert(finalForm);
+      // print("--- ISI FINALFORM ---");
+      // print(prettyprint);
+      // print("---------------------");
+      // // ==========================================================
+
       finalForm.addAll({'status': 'DRAFT'});
 
       final box = Hive.box<AplikasiSurvey>('survey_apps');
@@ -129,6 +228,17 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
 
   // HANYA MENGIRIM EVENT, TIDAK LEBIH
   void _sendAplikasiToAPI() {
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
+
+    // const encoder = JsonEncoder.withIndent('  ');
+    // String prettyprint = encoder.convert(formAnswers);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
+
+    // Cukup panggil event. Biarkan BlocListener yang menangani sisanya.
     context.read<SurveyBloc>().add(
           SendSurveyData(
             uniqueId: '${widget.surveyKey}', // <-- PASS ID DARI SINI
@@ -190,6 +300,19 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     }
 
     formAnswers['nik'] = _currentSurvey?.nik;
+
+    // print(jsonEncode(formAnswers));
+    // formAnswers = {
+    //   'katpemohon': 'PERORANGAN', // Contoh nilai default
+    //   // 'namadealer': survey.dataPemohon?.cabang,
+    //   // 'application_id': survey.dataPemohon?.id,
+    //   // 'nik': survey.dataPemohon?.nik,
+    //   // 'statuspernikahan': survey.dataPemohon?.statusperkawinan,
+    //   // 'nama': survey.dataPemohon?.nama,
+    //   // 'namapasangan': survey.dataPemohon?.namapasangan,
+    //   // 'ktppasangan': survey.dataPemohon?.nikpasangan,
+    //   'isPenjaminExist': 'Ya',
+    // };
   }
 
   @override
@@ -199,7 +322,6 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     loadQuestionData().then((data) {
       setState(() {
         _question = data;
-        openStates = List<bool>.filled(data.length, false);
       });
     });
 
@@ -273,6 +395,13 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                 backgroundColor: Colors.red.shade300,
               ),
             );
+
+            // context.read<SurveyBloc>().add(
+            //       UploadSurveyFiles(
+            //         uniqueId: widget.surveyKey,
+            //         formAnswers: formAnswers, // Kirim lagi formAnswers
+            //       ),
+            //     );
           }
 
           // Langkah 1: Metadata sukses
@@ -311,6 +440,49 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                 content: Text('❌ Gagal upload file : ${state.error}'),
                 backgroundColor: Colors.red));
           }
+
+          // if (state is SendSurveySuccess) {
+          //   // JIKA PENGIRIMAN API SUKSES...
+          //   try {
+          //     // 1. Buka box Hive
+          //     final box = Hive.box<AplikasiSurvey>('survey_apps');
+
+          //     // 2. Ambil data yang ada menggunakan ID dari state
+          //     final surveyToUpdate = box.get(state.uniqueId);
+
+          //     if (surveyToUpdate != null) {
+          //       // 3. Buat objek baru dengan status yang sudah diubah
+          //       final updatedSurvey = surveyToUpdate.copyWith(status: 'DONE');
+
+          //       // 4. Simpan kembali objek yang sudah diupdate ke Hive
+          //       box.put(state.uniqueId, updatedSurvey);
+
+          //       print(
+          //           'Status survei ID: ${state.uniqueId} berhasil diupdate ke DONE');
+          //     }
+          //   } catch (e) {
+          //     print('Gagal mengupdate status di Hive: $e');
+          //   }
+
+          //   if (Navigator.of(context).canPop()) {
+          //     Navigator.of(context).pop(); // Tutup dialog loading
+          //   }
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(content: Text('✅ Data berhasil dikirim!')),
+          //   );
+          //   // Contoh navigasi setelah sukses
+          //   Navigator.pushNamedAndRemoveUntil(
+          //       context, '/list-survey', (_) => false);
+          // }
+
+          // if (state is SendSurveyFailure) {
+          //   if (Navigator.of(context).canPop()) {
+          //     Navigator.of(context).pop(); // Tutup dialog loading
+          //   }
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     SnackBar(content: Text('❌ Gagal: ${state.error}')),
+          //   );
+          // }
         },
         child: Scaffold(
           appBar: AppBar(
@@ -336,27 +508,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
               final item = _question[index];
 
               return AccordionSection(
-                isOpen: openStates[index],
-                onOpenSection: () {
-                  // Use onOpenSection
-                  setState(() {
-                    // When this section opens, set its state to true
-                    openStates[index] = true;
-                    // Optional: Close all other sections if you want only one open at a time
-                    for (int i = 0; i < openStates.length; i++) {
-                      if (i != index) {
-                        openStates[i] = false;
-                      }
-                    }
-                  });
-                },
-                onCloseSection: () {
-                  // Use onCloseSection
-                  setState(() {
-                    // When this section closes, set its state to false
-                    openStates[index] = false;
-                  });
-                },
+                isOpen: false,
                 contentVerticalPadding: 10,
                 leftIcon: const Icon(
                   Icons.question_answer_outlined,
@@ -373,9 +525,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                   item: item,
                   formAnswers: formAnswers,
                   onFieldChanged: () {
-                    setState(() {
-                      openStates[index] = true;
-                    });
+                    setState(() {});
                   },
                 ),
               );
