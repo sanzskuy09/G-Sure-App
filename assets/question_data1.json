@@ -599,7 +599,7 @@
    {
     "title": "Catatan Analisa CMO",
     "fields": [
-      { "type": "text", "label": "Deskripsi", "key": "analisacmo" }
+      { "type": "textarea", "label": "Deskripsi", "key": "analisacmo" }
     ]
   }
 ]

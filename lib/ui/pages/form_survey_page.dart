@@ -42,12 +42,31 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
   int visibleSectionCount = 1; // hanya tampilkan satu section di awal
   // bool _isFormDirty = false;
 
+  // void _showNextSection() {
+  //   final nextCount = visibleSectionCount + 1;
+  //   final totalVisible = _question.length;
+  //   if (nextCount <= totalVisible) {
+  //     setState(() {
+  //       visibleSectionCount = nextCount;
+  //     });
+  //   }
+  // }
+
   void _showNextSection() {
     final nextCount = visibleSectionCount + 1;
     final totalVisible = _question.length;
     if (nextCount <= totalVisible) {
       setState(() {
         visibleSectionCount = nextCount;
+
+        // Tutup semua section
+        openStates = List.generate(visibleSectionCount, (_) => false);
+
+        // Buka section terakhir yang baru ditambahkan
+        final lastIndex = visibleSectionCount - 1;
+        if (lastIndex >= 0) {
+          openStates[lastIndex] = true;
+        }
       });
     }
   }
@@ -339,8 +358,10 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     loadQuestionData().then((data) {
       setState(() {
         _question = data;
-        openStates =
-            List.generate(data.length, (i) => i == 0); // buka yang pertama
+        openStates = List<bool>.filled(data.length, false);
+
+        // openStates =
+        //     List.generate(data.length, (i) => i == 0); // buka yang pertama
       });
     });
     _initializeFormAnswers();
@@ -478,7 +499,24 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
               final item = _question[actualIndex];
 
               return AccordionSection(
-                isOpen: index == visibleSectionIndexes.length - 1,
+                // isOpen: index == visibleSectionIndexes.length - 1,
+                isOpen: openStates[index],
+
+                onOpenSection: () {
+                  setState(() {
+                    openStates[index] = true;
+                    for (int i = 0; i < openStates.length; i++) {
+                      if (i != index) {
+                        openStates[i] = false;
+                      }
+                    }
+                  });
+                },
+                onCloseSection: () {
+                  setState(() {
+                    openStates[index] = false;
+                  });
+                },
                 contentVerticalPadding: 10,
                 leftIcon: const Icon(
                   Icons.question_answer_outlined,

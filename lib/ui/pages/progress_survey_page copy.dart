@@ -8,83 +8,8 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 
-class ProgressSurveyPage extends StatefulWidget {
+class ProgressSurveyPage extends StatelessWidget {
   const ProgressSurveyPage({super.key});
-
-  @override
-  State<ProgressSurveyPage> createState() => _ProgressSurveyPageState();
-}
-
-class _ProgressSurveyPageState extends State<ProgressSurveyPage> {
-  // LANGKAH 2: Tambahkan state untuk mengelola UI dan query pencarian
-  final TextEditingController _searchController = TextEditingController();
-  bool _isSearching = false;
-  String _searchQuery = "";
-
-  @override
-  void initState() {
-    super.initState();
-    // Listener untuk memperbarui UI saat pengguna mengetik
-    _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    // Jangan lupa dispose controller
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  AppBar _buildAppBar(BuildContext context) {
-    if (_isSearching) {
-      return AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            setState(() {
-              _isSearching = false;
-              _searchController.clear();
-            });
-          },
-        ),
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Cari berdasarkan nama...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
-          ),
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => _searchController.clear(),
-          ),
-        ],
-      );
-    } else {
-      return AppBar(
-        title: const Text('PROGRESS SURVEY'),
-        automaticallyImplyLeading: false,
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              setState(() {
-                _isSearching = true;
-              });
-            },
-          ),
-        ],
-      );
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -92,27 +17,23 @@ class _ProgressSurveyPageState extends State<ProgressSurveyPage> {
     final String boxName = 'survey_apps';
 
     return Scaffold(
-      appBar: _buildAppBar(context),
+      appBar: AppBar(
+        title: const Text('PROGRESS SURVEY'),
+      ),
       body: ValueListenableBuilder(
         valueListenable: Hive.box<AplikasiSurvey>(boxName).listenable(),
         builder: (context, Box<AplikasiSurvey> box, _) {
-          List<AplikasiSurvey> draftSurveys =
+          // --- MODIFIKASI DI SINI ---
+          // 1. Filter semua data untuk mendapatkan yang statusnya 'DRAFT'
+          final List<AplikasiSurvey> draftSurveys =
               box.values.where((survey) => survey.status != 'APP').toList();
-
-          if (_searchQuery.isNotEmpty) {
-            draftSurveys = draftSurveys.where((order) {
-              final orderName = order.dataPemohon!.nama?.toLowerCase() ?? '';
-              final query = _searchQuery.toLowerCase();
-              return orderName.contains(query);
-            }).toList();
-          }
+          // final List<AplikasiSurvey> draftSurveys =
+          //     box.values.where((survey) => survey.status == 'DONE').toList();
 
           if (draftSurveys.isEmpty) {
             return Center(
               child: Text(
-                _searchQuery.isNotEmpty
-                    ? 'Nama "$_searchQuery" tidak ditemukan.'
-                    : 'Belum ada data draft survey.',
+                'Belum ada data draft survey.',
                 style: blackTextStyle.copyWith(
                   fontSize: 16,
                   fontWeight: medium,
@@ -129,9 +50,111 @@ class _ProgressSurveyPageState extends State<ProgressSurveyPage> {
               final survey = draftSurveys[index];
               final hiveKey = survey.key;
 
+              // Gantikan widget lama dengan kartu baru yang didesain ulang
               return DraftSurveyCard(survey: survey, hiveKey: hiveKey);
             },
           );
+
+          // return ListView.builder(
+          //   padding: const EdgeInsets.all(8),
+          //   itemCount: draftSurveys.length,
+          //   itemBuilder: (context, index) {
+          //     // Ambil item dari list baru
+          //     final survey = draftSurveys[index];
+          //     // Ambil key langsung dari objek HiveObject
+          //     final hiveKey = survey.key;
+
+          //     final appId = hiveKey;
+          //     final namaPemohon = survey.dataPemohon?.nama ?? 'Tanpa Nama';
+          //     // Status pasti 'DRAFT', tapi bisa juga diambil dari survey.status
+          //     final statusSurvey = survey.status ?? 'DRAFT';
+
+          //     return Padding(
+          //       padding: const EdgeInsets.only(bottom: 8.0),
+          //       child: Material(
+          //         elevation: 2,
+          //         borderRadius: BorderRadius.circular(5),
+          //         child: InkWell(
+          //           borderRadius: BorderRadius.circular(5),
+          //           child: Container(
+          //             padding: const EdgeInsets.all(16),
+          //             decoration: BoxDecoration(
+          //               color: Colors.white,
+          //               borderRadius: BorderRadius.circular(5),
+          //             ),
+          //             child: Row(
+          //               children: [
+          //                 CircleAvatar(
+          //                   radius: 30,
+          //                   backgroundColor: lightBackgorundColor,
+          //                   child: const Icon(
+          //                     Icons.library_add_check,
+          //                     color: Colors.white,
+          //                   ),
+          //                 ),
+          //                 const SizedBox(
+          //                   width: 16,
+          //                 ),
+          //                 Expanded(
+          //                   child: Column(
+          //                     crossAxisAlignment: CrossAxisAlignment.start,
+          //                     children: [
+          //                       Text(
+          //                         namaPemohon,
+          //                         style: const TextStyle(
+          //                             fontWeight: FontWeight.bold,
+          //                             fontSize: 16),
+          //                       ),
+          //                       Text('ID: $appId '),
+          //                       const SizedBox(height: 6),
+          //                       Container(
+          //                         padding: const EdgeInsets.symmetric(
+          //                             horizontal: 10, vertical: 4),
+          //                         decoration: BoxDecoration(
+          //                           color: statusSurvey == 'DONE'
+          //                               ? Colors.green.shade100
+          //                               : Colors.orange.shade100,
+          //                           borderRadius: BorderRadius.circular(5),
+          //                         ),
+          //                         child: Text(
+          //                           statusSurvey,
+          //                           style: TextStyle(
+          //                             fontSize: 12,
+          //                             fontWeight: FontWeight.bold,
+          //                             color: statusSurvey == 'DONE'
+          //                                 ? Colors.green.shade800
+          //                                 : Colors.orange.shade800,
+          //                           ),
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   ),
+          //                 ),
+          //                 IconButton(
+          //                   padding: EdgeInsets.zero,
+          //                   onPressed: () {
+          //                     Navigator.push(
+          //                       context,
+          //                       // MaterialPageRoute(
+          //                       //   builder: (_) =>
+          //                       //       ProgressDetailPage(surveyKey: hiveKey),
+          //                       // ),
+          //                       MaterialPageRoute(
+          //                         builder: (_) =>
+          //                             DraftDetailPage(surveyKey: hiveKey),
+          //                       ),
+          //                     );
+          //                   },
+          //                   icon: const Icon(Icons.edit_square),
+          //                 ),
+          //               ],
+          //             ),
+          //           ),
+          //         ),
+          //       ),
+          //     );
+          //   },
+          // );
         },
       ),
     );

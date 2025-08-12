@@ -11,82 +11,24 @@ import 'package:hive/hive.dart';
 import 'package:hive_flutter/adapters.dart';
 import 'package:intl/intl.dart';
 
-class SurveyListPage extends StatefulWidget {
+class SurveyListPage extends StatelessWidget {
   const SurveyListPage({super.key});
 
   @override
-  State<SurveyListPage> createState() => _SurveyListPageState();
-}
+  Widget build(BuildContext context) {
+    // 1. Buka kedua box yang dibutuhkan
+    final ordersBox = Hive.box<OrderModel>('orders');
+    final surveysBox = Hive.box<AplikasiSurvey>('survey_apps');
 
-class _SurveyListPageState extends State<SurveyListPage> {
-  // LANGKAH 2: Tambahkan state untuk mengelola UI dan query pencarian
-  final TextEditingController _searchController = TextEditingController();
-  bool _isSearching = false;
-  String _searchQuery = "";
-
-  @override
-  void initState() {
-    super.initState();
-    // Listener untuk memperbarui UI saat pengguna mengetik
-    _searchController.addListener(() {
-      setState(() {
-        _searchQuery = _searchController.text;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    // Jangan lupa dispose controller
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  // LANGKAH 3: Buat AppBar yang dinamis untuk menangani mode pencarian
-  AppBar _buildAppBar(BuildContext context) {
-    if (_isSearching) {
-      return AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            setState(() {
-              _isSearching = false;
-              _searchController.clear();
-            });
-          },
-        ),
-        title: TextField(
-          controller: _searchController,
-          autofocus: true,
-          decoration: const InputDecoration(
-            hintText: 'Cari berdasarkan nama...',
-            border: InputBorder.none,
-            hintStyle: TextStyle(color: Colors.white70),
-          ),
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.close),
-            onPressed: () => _searchController.clear(),
-          ),
-        ],
-      );
-    } else {
-      return AppBar(
+    return Scaffold(
+      appBar: AppBar(
         title: const Text('LIST NEW SURVEY'),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search),
-            onPressed: () {
-              setState(() {
-                _isSearching = true;
-              });
-            },
-          ),
+          // Tambahkan tombol refresh untuk memicu sinkronisasi manual
           BlocBuilder<SurveyBloc, SurveyState>(
             builder: (context, state) {
+              // Tampilkan icon loading saat sedang sinkronisasi
               if (state is LoadingListDataFromOrder) {
                 return const Padding(
                   padding: EdgeInsets.only(right: 20.0),
@@ -100,6 +42,9 @@ class _SurveyListPageState extends State<SurveyListPage> {
               }
               return IconButton(
                 icon: const Icon(Icons.refresh),
+                // onPressed: () {
+                //   context.read<SurveyBloc>().add(GetDataSurveyFromOrder());
+                // },
                 onPressed: () {
                   final authState = context.read<AuthBloc>().state;
                   if (authState is AuthSuccess) {
@@ -110,22 +55,13 @@ class _SurveyListPageState extends State<SurveyListPage> {
                           .add(GetDataSurveyFromOrder(username));
                     }
                   }
+                  // context.read<OrderBloc>().add(SyncOrdersWithAPI());
                 },
               );
             },
           ),
         ],
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final ordersBox = Hive.box<OrderModel>('orders');
-    final surveysBox = Hive.box<AplikasiSurvey>('survey_apps');
-
-    return Scaffold(
-      appBar: _buildAppBar(context),
+      ),
       body: BlocListener<SurveyBloc, SurveyState>(
         listener: (context, state) {
           if (state is ListDataFromOrderSuccess) {
@@ -147,43 +83,35 @@ class _SurveyListPageState extends State<SurveyListPage> {
         child: ValueListenableBuilder<Box<OrderModel>>(
           valueListenable: ordersBox.listenable(),
           builder: (context, box, _) {
-            // 4a. Ambil key dari survey yang sudah ada
+            // 2. Buat "lookup set" dari survei yang sudah ada untuk pengecekan cepat.
+            //    Kita gabungkan appId dan nik menjadi satu kunci unik.
             final Set<String> existingSurveyKeys =
                 surveysBox.values.map((survey) {
               return '${survey.application_id}-${survey.nik}';
             }).toSet();
 
-            // 4b. Filter order yang belum ada di daftar survey
-            List<OrderModel> availableOrders = box.values.where((order) {
+            // 3. Filter daftar order.
+            //    Hanya tampilkan order yang kuncinya TIDAK ADA di dalam `existingSurveyKeys`.
+            final List<OrderModel> filteredOrders = box.values.where((order) {
               final orderKey = '${order.application_id}-${order.nik}';
               return !existingSurveyKeys.contains(orderKey);
             }).toList();
 
-            // 4c. Terapkan pencarian nama pada hasil filter di atas
-            if (_searchQuery.isNotEmpty) {
-              availableOrders = availableOrders.where((order) {
-                final orderName = order.nama?.toLowerCase() ?? '';
-                final query = _searchQuery.toLowerCase();
-                return orderName.contains(query);
-              }).toList();
-            }
-
-            if (availableOrders.isEmpty) {
-              return Center(
+            // 4. Tampilkan UI berdasarkan hasil filter
+            if (filteredOrders.isEmpty) {
+              return const Center(
                 child: Text(
-                  _searchQuery.isNotEmpty
-                      ? 'Nama "$_searchQuery" tidak ditemukan.'
-                      : 'Tidak ada order baru yang tersedia.',
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  'Tidak ada order baru yang tersedia.',
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
                 ),
               );
             }
 
-            // LANGKAH 5: Gunakan hasil akhir di ListView
             return ListView.builder(
-              itemCount: availableOrders.length,
+              itemCount: filteredOrders.length,
               itemBuilder: (context, index) {
-                final order = availableOrders[index];
+                final order = filteredOrders[index];
+                // Gantikan widget lama dengan kartu baru yang lebih menarik
                 return SurveyOrderCard(order: order);
               },
             );

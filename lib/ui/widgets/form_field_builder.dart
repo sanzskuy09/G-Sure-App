@@ -130,6 +130,23 @@ class FieldBuilder extends StatelessWidget {
           ),
         );
 
+      case 'textarea':
+        return labeledField(
+          label: field.label,
+          child: TextField(
+            textCapitalization: TextCapitalization
+                .sentences, // Capitalizes the first letter of each sentence
+            controller: field.controller,
+            style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
+            decoration: baseDecoration(),
+            keyboardType: TextInputType
+                .multiline, // Ini mengaktifkan tombol 'Enter' pada keyboard
+            maxLines:
+                null, // Ini memungkinkan field untuk tumbuh secara dinamis
+            onChanged: (value) => formAnswers?[field.key!] = value,
+          ),
+        );
+
       case 'numberDecimal':
         return labeledField(
           label: field.label,

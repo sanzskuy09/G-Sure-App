@@ -25,7 +25,9 @@ class SurveyService {
   // }
   Future<List<OrderModel>> getDataListOrder(String username) async {
     try {
-      final res = await http.get(Uri.parse('$baseUrl/pemohon/$username'));
+      // final res = await http.get(Uri.parse('$baseUrl/pemohon/order/$username'));
+      final res =
+          await http.get(Uri.parse('$baseUrlGratama/pemohon/order/$username'));
 
       if (res.statusCode == 200) {
         final List<dynamic> body = jsonDecode(res.body);
@@ -42,8 +44,10 @@ class SurveyService {
   }
 
   Future<void> sendSurveyData(Map<String, dynamic> data) async {
+    print('data survey $data');
     // Ganti 'submit-survey' dengan endpoint API Anda yang sebenarnya
-    final Uri url = Uri.parse('$baseUrlSurvey/alldata');
+    // final Uri url = Uri.parse('$baseUrlSurvey/alldata');
+    final Uri url = Uri.parse('$baseUrlSurveyGratama/alldata');
 
     try {
       final response = await http.post(
@@ -54,13 +58,34 @@ class SurveyService {
         body: jsonEncode(data),
       );
 
-      // 200 (OK) atau 201 (Created) biasanya menandakan sukses
       if (response.statusCode == 200 || response.statusCode == 201) {
         print('Data survey berhasil dikirim!');
-        // Anda bisa mengembalikan response body jika diperlukan
-        // return jsonDecode(response.body);
+
+        // Ambil application_id dari nested map dealer
+        final appId = data['dealer']?['application_id'];
+        if (appId != null) {
+          final Uri urlUpdate =
+              // Uri.parse('$baseUrl/pemohon/order/update/$appId');
+              Uri.parse('$baseUrlGratama/pemohon/order/update/$appId');
+
+          final updateResponse = await http.put(
+            urlUpdate,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          );
+
+          if (updateResponse.statusCode == 200 ||
+              updateResponse.statusCode == 201) {
+            print('Status berhasil diupdate!');
+          } else {
+            print(
+                'Gagal update status. Status: ${updateResponse.statusCode}, Body: ${updateResponse.body}');
+          }
+        } else {
+          print('application_id tidak ditemukan di data.dealer!');
+        }
       } else {
-        // Gagal mengirim data
         throw Exception(
             'Gagal mengirim data. Status: ${response.statusCode}, Body: ${response.body}');
       }
@@ -72,8 +97,10 @@ class SurveyService {
   }
 
   Future<void> fileUploadService(Map<String, dynamic> data) async {
+    // final Uri url =
+    //     Uri.parse('$baseUrlSurvey/api/foto-dokumen/upload/multiple');
     final Uri url =
-        Uri.parse('$baseUrlSurvey/api/foto-dokumen/upload/multiple');
+        Uri.parse('$baseUrlSurveyGratama/api/foto-dokumen/upload/multiple');
 
     try {
       print('ini data $data');
@@ -108,7 +135,8 @@ class SurveyService {
       print('filesToUpload $filesToUpload');
 
       // Ganti 'POST' dan endpoint sesuai kebutuhan API Anda
-      var uri = Uri.parse('$baseUrlSurvey/foto-dokumen/upload/multiple');
+      // var uri = Uri.parse('$baseUrlSurvey/foto-dokumen/upload/multiple');
+      var uri = Uri.parse('$baseUrlSurveyGratama/foto-dokumen/upload/multiple');
       var request = http.MultipartRequest('POST', uri);
 
       // --- 1. Tambahkan semua data teks ---
@@ -181,7 +209,8 @@ class SurveyService {
     required Map<String, dynamic> textData,
   }) async {
     try {
-      var uri = Uri.parse('$baseUrlSurvey/foto-tambahan/upload');
+      // var uri = Uri.parse('$baseUrlSurvey/foto-tambahan/upload');
+      var uri = Uri.parse('$baseUrlSurveyGratama/foto-tambahan/upload');
       var request = http.MultipartRequest('POST', uri);
 
       // --- 1. Tambahkan semua data teks ke `request.fields` ---
