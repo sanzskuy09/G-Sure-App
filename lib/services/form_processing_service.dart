@@ -58,7 +58,7 @@ class FormProcessingServiceAPI {
     dealerData['alamatsurvey'] = flatFormAnswers['alamatsurvey'];
     dealerData['rtsurvey'] = flatFormAnswers['rtsurvey'];
     dealerData['rwsurvey'] = flatFormAnswers['rwsurvey'];
-    dealerData['kodepoksurvey'] = flatFormAnswers['kodepoksurvey'];
+    dealerData['kodepoksurvey'] = flatFormAnswers['kodepossurvey'];
     dealerData['kelsurvey'] = flatFormAnswers['kelsurvey'];
     dealerData['kecsurvey'] = flatFormAnswers['kecsurvey'];
     dealerData['kotasurvey'] = flatFormAnswers['kotasurvey'];

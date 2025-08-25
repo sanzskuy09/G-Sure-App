@@ -13,8 +13,8 @@ class AuthServices {
   Future<UserModel> login(LoginModel data) async {
     try {
       final res = await http.post(
-        // Uri.parse('$baseUrl/user/login'),
-        Uri.parse('$baseUrlGratama/user/login'),
+        Uri.parse('$baseUrl/user/login'),
+        // Uri.parse('$baseUrlGratama/user/login'),
         body: data.toJson(),
         // headers: {
         //   'Content-Type': 'application/json',

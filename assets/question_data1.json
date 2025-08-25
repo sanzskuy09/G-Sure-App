@@ -473,7 +473,7 @@
       },
       { "type": "number", "label": "No. Telepon", "key": "notelppenjamin" },
       { "type": "number", "label": "No. Whatsapp", "key": "nowapenjamin" },
-      { "type": "number", "label": "KTP", "key": "ktppenjamin" },
+      { "type": "number", "label": "KTP", "key": "noktppenjamin" },
       { "type": "text", "label": "Tanggal KTP", "key": "tglktppenjamin" },
       { "type": "number", "label": "SIM (Nomor)", "key": "simpenjamin" },
       { "type": "number", "label": "NPWP (Nomor)", "key": "npwppenjamin" },

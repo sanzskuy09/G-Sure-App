@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:gsure/blocs/auth/auth_bloc.dart';
+import 'package:gsure/services/backup_restore_service.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:hive/hive.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
+
+  @override
+  State<SettingsPage> createState() => _SettingsPageState();
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  final _backupService = BackupRestoreService1();
 
   void _resetDataHiveTEmp() async {
     // await Hive.deleteBoxFromDisk('konsumen');
@@ -43,6 +51,167 @@ class SettingsPage extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  // TERIMA context sebagai parameter
+  void _doBackup(BuildContext context) {
+    // TODO: Tambahkan logika untuk MEM-BACKUP data Anda di sini
+    print('Melakukan proses backup...');
+
+    // Sekarang 'context' sudah terdefinisi dan bisa digunakan
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Backup berhasil!')),
+    );
+  }
+
+// TERIMA context sebagai parameter
+  void _doRestore(BuildContext context) {
+    // TODO: Tambahkan logika untuk ME-RESTORE data Anda di sini
+    print('Melakukan proses restore...');
+
+    // Sekarang 'context' sudah terdefinisi dan bisa digunakan
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Restore berhasil!'),
+        backgroundColor: Colors.green,
+      ),
+    );
+  }
+
+  void _showBackupRestoreDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+          title: const Text('Manajemen Data', textAlign: TextAlign.center),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.cloud_upload_outlined),
+                title: const Text('Backup Data'),
+                subtitle: const Text('Simpan data ke folder Download'),
+                onTap: () async {
+                  Navigator.pop(dialogContext); // Tutup dialog dulu
+
+                  // Panggil fungsi backup
+                  final bool success = await _backupService.backup(context);
+
+                  // Peringatan: Selalu cek 'mounted' sebelum menggunakan context setelah await
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Backup Berhasil!'),
+                          backgroundColor: Colors.green),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Backup Gagal! Cek log.'),
+                          backgroundColor: Colors.red),
+                    );
+                  }
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cloud_download_outlined),
+                title: const Text('Restore Data'),
+                subtitle: const Text('Pulihkan data dari file backup'),
+                onTap: () async {
+                  Navigator.pop(dialogContext); // Tutup dialog
+
+                  // Panggil fungsi restore
+                  final bool success = await _backupService.restore(context);
+
+                  if (!context.mounted) return;
+
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text(
+                              'Restore Berhasil! Silakan restart aplikasi.'),
+                          backgroundColor: Colors.green),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Restore Gagal! Cek log.'),
+                          backgroundColor: Colors.red),
+                    );
+                  }
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+// Ubah fungsi _backupDataHiveTemp menjadi seperti ini
+  void _backupDataHiveTemp(BuildContext context) {
+    showDialog(
+      context: context,
+      // Menggunakan barrierDismissible: false agar dialog tidak tertutup saat area luar diketuk
+      barrierDismissible: true,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          // Membuat sudut dialog menjadi membulat
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+          ),
+          title: const Text(
+            'Manajemen Data',
+            textAlign: TextAlign.center,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+          // Menggunakan content untuk meletakkan widget custom
+          content: Column(
+            // Ukuran dialog akan menyesuaikan kontennya
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Divider(
+                color: redColor,
+              ), // Garis pemisah
+              ListTile(
+                leading: Icon(Icons.cloud_upload_outlined,
+                    color: Theme.of(context).primaryColor),
+                title: const Text('Backup Data'),
+                subtitle: const Text('Simpan data Anda ke lokal'),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _doBackup(context);
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.cloud_download_outlined,
+                    color: Theme.of(context).colorScheme.secondary),
+                title: const Text('Restore Data'),
+                subtitle: const Text('Pulihkan data dari lokal'),
+                onTap: () {
+                  Navigator.pop(dialogContext);
+                  _doRestore(context);
+                },
+              ),
+            ],
+          ),
+          // Anda bisa menambahkan tombol aksi jika perlu
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Batal'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Menutup dialog
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -168,10 +337,16 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                   // MENU ITEM : OTHER
+                  // listButton(
+                  //     icon: Icons.sync,
+                  //     label: 'Synchronize',
+                  //     onTap: _resetDataHiveTEmp),
                   listButton(
-                      icon: Icons.sync,
-                      label: 'Synchronize',
-                      onTap: _resetDataHiveTEmp),
+                    icon: Icons.sync,
+                    label: 'Backup/Restore',
+                    // onTap: () => _backupDataHiveTemp(context),
+                    onTap: () => _showBackupRestoreDialog(context),
+                  ),
                   listButton(
                     icon: Icons.info_outline,
                     label: 'About',
