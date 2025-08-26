@@ -52,14 +52,14 @@ class _SplashPageState extends State<SplashPage>
     const storage = FlutterSecureStorage();
     String? token = await storage.read(key: 'token');
 
-    print('Stored token: $token');
+    // print('Stored token: $token');
 
     if (token != null && token.isNotEmpty) {
       // context.read<AuthBloc>().add(AuthCheck(token));
-      context.read<AuthBloc>().add(AuthCheckStatus());
+      if (mounted) context.read<AuthBloc>().add(AuthCheckStatus());
     } else {
       Timer(const Duration(seconds: 3), () {
-        print('token kosong');
+        // print('token kosong');
         Navigator.pushNamedAndRemoveUntil(context, '/login', (_) => false);
         // Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
       });
@@ -78,7 +78,6 @@ class _SplashPageState extends State<SplashPage>
       backgroundColor: Colors.white, // ganti dengan whiteColor jika punya
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          print('hasil sate: $state');
           if (state is AuthSuccess) {
             // Navigator.pushNamedAndRemoveUntil(context, '/main', (_) => false);
             Timer(Duration(seconds: 3), () {

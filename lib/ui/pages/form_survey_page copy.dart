@@ -13,12 +13,15 @@ import 'package:gsure/models/question_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/services/form_processing_service.dart';
 import 'package:gsure/shared/theme.dart';
-import 'package:gsure/ui/pages/loading_lottie_page.dart';
 import 'package:gsure/ui/widgets/buttons.dart';
 import 'package:gsure/ui/widgets/lottie_confirm_dialog.dart';
 import 'package:gsure/ui/widgets/question_section.dart';
 import 'package:hive/hive.dart';
 import 'package:logger/logger.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:gsure/blocs/form/form_bloc.dart';
+// import 'package:intl/intl.dart';
+// import 'package:dio/dio.dart';
 
 class FormSurveyPage extends StatefulWidget {
   final OrderModel order;
@@ -111,114 +114,120 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     logger.i(compactJson);
   }
 
-  // void _showConfirmationDialog() {
-  //   // 1. Lakukan pemisahan data di sini
-  //   final Map<String, dynamic> jsonData = {};
-  //   final Map<String, Map<String, dynamic>> fileData = {};
+  void _showConfirmationDialog() {
+    // 1. Lakukan pemisahan data di sini
+    final Map<String, dynamic> jsonData = {};
+    final Map<String, Map<String, dynamic>> fileData = {};
 
-  //   // final formService = FormProcessingServiceAPI();
-  //   // final Map<String, dynamic> finalForm =
-  //   //     formService.processFormToAPI(formAnswers);
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
 
-  //   // // printPrettyJson(finalForm);
+    // // printPrettyJson(finalForm);
 
-  //   // finalForm.forEach((section, value) {
-  //   //   print('[$section]: ${jsonEncode(value)}');
-  //   // });
+    // finalForm.forEach((section, value) {
+    //   print('[$section]: ${jsonEncode(value)}');
+    // });
 
-  //   final formService = FormProcessingService();
+    final formService = FormProcessingService();
 
-  //   final Map<String, dynamic> finalForm =
-  //       formService.processFormToNestedMap(formAnswers);
+    final Map<String, dynamic> finalForm =
+        formService.processFormToNestedMap(formAnswers);
 
-  //   // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
-  //   // JsonEncoder encoder =
-  //   //     JsonEncoder.withIndent('  '); // '  ' untuk 2 spasi indentasi
+    // ✅ TAMBAHKAN BLOK INI UNTUK MELIHAT ISI FINALFORM
+    // JsonEncoder encoder =
+    //     JsonEncoder.withIndent('  '); // '  ' untuk 2 spasi indentasi
 
-  //   for (final entry in formAnswers.entries) {
-  //     final key = entry.key;
-  //     final value = entry.value;
-  //     if (value is Map && value.containsKey('file')) {
-  //       fileData[key] = Map<String, dynamic>.from(value);
-  //     } else if (value != null) {
-  //       jsonData[key] = value;
-  //     }
-  //   }
+    for (final entry in formAnswers.entries) {
+      final key = entry.key;
+      final value = entry.value;
+      if (value is Map && value.containsKey('file')) {
+        fileData[key] = Map<String, dynamic>.from(value);
+      } else if (value != null) {
+        jsonData[key] = value;
+      }
+    }
 
-  //   // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
-  //   const encoder = JsonEncoder.withIndent('  ');
-  //   // final String jsonString = encoder.convert(jsonData);
-  //   final String jsonString = encoder.convert(finalForm);
-  //   // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
-  //   final String fileString = encoder.convert(fileData.map((key, value) =>
-  //       MapEntry(
-  //           key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
+    // 2. Format data menjadi string JSON yang rapi untuk ditampilkan
+    const encoder = JsonEncoder.withIndent('  ');
+    // final String jsonString = encoder.convert(jsonData);
+    final String jsonString = encoder.convert(finalForm);
+    // Untuk file, kita tampilkan key dan path-nya saja agar ringkas
+    final String fileString = encoder.convert(fileData.map((key, value) =>
+        MapEntry(
+            key, (value['file'] as File?)?.path ?? 'Path tidak ditemukan')));
 
-  //   // String prettyprint = encoder.convert(finalForm);
-  //   // print("--- ISI FINALFORM ---");
-  //   // print(prettyprint);
-  //   // print("---------------------");
-  //   // ==========================================================
+    // String prettyprint = encoder.convert(finalForm);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
+    // ==========================================================
 
-  //   // 3. Tampilkan dialog
-  //   showDialog(
-  //     context: context,
-  //     builder: (context) {
-  //       return AlertDialog(
-  //         title: const Text("Konfirmasi Pengiriman"),
-  //         content: SingleChildScrollView(
-  //           child: Column(
-  //             crossAxisAlignment: CrossAxisAlignment.start,
-  //             children: [
-  //               const Text("Data JSON yang akan dikirim:",
-  //                   style: TextStyle(fontWeight: FontWeight.bold)),
-  //               const SizedBox(height: 8),
-  //               Text(jsonString,
-  //                   style:
-  //                       const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-  //               const SizedBox(height: 16),
-  //               const Text("File yang akan di-upload:",
-  //                   style: TextStyle(fontWeight: FontWeight.bold)),
-  //               const SizedBox(height: 8),
-  //               // Text(fileString,
-  //               //     style:
-  //               //         const TextStyle(fontFamily: 'monospace', fontSize: 12)),
-  //             ],
-  //           ),
-  //         ),
-  //         actions: [
-  //           TextButton(
-  //             child: const Text("Batal"),
-  //             onPressed: () => Navigator.of(context).pop(),
-  //           ),
-  //           FilledButton(
-  //             child: const Text("Kirim"),
-  //             onPressed: () {
-  //               // _sendAplikasiToAPI();
-  //               // _saveAplikasiToHive();
-  //               // Navigator.of(context).pop(); // Tutup dialog
-  //               // _submitSurvey(jsonData,
-  //               //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
-  //             },
-  //           ),
-  //         ],
-  //       );
-  //     },
-  //   );
-  // }
+    // 3. Tampilkan dialog
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Konfirmasi Pengiriman"),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text("Data JSON yang akan dikirim:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                Text(jsonString,
+                    style:
+                        const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+                const SizedBox(height: 16),
+                const Text("File yang akan di-upload:",
+                    style: TextStyle(fontWeight: FontWeight.bold)),
+                const SizedBox(height: 8),
+                // Text(fileString,
+                //     style:
+                //         const TextStyle(fontFamily: 'monospace', fontSize: 12)),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text("Batal"),
+              onPressed: () => Navigator.of(context).pop(),
+            ),
+            FilledButton(
+              child: const Text("Kirim"),
+              onPressed: () {
+                // _sendAplikasiToAPI();
+                // _saveAplikasiToHive();
+                // Navigator.of(context).pop(); // Tutup dialog
+                // _submitSurvey(jsonData,
+                //     fileData); // Panggil fungsi submit dengan data yang sudah dipisah
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   void _sendAplikasiToAPI() {
+    // final formService = FormProcessingServiceAPI();
+    // final Map<String, dynamic> finalForm =
+    //     formService.processFormToAPI(formAnswers);
+
+    // const encoder = JsonEncoder.withIndent('  ');
+    // String prettyprint = encoder.convert(formAnswers);
+    // print("--- ISI FINALFORM ---");
+    // print(prettyprint);
+    // print("---------------------");
+
+    // Cukup panggil event. Biarkan BlocListener yang menangani sisanya.
     context.read<SurveyBloc>().add(
           SendSurveyData(
-            uniqueId: '${widget.order.application_id}',
+            uniqueId: '${widget.order.application_id}', // <-- PASS ID DARI SINI
             formAnswers: formAnswers,
           ),
         );
-
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => LoadingLottiePage()),
-    );
   }
 
   void _showInputConfirmDialogToAPI() async {
@@ -249,8 +258,17 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
 
       final box = Hive.box<AplikasiSurvey>('survey_apps');
       final aplikasi = AplikasiSurvey.fromJson(finalForm);
+      // final uniqueId = 'app_${DateTime.now().millisecondsSinceEpoch}';
       final uniqueId = '${widget.order.application_id}';
       box.put(uniqueId, aplikasi);
+
+      // print('Data survey berhasil disimpan ke Hive dengan key: $uniqueId.');
+
+      // --- LOGIKA BARU UNTUK UPDATE ORDER ---
+      // 2. Buka box tempat OrderModel disimpan
+      // final orderBox = Hive.box<OrderModel>('orders');
+      // order.isActived = false;
+      // orderBox.put(order.id, order);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -258,6 +276,8 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       );
 
       Navigator.pushNamedAndRemoveUntil(context, '/list-survey', (_) => false);
+      // print(
+      //     'Data berhasil disimpan ke Hive dengan key: $uniqueId. Jumlah data: ${box.length}');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('❌ Gagal menyimpan data: $e')),
@@ -296,22 +316,40 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     return isConfirmed ?? false;
   }
 
+  // 3. Buat fungsi terpisah agar initState tetap rapi.
   void _initializeFormAnswers() {
     final order = widget.order;
 
     formAnswers = order.toJson();
 
+// ✅ 1. AMBIL STATE DARI AUTHBLOC
+    // `context.read<T>()` digunakan untuk membaca state sekali saja tanpa me-rebuild widget
     final authState = context.read<AuthBloc>().state;
 
+    // ✅ 2. CEK JIKA LOGIN BERHASIL DAN AMBIL USERNAME
     if (authState is AuthSuccess) {
+      // Ambil username dari user yang sedang login dan tambahkan ke map
       formAnswers['created_by'] = authState.user.username;
       formAnswers['updated_by'] = authState.user.username;
     } else {
+      // Fallback jika karena suatu alasan user tidak ditemukan di state
       formAnswers['created_by'] = 'unknown_user';
       formAnswers['updated_by'] = 'unknown_user';
     }
 
     formAnswers['nik'] = order.nik;
+
+    // formAnswers = {
+    //   'application_id': order.application_id,
+    //   'katpemohon': 'PERORANGAN', // Contoh nilai default
+    //   'namadealer': order.cabang,
+    //   'nik': order.nik,
+    //   'statuspernikahan': order.statusperkawinan,
+    //   'nama': order.nama,
+    //   'namapasangan': order.namapasangan,
+    //   'ktppasangan': order.nikpasangan,
+    //   'isPenjaminExist': 'Ya',
+    // };
   }
 
   @override
@@ -347,7 +385,7 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
     }
 
     return PopScope(
-      canPop: false,
+      canPop: false, // Hanya bisa pop jika form tidak kotor/berubah
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         if (didPop) {
           return;
@@ -359,14 +397,74 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
       },
       child: BlocListener<SurveyBloc, SurveyState>(
         listener: (context, state) {
+          // ✅ TAMPILKAN SNACKBAR JIKA SUKSES
+          // if (state is SendSurveySuccess) {
+          //   ScaffoldMessenger.of(context).showSnackBar(
+          //     const SnackBar(
+          //       content: Text('✅ Data berhasil dikirim ke server!'),
+          //       backgroundColor: Colors.green,
+          //     ),
+          //   );
+          //   // Pindah halaman setelah notifikasi muncul
+          //   Navigator.pushNamedAndRemoveUntil(
+          //       context, '/list-survey', (_) => false);
+          // }
+
+          // // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
+
+          if (state is SendingSurvey || state is UploadingFiles) {
+            showDialog(
+              context: context,
+              barrierDismissible: false,
+              builder: (context) =>
+                  const Center(child: CircularProgressIndicator()),
+            );
+          }
+
           if (state is SendSurveyFailure) {
+            Navigator.pop(context);
+
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
+                // content: Text('❌ Gagal mengirim data: ${state.error}'),
                 content: Text(
                     '❌ Gagal mengirim data: Data ini sudah pernah dikirim'),
                 backgroundColor: Colors.red.shade300,
               ),
             );
+
+            // context.read<SurveyBloc>().add(
+            //       UploadSurveyFiles(
+            //         uniqueId: '${widget.order.application_id}',
+            //         formAnswers: formAnswers, // Kirim lagi formAnswers
+            //       ),
+            //     );
+          }
+
+          // Langkah 1: Metadata sukses
+          if (state is SendSurveySuccess) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text(
+                    '✅ Data form berhasil dikirim. Memulai upload file...')));
+            // Langkah 2: Langsung picu event upload file
+            context.read<SurveyBloc>().add(UploadSurveyFiles(
+                  uniqueId: state.uniqueId,
+                  formAnswers: formAnswers, // Kirim lagi formAnswers
+                ));
+          }
+
+          // Hasil akhir dari upload file
+          if (state is UploadFilesSuccess) {
+            Navigator.pop(context);
+
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                content: Text('🎉 Semua file berhasil diunggah!'),
+                backgroundColor: Colors.green));
+
+            Navigator.pushNamedAndRemoveUntil(
+                context, '/list-survey', (_) => false);
           }
 
           if (state is UploadFilesFailed) {
@@ -375,15 +473,6 @@ class _FormSurveyPageState extends State<FormSurveyPage> {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                 content: Text('❌ Gagal upload file: ${state.error}'),
                 backgroundColor: Colors.red));
-          }
-
-          if (state is SendSurveySuccess) {
-            context.read<SurveyBloc>().add(
-                  UploadSurveyFiles(
-                    uniqueId: state.uniqueId,
-                    formAnswers: formAnswers,
-                  ),
-                );
           }
         },
         child: Scaffold(

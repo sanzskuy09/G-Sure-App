@@ -111,14 +111,64 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     return await sourceFile.copy(newPath);
   }
 
-  Future<File?> _compressImage(File file, {int targetSizeInMB = 1}) async {
-    final int targetSizeInBytes = targetSizeInMB * 1024 * 1024;
+  // Future<File?> _compressImage(File file, {int targetSizeInMB = 1}) async {
+  //   final int targetSizeInBytes = targetSizeInMB * 1024 * 1024;
+  //   final initialSize = await file.length();
+
+  //   // Jika ukuran file sudah di bawah target, langsung kembalikan file asli
+  //   if (initialSize <= targetSizeInBytes) {
+  //     print(
+  //         'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
+  //     return file;
+  //   }
+
+  //   // Siapkan path untuk file hasil kompresi
+  //   final tempDir = await getTemporaryDirectory();
+  //   final timestamp = DateTime.now().millisecondsSinceEpoch;
+  //   final targetPath = p.join(tempDir.path, '${timestamp}_compressed.jpg');
+
+  //   int quality = 85; // Mulai dengan kualitas 85%
+
+  //   // Kompres file
+  //   XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
+  //     file.absolute.path,
+  //     targetPath,
+  //     quality: quality,
+  //   );
+
+  //   if (compressedXFile == null) {
+  //     print('Kompresi gagal.');
+  //     return null; // Gagal kompresi
+  //   }
+
+  //   // Cek ukuran hasil kompresi, jika masih terlalu besar, kurangi kualitas
+  //   // (Looping sederhana untuk menurunkan kualitas jika perlu)
+  //   int compressedSize = await compressedXFile.length();
+  //   while (compressedSize > targetSizeInBytes && quality > 10) {
+  //     quality -= 5; // Kurangi kualitas
+  //     compressedXFile = await FlutterImageCompress.compressAndGetFile(
+  //       file.absolute.path,
+  //       targetPath,
+  //       quality: quality,
+  //     );
+  //     if (compressedXFile == null) break;
+  //     compressedSize = await compressedXFile.length();
+  //   }
+
+  //   print(
+  //       'Kompresi selesai. Ukuran: ${(initialSize / 1024).toStringAsFixed(2)} KB -> ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+
+  //   return File(compressedXFile!.path);
+  // }
+
+  Future<File?> _compressImage(File file, {int targetSizeInKB = 500}) async {
+    final int targetSizeInBytes = targetSizeInKB * 1024;
     final initialSize = await file.length();
 
     // Jika ukuran file sudah di bawah target, langsung kembalikan file asli
     if (initialSize <= targetSizeInBytes) {
-      print(
-          'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
+      // print(
+      //     'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
       return file;
     }
 
@@ -129,7 +179,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
 
     int quality = 85; // Mulai dengan kualitas 85%
 
-    // Kompres file
+    // Kompres file pertama kali
     XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
       file.absolute.path,
       targetPath,
@@ -137,12 +187,11 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     );
 
     if (compressedXFile == null) {
-      print('Kompresi gagal.');
+      // print('Kompresi gagal.');
       return null; // Gagal kompresi
     }
 
     // Cek ukuran hasil kompresi, jika masih terlalu besar, kurangi kualitas
-    // (Looping sederhana untuk menurunkan kualitas jika perlu)
     int compressedSize = await compressedXFile.length();
     while (compressedSize > targetSizeInBytes && quality > 10) {
       quality -= 5; // Kurangi kualitas
@@ -155,8 +204,8 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       compressedSize = await compressedXFile.length();
     }
 
-    print(
-        'Kompresi selesai. Ukuran: ${(initialSize / 1024).toStringAsFixed(2)} KB -> ${(compressedSize / 1024).toStringAsFixed(2)} KB');
+    // print(
+    //     'Kompresi selesai. Ukuran: ${(initialSize / 1024).toStringAsFixed(2)} KB -> ${(compressedSize / 1024).toStringAsFixed(2)} KB');
 
     return File(compressedXFile!.path);
   }
@@ -443,7 +492,7 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
 
     // ✅ PANGGIL FUNGSI KOMPRESI DI SINI
     final compressedFile =
-        await _compressImage(originalFile, targetSizeInMB: 1);
+        await _compressImage(originalFile, targetSizeInKB: 500);
 
     // Jika kompresi gagal, hentikan proses
     if (compressedFile == null) {

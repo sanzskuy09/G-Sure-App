@@ -54,7 +54,6 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
       if (key.startsWith(keyPrefix)) {
         // Pastikan kita tidak menambahkan field yang sudah ada dari template
         if (!_fields.any((field) => field.key == key)) {
-          print('key ditemukan: $key');
           // 4. Jika ditemukan key dinamis, buat FieldModel baru dan tambahkan ke list
           _fields.add(FieldModel(
             key: key,

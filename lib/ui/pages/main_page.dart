@@ -40,7 +40,7 @@ class _MainPageState extends State<MainPage> {
       if (authState is AuthSuccess) {
         final username = authState.user.username;
         if (username != null) {
-          print('username : $username');
+          // print('username : $username');
           context.read<SurveyBloc>().add(GetDataSurveyFromOrder(username));
           // context.read<OrderBloc>().add(FetchOrders(username));
         }

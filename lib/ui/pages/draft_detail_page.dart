@@ -12,6 +12,7 @@ import 'package:gsure/models/question_model.dart';
 import 'package:gsure/models/survey_app_model.dart';
 import 'package:gsure/services/form_processing_service.dart';
 import 'package:gsure/shared/theme.dart';
+import 'package:gsure/ui/pages/loading_lottie_page.dart';
 import 'package:gsure/ui/widgets/buttons.dart';
 import 'package:gsure/ui/widgets/lottie_confirm_dialog.dart';
 import 'package:gsure/ui/widgets/question_section.dart';
@@ -36,18 +37,8 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
   List<bool> openStates = [];
   int openIndex = 0;
   DateTime? selectedDate;
-  int visibleSectionCount = 1; // hanya tampilkan satu section di awal
+  int visibleSectionCount = 1;
   // bool _isFormDirty = false;
-
-  // void _showNextSection() {
-  //   final nextCount = visibleSectionCount + 1;
-  //   final totalVisible = _question.length;
-  //   if (nextCount <= totalVisible) {
-  //     setState(() {
-  //       visibleSectionCount = nextCount;
-  //     });
-  //   }
-  // }
 
   Future<List<QuestionSection>> loadQuestionData() async {
     final String jsonStr =
@@ -61,7 +52,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       context: context,
       title: 'Keluar dari Halaman?',
       message: 'Data yang belum disimpan akan hilang. Anda yakin ingin keluar?',
-      lottieAsset: 'assets/animations/warning.json', // Ganti dengan path Anda
+      lottieAsset: 'assets/animations/warning.json',
       confirmButtonColor: redColor,
       confirmButtonText: 'Ya, Keluar',
     );
@@ -75,7 +66,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       title: 'Peringatan?',
       message:
           'Data ini sudah dikirim dan tidak dapat diedit kembali. silahkan hubungi admin.',
-      lottieAsset: 'assets/animations/warning.json', // Ganti dengan path Anda
+      lottieAsset: 'assets/animations/warning.json',
       confirmButtonColor: redColor,
       confirmButtonText: 'Ya, paham',
     );
@@ -89,7 +80,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       title: 'Simpan Kembali Proses?',
       message:
           'Data akan disimpan di data lokal kemabli. Pastikan semua data sudah benar.',
-      lottieAsset: 'assets/animations/success.json', // Ganti dengan path Anda
+      lottieAsset: 'assets/animations/success.json',
       confirmButtonColor: successColor,
       confirmButtonText: 'Lanjutkan',
     );
@@ -127,7 +118,6 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     }
   }
 
-  // HANYA MENGIRIM EVENT, TIDAK LEBIH
   void _sendAplikasiToAPI() {
     context.read<SurveyBloc>().add(
           SendSurveyData(
@@ -135,6 +125,11 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
             formAnswers: formAnswers,
           ),
         );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => LoadingLottiePage()),
+    );
   }
 
   void _showInputConfirmDialogToAPI() async {
@@ -154,37 +149,15 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     }
   }
 
-// Fungsi _showConfirmDialogSendData Anda sudah benar, tidak perlu diubah.
-  void _showConfirmDialogSendData() async {
-    final bool? isConfirmed = await showLottieConfirmationDialog(
-      context: context,
-      title: 'Lanjutkan Proses?',
-      message:
-          'Proses akan dilanjutkan ke tahap survey lapangan. Pastikan semua data sudah benar.',
-      lottieAsset: 'assets/animations/success.json',
-      confirmButtonColor: successColor,
-      confirmButtonText: 'Lanjutkan',
-    );
-
-    if (isConfirmed == true) {
-      if (!context.mounted) return;
-      _sendAplikasiToAPI(); // Panggil fungsi yang sudah disederhanakan
-    }
-  }
-
-  // 3. Buat fungsi terpisah agar initState tetap rapi.
   void _initializeFormAnswers(AplikasiSurvey survey) {
     formAnswers = survey.toFlatJson();
 
     final authState = context.read<AuthBloc>().state;
 
-    // ✅ 2. CEK JIKA LOGIN BERHASIL DAN AMBIL USERNAME
     if (authState is AuthSuccess) {
-      // Ambil username dari user yang sedang login dan tambahkan ke map
       formAnswers['created_by'] = authState.user.username;
       formAnswers['updated_by'] = authState.user.username;
     } else {
-      // Fallback jika karena suatu alasan user tidak ditemukan di state
       formAnswers['created_by'] = 'unknown_user';
       formAnswers['updated_by'] = 'unknown_user';
     }
@@ -203,11 +176,9 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       });
     });
 
-    // Load survey data from Hive
     final box = Hive.box<AplikasiSurvey>('survey_apps');
     _currentSurvey = box.get(widget.surveyKey);
 
-    // Initialize form answers if survey data is available
     if (_currentSurvey != null) {
       _initializeFormAnswers(_currentSurvey!);
     }
@@ -221,7 +192,6 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil box Hive
     final AplikasiSurvey? survey = _currentSurvey;
 
     if (_question.isEmpty) {
@@ -238,7 +208,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
     }
 
     return PopScope(
-      canPop: false, // Hanya bisa pop jika form tidak kotor/berubah
+      canPop: false,
       onPopInvokedWithResult: (bool didPop, dynamic result) async {
         if (didPop) {
           return;
@@ -250,24 +220,9 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
       },
       child: BlocListener<SurveyBloc, SurveyState>(
         listener: (context, state) {
-          // Logika untuk bereaksi terhadap perubahan state BLoC
-          if (state is SendingSurvey || state is UploadingFiles) {
-            showDialog(
-              context: context,
-              barrierDismissible: false,
-              builder: (context) =>
-                  const Center(child: CircularProgressIndicator()),
-            );
-          }
-
-          // // ✅ TAMPILKAN SNACKBAR JIKA GAGAL
           if (state is SendSurveyFailure) {
-            // PENTING: Tutup dialog loading
-            Navigator.pop(context);
-
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                // content: Text('❌ Gagal mengirim data: ${state.error}'),
                 content: Text(
                     '❌ Gagal mengirim data: Data ini sudah pernah dikirim'),
                 backgroundColor: Colors.red.shade300,
@@ -275,41 +230,21 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
             );
           }
 
-          // Langkah 1: Metadata sukses
-          if (state is SendSurveySuccess) {
-            Navigator.pop(context);
-
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text(
-                    '✅ Data form berhasil dikirim. Memulai upload file...')));
-            // Langkah 2: Langsung picu event upload file
-            context.read<SurveyBloc>().add(
-                  UploadSurveyFiles(
-                    uniqueId: state.uniqueId,
-                    formAnswers: formAnswers, // Kirim lagi formAnswers
-                  ),
-                );
-          }
-
-          // Hasil akhir dari upload file
-          if (state is UploadFilesSuccess) {
-            // PENTING: Tutup dialog loading
-            Navigator.pop(context);
-
-            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                content: Text('🎉 Semua file berhasil diunggah!'),
-                backgroundColor: Colors.green));
-
-            Navigator.pushNamedAndRemoveUntil(
-                context, '/list-survey', (_) => false);
-          }
-
           if (state is UploadFilesFailed) {
             Navigator.pop(context);
 
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                content: Text('❌ Gagal upload file : ${state.error}'),
+                content: Text('❌ Gagal upload file: ${state.error}'),
                 backgroundColor: Colors.red));
+          }
+
+          if (state is SendSurveySuccess) {
+            context.read<SurveyBloc>().add(
+                  UploadSurveyFiles(
+                    uniqueId: state.uniqueId,
+                    formAnswers: formAnswers,
+                  ),
+                );
           }
         },
         child: Scaffold(
@@ -338,11 +273,8 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
               return AccordionSection(
                 isOpen: openStates[index],
                 onOpenSection: () {
-                  // Use onOpenSection
                   setState(() {
-                    // When this section opens, set its state to true
                     openStates[index] = true;
-                    // Optional: Close all other sections if you want only one open at a time
                     for (int i = 0; i < openStates.length; i++) {
                       if (i != index) {
                         openStates[i] = false;
@@ -351,9 +283,7 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                   });
                 },
                 onCloseSection: () {
-                  // Use onCloseSection
                   setState(() {
-                    // When this section closes, set its state to false
                     openStates[index] = false;
                   });
                 },
@@ -413,7 +343,6 @@ class _DraftDetailPageState extends State<DraftDetailPage> {
                     onPressed: _currentSurvey?.status == 'DONE'
                         ? () {}
                         : _showInputConfirmDialogToAPI,
-                    // onPressed: _showInputConfirmDialogToAPI,
                   ),
                   BuildButton(
                     iconData: Icons.arrow_forward_ios,

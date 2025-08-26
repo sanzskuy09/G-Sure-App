@@ -18,7 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   void _resetDataHiveTEmp() async {
     // await Hive.deleteBoxFromDisk('konsumen');
-    // await Hive.deleteFromDisk();
+    await Hive.deleteFromDisk();
   }
 
   Future<void> clearAllStorage() async {
@@ -341,12 +341,12 @@ class _SettingsPageState extends State<SettingsPage> {
                   //     icon: Icons.sync,
                   //     label: 'Synchronize',
                   //     onTap: _resetDataHiveTEmp),
-                  listButton(
-                    icon: Icons.sync,
-                    label: 'Backup/Restore',
-                    // onTap: () => _backupDataHiveTemp(context),
-                    onTap: () => _showBackupRestoreDialog(context),
-                  ),
+                  // listButton(
+                  //   icon: Icons.sync,
+                  //   label: 'Backup/Restore',
+                  //   // onTap: () => _backupDataHiveTemp(context),
+                  //   onTap: () => _showBackupRestoreDialog(context),
+                  // ),
                   listButton(
                     icon: Icons.info_outline,
                     label: 'About',
@@ -372,11 +372,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     ),
                     contentPadding: EdgeInsets.symmetric(vertical: 2),
                     onTap: () {
-                      // Navigator.pushNamedAndRemoveUntil(
-                      //   context,
-                      //   '/login',
-                      //   (_) => false,
-                      // );
                       _showLogoutDialog(context);
                     }, // Action here
                   ),
