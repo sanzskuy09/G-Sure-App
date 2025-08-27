@@ -121,6 +121,14 @@ class _ProgressSurveyPageState extends State<ProgressSurveyPage> {
             );
           }
 
+          draftSurveys.sort((a, b) {
+            final dateA =
+                DateTime.tryParse(a.created_date ?? '') ?? DateTime(1900);
+            final dateB =
+                DateTime.tryParse(b.created_date ?? '') ?? DateTime(1900);
+            return dateB.compareTo(dateA); // descending (baru duluan)
+          });
+
           return ListView.builder(
             padding: const EdgeInsets.symmetric(
                 vertical: 8), // Beri sedikit padding pada list

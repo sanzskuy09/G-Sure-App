@@ -7,6 +7,7 @@ import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/shared/theme.dart';
 import 'package:gsure/ui/widgets/camera_and_upload_field.dart';
+import 'package:gsure/ui/widgets/camera_and_upload_tambahan_field.dart';
 import 'package:gsure/ui/widgets/camera_field.dart';
 import 'package:gsure/ui/widgets/file_field.dart';
 import 'package:gsure/utils/number_formated.dart';
@@ -387,6 +388,32 @@ class FieldBuilder extends StatelessWidget {
 
       case 'cameraAndUpload':
         return CameraAndUploadFieldForm(
+          index: index,
+          label: field.label,
+          fieldKey: field.key,
+          value: field.value,
+          onFilePicked: (val, ts, pos) {
+            // 1. Update state lokal field (ini sudah benar)
+            field.value = val;
+            field.timestamp = ts;
+            field.latitude = pos?.latitude;
+            field.longitude = pos?.longitude;
+
+            // 2. ✅ TAMBAHKAN INI: Simpan Map lengkap ke formAnswers
+            formAnswers?[field.key!] = {
+              'file': val,
+              'timestamp': ts,
+              'latitude': pos?.latitude,
+              'longitude': pos?.longitude,
+            };
+
+            // 3. Panggil onValueChanged agar parent tahu ada perubahan
+            onValueChanged?.call(formAnswers?[field.key!]);
+          },
+        );
+
+      case 'cameraAndUploadTambahan':
+        return CameraAndUploadTambahanFieldForm(
           index: index,
           label: field.label,
           fieldKey: field.key,

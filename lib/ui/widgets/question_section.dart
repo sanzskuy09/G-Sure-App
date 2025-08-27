@@ -222,7 +222,7 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
 
                   _fields.add(FieldModel(
                     key: newKey, // <-- Gunakan key baru
-                    type: "cameraAndUpload",
+                    type: "cameraAndUploadTambahan",
                     label: newLabel, // <-- Gunakan label baru
                   ));
                 });
