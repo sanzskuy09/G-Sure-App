@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:gsure/blocs/auth/auth_bloc.dart';
 import 'package:gsure/services/backup_restore_service.dart';
 import 'package:gsure/shared/theme.dart';
+import 'package:gsure/ui/pages/face_verification_page.dart';
 import 'package:hive/hive.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -347,6 +348,19 @@ class _SettingsPageState extends State<SettingsPage> {
                   //   // onTap: () => _backupDataHiveTemp(context),
                   //   onTap: () => _showBackupRestoreDialog(context),
                   // ),
+                  listButton(
+                    icon: Icons.info_outline,
+                    label: 'Face Detection',
+                    onTap: () {
+                      // Navigator.pushNamed(context, '/about');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const FaceVerificationPage(),
+                        ),
+                      );
+                    },
+                  ),
                   listButton(
                     icon: Icons.info_outline,
                     label: 'About',
