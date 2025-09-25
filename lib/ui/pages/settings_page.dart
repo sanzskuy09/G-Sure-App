@@ -348,19 +348,19 @@ class _SettingsPageState extends State<SettingsPage> {
                   //   // onTap: () => _backupDataHiveTemp(context),
                   //   onTap: () => _showBackupRestoreDialog(context),
                   // ),
-                  listButton(
-                    icon: Icons.info_outline,
-                    label: 'Face Detection',
-                    onTap: () {
-                      // Navigator.pushNamed(context, '/about');
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const FaceVerificationPage(),
-                        ),
-                      );
-                    },
-                  ),
+                  // listButton(
+                  //   icon: Icons.info_outline,
+                  //   label: 'Face Detection',
+                  //   onTap: () {
+                  //     // Navigator.pushNamed(context, '/about');
+                  //     Navigator.push(
+                  //       context,
+                  //       MaterialPageRoute(
+                  //         builder: (context) => const FaceVerificationPage(),
+                  //       ),
+                  //     );
+                  //   },
+                  // ),
                   listButton(
                     icon: Icons.info_outline,
                     label: 'About',

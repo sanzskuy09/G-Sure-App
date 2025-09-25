@@ -1,7 +1,12 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
+import 'package:gsure/ui/pages/submission_form_page.dart';
+import 'package:gsure/ui/widgets/face_frame_painter.dart'; // Ganti 'gsure' dengan nama project Anda
 import 'package:gsure/ui/widgets/face_painter.dart';
 
 class FaceVerificationPage extends StatefulWidget {
@@ -12,31 +17,24 @@ class FaceVerificationPage extends StatefulWidget {
 }
 
 class _FaceVerificationPageState extends State<FaceVerificationPage> {
-  // Controller untuk kamera
   CameraController? _cameraController;
-  // Flag untuk menandakan apakah kamera sudah siap
   bool _isCameraInitialized = false;
-  // Instance dari FaceDetector
   late final FaceDetector _faceDetector;
-  // Untuk menggambar kotak di wajah
   CustomPaint? _customPaint;
-  // Status instruksi untuk pengguna
-  String _instruction = "Posisikan wajah Anda di dalam bingkai";
-  // Flag untuk mencegah deteksi berulang
+  String _instruction = "Posisikan wajah Anda di tengah";
   bool _isDetecting = false;
+  bool _isProcessingSuccess = false;
 
   @override
   void initState() {
     super.initState();
-    // Inisialisasi FaceDetector dengan opsi untuk mendeteksi landmark dan klasifikasi (kedipan)
     final options = FaceDetectorOptions(
-      enableClassification: true, // Untuk deteksi kedipan & senyuman
-      enableLandmarks: true, // Untuk mendeteksi bentuk wajah
+      enableClassification: true,
+      enableLandmarks: true,
+      enableContours: true, // WAJIB DIAKTIFKAN UNTUK MENDAPATKAN MESH
       performanceMode: FaceDetectorMode.accurate,
     );
     _faceDetector = FaceDetector(options: options);
-
-    // Mulai inisialisasi kamera
     _initializeCamera();
   }
 
@@ -47,11 +45,8 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
     super.dispose();
   }
 
-  // Fungsi untuk inisialisasi kamera
   Future<void> _initializeCamera() async {
-    // Dapatkan daftar kamera yang tersedia
     final cameras = await availableCameras();
-    // Pilih kamera depan
     final frontCamera = cameras.firstWhere(
       (camera) => camera.lensDirection == CameraLensDirection.front,
       orElse: () => cameras.first,
@@ -68,49 +63,37 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       _isCameraInitialized = true;
     });
 
-    // Mulai streaming gambar dari kamera untuk diproses
     _cameraController!.startImageStream(_processImage);
   }
 
-  // Fungsi untuk memproses setiap frame gambar dari kamera
   Future<void> _processImage(CameraImage image) async {
-    if (_isDetecting) return;
+    if (_isDetecting || _isProcessingSuccess || !mounted) return;
     _isDetecting = true;
 
     try {
       final inputImage = _inputImageFromCameraImage(image);
       if (inputImage == null) return;
 
-      // Proses gambar untuk mendeteksi wajah
       final faces = await _faceDetector.processImage(inputImage);
 
       if (faces.isNotEmpty) {
-        final face = faces.first; // Ambil wajah pertama yang terdeteksi
-
-        // Cek liveness sederhana: Kedipan mata
-        // Nilai probabilitas mata terbuka: 1.0 (sangat yakin terbuka), 0.0 (sangat yakin tertutup)
+        final face = faces.first;
         final double? leftEyeOpenProb = face.leftEyeOpenProbability;
         final double? rightEyeOpenProb = face.rightEyeOpenProbability;
 
         if (leftEyeOpenProb != null && rightEyeOpenProb != null) {
           if (leftEyeOpenProb < 0.2 && rightEyeOpenProb < 0.2) {
-            // Mata terdeteksi berkedip!
-            setState(() {
-              _instruction = "Verifikasi berhasil!";
-            });
-            _captureAndGoBack();
+            if (mounted) {
+              setState(() => _instruction = "Verifikasi berhasil!");
+              // PANGGIL FUNGSI BARU DI SINI
+              _onVerificationSuccess();
+            }
           } else {
-            setState(() {
-              _instruction = "Bagus! Sekarang silakan berkedip";
-            });
+            if (mounted)
+              setState(() => _instruction = "Bagus! Sekarang silakan berkedip");
           }
-        } else {
-          setState(() {
-            _instruction = "Posisikan wajah Anda di dalam bingkai";
-          });
         }
 
-        // Buat painter untuk menggambar kotak di wajah
         final painter = FacePainter(
           face: face,
           imageSize: Size(
@@ -119,114 +102,300 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
           ),
           cameraLensDirection: _cameraController!.description.lensDirection,
         );
-        setState(() {
-          _customPaint = CustomPaint(painter: painter);
-        });
+        if (mounted)
+          setState(() => _customPaint = CustomPaint(painter: painter));
       } else {
-        // Jika tidak ada wajah terdeteksi
-        setState(() {
-          _customPaint = null;
-          _instruction = "Posisikan wajah Anda di dalam bingkai";
-        });
+        if (mounted) {
+          setState(() {
+            _customPaint = null;
+            _instruction = "Posisikan wajah Anda di tengah";
+          });
+        }
       }
     } catch (e) {
       debugPrint("Error processing image: $e");
     } finally {
-      _isDetecting = false;
+      if (mounted) _isDetecting = false;
     }
   }
 
-  // Fungsi untuk mengambil foto dan kembali ke halaman sebelumnya
-  Future<void> _captureAndGoBack() async {
-    // Hentikan deteksi agar tidak berjalan terus menerus
-    if (!_isDetecting) return;
-    _isDetecting = false; // Mencegah pemanggilan ganda
+  // Future<void> _onVerificationSuccess() async {
+  //   if (_isProcessingSuccess) return;
+  //   setState(() => _isProcessingSuccess = true);
 
+  //   await _cameraController?.stopImageStream();
+
+  //   if (!mounted) return;
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Verifikasi Wajah Berhasil!')),
+  //   );
+
+  //   final XFile imageFile = await _cameraController!.takePicture();
+  //   final Uint8List imageBytes = await imageFile.readAsBytes();
+  //   final String base64Image = base64Encode(imageBytes);
+
+  //   // ===== PERUBAHAN UTAMA DI SINI =====
+  //   // 1. Lepaskan controller kamera SEPENUHNYA
+  //   await _cameraController?.dispose();
+
+  //   // 2. Set state controller menjadi null agar CameraPreview tidak error
+  //   setState(() {
+  //     _cameraController = null;
+  //   });
+  //   // ===================================
+
+  //   if (!mounted) return;
+
+  //   // Navigasi ke halaman form baru setelah kamera benar-benar mati
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => SubmissionFormPage(
+  //         base64Image: base64Image,
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  // Future<void> _onVerificationSuccess() async {
+  //   // 1. Set flag agar fungsi ini tidak dipanggil berkali-kali
+  //   if (_isProcessingSuccess) return;
+  //   setState(() => _isProcessingSuccess = true);
+
+  //   // 2. Hentikan stream kamera
+  //   await _cameraController?.stopImageStream();
+
+  //   if (!mounted) return;
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(content: Text('Verifikasi Wajah Berhasil!')),
+  //   );
+
+  //   // 3. Ambil gambar dengan kualitas terbaik
+  //   final XFile imageFile = await _cameraController!.takePicture();
+  //   final Uint8List imageBytes = await imageFile.readAsBytes();
+  //   final String base64Image = base64Encode(imageBytes);
+
+  //   if (!mounted) return;
+
+  //   // 4. Navigasi ke halaman form baru dan kirim data gambar
+  //   Navigator.push(
+  //     context,
+  //     MaterialPageRoute(
+  //       builder: (context) => SubmissionFormPage(
+  //         base64Image: base64Image,
+  //       ),
+  //     ),
+  //   ).then((_) {
+  //     // 2. BLOK INI AKAN DIJALANKAN SETELAH NAVIGASI SELESAI
+  //     // Kita tambahkan jeda singkat untuk memastikan animasi transisi benar-benar selesai
+  //     Future.delayed(const Duration(milliseconds: 500), () {
+  //       // 3. Pastikan halaman masih ada (mounted) sebelum mencoba dispose
+  //       if (mounted) {
+  //         _cameraController?.dispose();
+  //         setState(() {
+  //           _cameraController = null;
+  //           // Reset flag agar jika user kembali, verifikasi bisa dimulai lagi
+  //           _isDetecting = false;
+  //           _isProcessingSuccess = false;
+  //         });
+  //       }
+  //     });
+  //   });
+  // }
+
+  // Lokasi: di dalam _FaceVerificationPageState
+
+  Future<void> _onVerificationSuccess() async {
+    if (_isProcessingSuccess) return;
+    setState(() => _isProcessingSuccess = true);
+
+    // Hentikan stream agar tidak ada proses yang berjalan selama transisi
     await _cameraController?.stopImageStream();
 
-    // Tampilkan pesan sukses
+    if (!mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Wajah berhasil diverifikasi!'),
-        backgroundColor: Colors.green,
-      ),
+      const SnackBar(content: Text('Verifikasi Wajah Berhasil!')),
     );
 
-    // Tunggu sejenak lalu kembali
-    await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      Navigator.of(context).pop();
-    }
+    // Ambil gambar dengan kualitas terbaik
+    final XFile imageFile = await _cameraController!.takePicture();
+    final Uint8List imageBytes = await imageFile.readAsBytes();
+    final String base64Image = base64Encode(imageBytes);
+
+    if (!mounted) return;
+
+    // ===== GANTI NAVIGASI DENGAN PUSHREPLACEMENT =====
+    // Ini akan menghapus halaman kamera dan menggantinya dengan halaman form.
+    // Method dispose() dari halaman ini akan otomatis dipanggil.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SubmissionFormPage(
+          base64Image: base64Image,
+        ),
+      ),
+    );
   }
 
-  // Helper untuk konversi format gambar
+  // Future<void> _captureAndGoBack() async {
+  //   await _cameraController?.stopImageStream();
+  //   if (!mounted) return;
+
+  //   ScaffoldMessenger.of(context).showSnackBar(
+  //     const SnackBar(
+  //       content: Text('Wajah berhasil diverifikasi!'),
+  //       backgroundColor: Colors.green,
+  //     ),
+  //   );
+
+  //   await Future.delayed(const Duration(seconds: 1));
+  //   if (mounted) Navigator.of(context).pop();
+  // }
+
+  // --- Gunakan fungsi _inputImageFromCameraImage dari jawaban sebelumnya ---
+  // (Pastikan fungsi ini ada di sini)
+
   InputImage? _inputImageFromCameraImage(CameraImage image) {
     if (_cameraController == null) return null;
     final camera = _cameraController!.description;
+    final sensorOrientation = camera.sensorOrientation;
 
-    final rotation =
-        InputImageRotationValue.fromRawValue(camera.sensorOrientation);
+    InputImageRotation? rotation;
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      rotation = InputImageRotationValue.fromRawValue(sensorOrientation);
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
+      var rotationCompensation = (sensorOrientation + 360) % 360;
+      rotation = InputImageRotationValue.fromRawValue(rotationCompensation);
+    }
+
     if (rotation == null) return null;
 
     final format = InputImageFormatValue.fromRawValue(image.format.raw);
-    if (format == null) return null;
+    if (image.planes.length == 1) {
+      return InputImage.fromBytes(
+          bytes: image.planes[0].bytes,
+          metadata: InputImageMetadata(
+            size: Size(image.width.toDouble(), image.height.toDouble()),
+            rotation: rotation,
+            format: format!,
+            bytesPerRow: image.planes[0].bytesPerRow,
+          ));
+    }
 
+    final allBytes = WriteBuffer();
+    for (final Plane plane in image.planes) {
+      allBytes.putUint8List(plane.bytes);
+    }
+
+    final bytes = allBytes.done().buffer.asUint8List();
     return InputImage.fromBytes(
-      bytes: image.planes.first.bytes,
-      metadata: InputImageMetadata(
-        size: Size(image.width.toDouble(), image.height.toDouble()),
-        rotation: rotation,
-        format: format,
-        bytesPerRow: image.planes.first.bytesPerRow,
-      ),
-    );
+        bytes: bytes,
+        metadata: InputImageMetadata(
+          size: Size(image.width.toDouble(), image.height.toDouble()),
+          rotation: rotation,
+          format: InputImageFormat.nv21,
+          bytesPerRow: image.planes[0].bytesPerRow,
+        ));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
+      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title:
+            const Text('Face detection', style: TextStyle(color: Colors.black)),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: const SizedBox(), // Hapus tombol back default
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.black),
+            onPressed: () => Navigator.of(context).pop(),
+          )
+        ],
+      ),
+      body: Column(
         children: [
-          // Tampilkan preview kamera jika sudah siap
-          if (_isCameraInitialized)
-            CameraPreview(_cameraController!)
-          else
-            const Center(child: CircularProgressIndicator()),
+          const SizedBox(height: 48),
 
-          // Tampilkan kotak di sekitar wajah
-          if (_customPaint != null) _customPaint!,
+          // Area Kamera
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: AspectRatio(
+              aspectRatio: 3 / 4, // Rasio aspek untuk area kamera
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(24),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (_isCameraInitialized)
+                      _buildCameraPreview()
+                    else
+                      const Center(child: CircularProgressIndicator()),
 
-          // UI Tambahan (Instruksi & Tombol Kembali)
-          Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              SafeArea(
-                child: Align(
-                  alignment: Alignment.topLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
+                    // Painter untuk bingkai statis
+                    CustomPaint(painter: FaceFramePainter()),
+
+                    // Painter untuk mesh wajah dinamis
+                    if (_customPaint != null) _customPaint!,
+                  ],
                 ),
               ),
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                color: Colors.black.withOpacity(0.5),
-                child: Text(
+            ),
+          ),
+
+          const Spacer(),
+
+          // Area Footer
+          Container(
+            padding: const EdgeInsets.fromLTRB(24, 24, 24, 48),
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              // Jika ingin ada bayangan
+              // boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10)]
+            ),
+            child: Column(
+              children: [
+                Text(
                   _instruction,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
+                      fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ],
-          ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Please keep your face centered on the screen and facing forward',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 24),
+                const LinearProgressIndicator(), // Contoh progress bar
+              ],
+            ),
+          )
         ],
+      ),
+    );
+  }
+
+  Widget _buildCameraPreview() {
+    if (_cameraController == null) return const SizedBox.shrink();
+
+    final size = MediaQuery.of(context).size;
+    final cameraAspectRatio = _cameraController!.value.aspectRatio;
+    var scale = size.aspectRatio * cameraAspectRatio;
+    if (scale < 1) scale = 1 / scale;
+
+    return Transform.scale(
+      scale: scale,
+      child: Center(
+        child: CameraPreview(_cameraController!),
       ),
     );
   }

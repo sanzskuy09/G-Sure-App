@@ -36,7 +36,7 @@ android {
     }
 
     aaptOptions {
-        noCompress "tflite"
+        noCompress.add("tflite")
     }
 
     buildTypes {

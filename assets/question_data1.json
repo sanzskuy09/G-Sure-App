@@ -1,4 +1,10 @@
 [
+   {
+    "title": "Pefindo",
+    "fields": [
+      { "type": "button", "key": "btnpefindo", "label": "Verifikasi Wajah" }
+    ]
+  },
   {
     "title": "Dealer",
     "fields": [

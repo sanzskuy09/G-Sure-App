@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:gsure/models/photo_data_model.dart';
 import 'package:gsure/models/question_model.dart';
 import 'package:gsure/shared/theme.dart';
+import 'package:gsure/ui/pages/face_verification_page.dart';
 import 'package:gsure/ui/widgets/camera_and_upload_field.dart';
 import 'package:gsure/ui/widgets/camera_and_upload_tambahan_field.dart';
 import 'package:gsure/ui/widgets/camera_field.dart';
@@ -113,6 +114,41 @@ class FieldBuilder extends StatelessWidget {
             style: blackTextStyle.copyWith(fontSize: 16, fontWeight: semiBold),
             decoration: baseDecoration(),
             onChanged: (value) => formAnswers?[field.key!] = value,
+          ),
+        );
+
+      case 'button':
+        return labeledField(
+          label: field.label,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8), // ✅ Jarak antara label & button
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const FaceVerificationPage(),
+                    ),
+                  );
+                },
+                icon: const Icon(Icons.face, size: 20),
+                label: const Text('Verifikasi Wajah'),
+                style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+                  textStyle: const TextStyle(
+                      fontSize: 16, fontWeight: FontWeight.bold),
+                  backgroundColor: primaryColor,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  elevation: 5,
+                ),
+              ),
+            ],
           ),
         );
 
