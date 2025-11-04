@@ -101,6 +101,54 @@ class FieldBuilder extends StatelessWidget {
       );
     }
 
+    Widget buildVerificationButton(BuildContext context) {
+      return ElevatedButton.icon(
+        onPressed: () async {
+          // ✅ 1. Jadikan async
+
+          // 2. Pindah halaman DAN TUNGGU HINGGA KEMBALI
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              // ✅ KIRIM formAnswers KE HALAMAN BERIKUTNYA
+              builder: (context) => FaceVerificationPage(
+                // Teruskan data form yang ada saat ini
+                formAnswers: formAnswers,
+              ),
+            ),
+          );
+
+          print('result ===>');
+          print(result);
+
+          // 3. Cek jika ada hasil ('Diterima' / 'Ditolak')
+          if (result != null && result is String) {
+            // 4. Update state di parent widget & simpan hasil
+            setState?.call(() {
+              formAnswers?[field.key!] = result;
+            });
+          }
+        },
+        icon: const Icon(Icons.face, size: 20),
+        label: Text(
+          // Beri label berbeda jika mengulang
+          storedValue == 'Ditolak'
+              ? 'Coba Verifikasi Ulang'
+              : 'Verifikasi Wajah',
+        ),
+        style: ElevatedButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          backgroundColor: primaryColor, // Asumsi 'primaryColor' ada
+          foregroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+          elevation: 5,
+        ),
+      );
+    }
+
     switch (field.type) {
       case 'text':
       case 'email':
@@ -117,39 +165,105 @@ class FieldBuilder extends StatelessWidget {
           ),
         );
 
+      // case 'button':
+      //   return labeledField(
+      //     label: field.label,
+      //     child: Column(
+      //       crossAxisAlignment: CrossAxisAlignment.start,
+      //       children: [
+      //         const SizedBox(height: 8), // ✅ Jarak antara label & button
+      //         ElevatedButton.icon(
+      //           onPressed: () {
+      //             Navigator.push(
+      //               context,
+      //               MaterialPageRoute(
+      //                 builder: (context) => const FaceVerificationPage(),
+      //               ),
+      //             );
+      //           },
+      //           icon: const Icon(Icons.face, size: 20),
+      //           label: const Text('Verifikasi Wajah'),
+      //           style: ElevatedButton.styleFrom(
+      //             padding:
+      //                 const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      //             textStyle: const TextStyle(
+      //                 fontSize: 16, fontWeight: FontWeight.bold),
+      //             backgroundColor: primaryColor,
+      //             foregroundColor: Colors.white,
+      //             shape: RoundedRectangleBorder(
+      //               borderRadius: BorderRadius.circular(10),
+      //             ),
+      //             elevation: 5,
+      //           ),
+      //         ),
+      //       ],
+      //     ),
+      //   );
+
       case 'button':
-        return labeledField(
-          label: field.label,
-          child: Column(
+        Widget buttonChild;
+
+        // ✅ 5. Tampilkan UI berdasarkan status
+        if (storedValue == 'Diterima') {
+          // --- TAMPILAN SUKSES ---
+          buttonChild = Padding(
+            padding: const EdgeInsets.only(top: 8.0),
+            child: Row(
+              children: [
+                Icon(Icons.check_circle, color: Colors.green[700]),
+                const SizedBox(width: 8),
+                Text(
+                  'Verifikasi Diterima',
+                  style: blackTextStyle.copyWith(
+                    // Asumsi style ini ada
+                    fontSize: 16,
+                    fontWeight: semiBold, // Asumsi style ini ada
+                  ),
+                ),
+              ],
+            ),
+          );
+        } else if (storedValue == 'Ditolak') {
+          // --- TAMPILAN GAGAL (Bisa Coba Lagi) ---
+          buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const SizedBox(height: 8), // ✅ Jarak antara label & button
-              ElevatedButton.icon(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FaceVerificationPage(),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, bottom: 8.0),
+                child: Row(
+                  children: [
+                    Icon(Icons.error, color: Colors.red[700]),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Verifikasi Ditolak',
+                      style: blackTextStyle.copyWith(
+                        // Asumsi style ini ada
+                        fontSize: 16,
+                        fontWeight: semiBold, // Asumsi style ini ada
+                      ),
                     ),
-                  );
-                },
-                icon: const Icon(Icons.face, size: 20),
-                label: const Text('Verifikasi Wajah'),
-                style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
-                  textStyle: const TextStyle(
-                      fontSize: 16, fontWeight: FontWeight.bold),
-                  backgroundColor: primaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 5,
+                  ],
                 ),
               ),
+              // Tampilkan tombol lagi untuk mengulang
+              buildVerificationButton(context),
             ],
-          ),
+          );
+        } else {
+          // --- TAMPILAN AWAL (Tombol Verifikasi) ---
+          buttonChild = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: 8),
+              // Tampilkan tombol
+              buildVerificationButton(context),
+            ],
+          );
+        }
+
+        return labeledField(
+          label: field.label,
+          child: buttonChild,
         );
 
       case 'textNoSpace':
