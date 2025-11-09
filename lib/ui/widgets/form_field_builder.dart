@@ -101,6 +101,68 @@ class FieldBuilder extends StatelessWidget {
       );
     }
 
+    Widget _buildScoreIndicator({
+      required String label,
+      required IconData icon,
+      required double score,
+      required Color color,
+    }) {
+      // Ubah skor (misal: 0.322) menjadi persentase (misal: "32.2%")
+      final String percentage = (score).toStringAsFixed(1);
+
+      return Padding(
+        padding: const EdgeInsets.only(top: 12.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Label dan Ikon
+            Row(
+              children: [
+                Icon(icon, size: 16, color: Colors.grey[700]),
+                const SizedBox(width: 6),
+                Text(
+                  label,
+                  style: greyTextStyle.copyWith(
+                    fontSize: 14,
+                    fontWeight: semiBold, // Asumsi 'semiBold' ada
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            // Progress Bar dan Teks Persentase
+            Row(
+              children: [
+                Expanded(
+                  // ClipRRect agar progress bar memiliki sudut bulat
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: LinearProgressIndicator(
+                      value: score, // Nilai 0.0 - 1.0
+                      minHeight: 10,
+                      backgroundColor: color.withOpacity(0.2),
+                      color: color,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                // Teks Persen
+                Text(
+                  '$percentage%',
+                  style: blackTextStyle.copyWith(
+                    // Asumsi 'blackTextStyle' ada
+                    fontSize: 14,
+                    fontWeight: semiBold,
+                    color: color,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    }
+
     Widget buildVerificationButton(BuildContext context) {
       return ElevatedButton.icon(
         onPressed: () async {
@@ -122,10 +184,18 @@ class FieldBuilder extends StatelessWidget {
           print(result);
 
           // 3. Cek jika ada hasil ('Diterima' / 'Ditolak')
-          if (result != null && result is String) {
-            // 4. Update state di parent widget & simpan hasil
+          if (result != null && result is Map<String, dynamic>) {
+            // Panggil setState untuk update UI
             setState?.call(() {
-              formAnswers?[field.key!] = result;
+              // 1. Simpan status utama ('Diterima' / 'Ditolak')
+              formAnswers?[field.key!] = result['status'];
+
+              // 2. Simpan skor dan pesan ke key BARU di formAnswers
+              // Kita tambahkan prefix key agar unik
+              formAnswers?['${field.key}_liveness'] = result['liveness'];
+              formAnswers?['${field.key}_manipulation'] =
+                  result['manipulation'];
+              formAnswers?['${field.key}_message'] = result['message'];
             });
           }
         },
@@ -203,28 +273,58 @@ class FieldBuilder extends StatelessWidget {
       case 'button':
         Widget buttonChild;
 
+        final dynamic storedValue = formAnswers?[field.key];
+        final double? livenessScore =
+            (formAnswers?['${field.key}_liveness'] as num?)?.toDouble();
+        final double? manipulationScore =
+            (formAnswers?['${field.key}_manipulation'] as num?)?.toDouble();
+        final dynamic errorMessage = formAnswers?['${field.key}_message'];
+
         // ✅ 5. Tampilkan UI berdasarkan status
         if (storedValue == 'Diterima') {
-          // --- TAMPILAN SUKSES ---
+          // --- TAMPILAN SUKSES BARU YANG LEBIH MENARIK ---
           buttonChild = Padding(
             padding: const EdgeInsets.only(top: 8.0),
-            child: Row(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.check_circle, color: Colors.green[700]),
-                const SizedBox(width: 8),
-                Text(
-                  'Verifikasi Diterima',
-                  style: blackTextStyle.copyWith(
-                    // Asumsi style ini ada
-                    fontSize: 16,
-                    fontWeight: semiBold, // Asumsi style ini ada
-                  ),
+                // Header Status
+                Row(
+                  children: [
+                    Icon(Icons.check_circle, color: Colors.green[700]),
+                    const SizedBox(width: 8),
+                    Text(
+                      'Verifikasi Diterima',
+                      style: blackTextStyle.copyWith(
+                        fontSize: 16,
+                        fontWeight: semiBold,
+                      ),
+                    ),
+                  ],
                 ),
+
+                // --- Tampilkan Skor Liveness ---
+                if (livenessScore != null)
+                  _buildScoreIndicator(
+                    label: 'Liveness',
+                    icon: Icons.tag_faces_rounded,
+                    score: livenessScore,
+                    color: Colors.blue[600]!, // Warna biru untuk liveness
+                  ),
+
+                // --- Tampilkan Skor Manipulasi ---
+                if (manipulationScore != null)
+                  _buildScoreIndicator(
+                    label: 'Image Manipulation',
+                    icon: Icons.security_rounded,
+                    score: manipulationScore,
+                    color: Colors.red[600]!, // Warna merah untuk manipulasi
+                  ),
               ],
             ),
           );
         } else if (storedValue == 'Ditolak') {
-          // --- TAMPILAN GAGAL (Bisa Coba Lagi) ---
+          // --- TAMPILAN GAGAL (Tetap sama, sudah jelas) ---
           buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -237,16 +337,23 @@ class FieldBuilder extends StatelessWidget {
                     Text(
                       'Verifikasi Ditolak',
                       style: blackTextStyle.copyWith(
-                        // Asumsi style ini ada
                         fontSize: 16,
-                        fontWeight: semiBold, // Asumsi style ini ada
+                        fontWeight: semiBold,
                       ),
                     ),
                   ],
                 ),
               ),
-              // Tampilkan tombol lagi untuk mengulang
-              buildVerificationButton(context),
+              if (errorMessage != null)
+                Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: Text(
+                    'Alasan: $errorMessage',
+                    style: greyTextStyle.copyWith(
+                        fontSize: 14, color: Colors.red[700]),
+                  ),
+                ),
+              buildVerificationButton(context), // Tombol coba lagi
             ],
           );
         } else {
@@ -255,7 +362,6 @@ class FieldBuilder extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SizedBox(height: 8),
-              // Tampilkan tombol
               buildVerificationButton(context),
             ],
           );

@@ -26,19 +26,23 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       const Color(0xFFC62828); // Merah tua (seperti Pefindo)
 
   // --- (FungSI LOGIKA ANDA TETAP SAMA) ---
-  Future<String> _captureAndVerifyFace(BuildContext context) async {
+  Future<Map<String, dynamic>?> _captureAndVerifyFace(
+      BuildContext context) async {
     // ... (SELURUH KODE _captureAndVerifyFace ANDA ADA DI SINI) ...
     // ... (Tidak ada perubahan pada logika 'try' 'catch' Anda) ...
     // ... (Pastikan kode Basic Auth dan format 'dob' Anda ada di sini) ...
 
     // --- CONTOH SINGKAT LOGIKA (JANGAN DISALIN JIKA SUDAH ADA) ---
+
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? imageFile = await picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.front,
       );
-      if (imageFile == null) return 'Batal';
+      if (imageFile == null) {
+        return null; // Menggantikan return 'Batal'
+      }
 
       final List<int> imageBytes = await File(imageFile.path).readAsBytes();
       final String base64Image = base64Encode(imageBytes);
@@ -54,7 +58,7 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       if (tgllahir != null && tgllahir.isNotEmpty) {
         try {
           DateTime parsedDate = DateTime.parse(tgllahir);
-          formattedDob = DateFormat('dd-MM-yyyy').format(parsedDate);
+          formattedDob = DateFormat('yyy-MM-dd').format(parsedDate);
         } catch (e) {
           print('Error parsing tanggal: $e');
         }
@@ -68,17 +72,19 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
         // "mobile": nohp,
         // "InquiryReason": "ProvidingFacilities",
         // "ReferenceCode": "testAbits111",
-        // 'image_base64': base64Image
+        // 'selfiePhoto': base64Image
         // ====
         "govid": "3511000101806300",
         "fullname": "UserIAA",
-        "dob": "13-05-1992",
+        "dob": "1992-05-13",
         "email": "test@testing.com",
         "mobile": "+62818000222",
         "InquiryReason": "ProvidingFacilities",
         "ReferenceCode": "testAbits111",
-        'image_base64': base64Image,
+        'selfiePhoto': base64Image,
       };
+
+      print('print apiBody $apiBody');
 
       // Basic Auth
       final String username = 'gfi001';
@@ -99,14 +105,56 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       );
 
       if (response.statusCode == 200) {
-        return 'Diterima';
+        // 1. Decode JSON string ke Map
+        final Map<String, dynamic> responseData = jsonDecode(response.body);
+
+        // 2. Cek apakah API sukses (berdasarkan JSON Anda)
+        if (responseData['Success'] == true) {
+          // 3. Ambil list 'fields'
+          // Perhatikan, ada 'data' di dalam 'data'
+          final List<dynamic> fields = responseData['data']['data']['fields'];
+
+          double livenessScore = 0.0;
+          double manipulationScore = 0.0;
+
+          // 4. Cari skornya
+          try {
+            livenessScore = fields
+                .firstWhere((field) => field['field'] == 'liveness')['score'];
+
+            manipulationScore = fields.firstWhere(
+                (field) => field['field'] == 'imgManipulationScore')['score'];
+          } catch (e) {
+            print('Gagal parsing score dari JSON: $e');
+            // Gagal parsing, anggap Ditolak
+            return {
+              'status': 'Ditolak',
+              'message': 'Format respon tidak dikenal'
+            };
+          }
+
+          // 5. Kembalikan MAP LENGKAP
+          return {
+            'status': 'Diterima',
+            'liveness': livenessScore,
+            'manipulation': manipulationScore
+          };
+        } else {
+          // Jika response.statusCode == 200, tapi 'Success': false
+          return {
+            'status': 'Ditolak',
+            'message': responseData['Message'] ?? 'API mengembalikan kegagalan'
+          };
+        }
       } else {
-        print('API Error: ${response.body}');
-        return 'Ditolak';
+        return {
+          'status': 'Ditolak',
+          'message': 'Error HTTP ${response.statusCode}'
+        };
       }
     } catch (e) {
       print('Terjadi error saat verifikasi: $e');
-      return 'Ditolak';
+      return {'status': 'Ditolak', 'message': 'Error: ${e.toString()}'};
     }
   }
 
@@ -115,21 +163,24 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       _isLoading = true;
     });
 
-    final String result = await _captureAndVerifyFace(context);
+    // 'result' sekarang adalah Map<String, dynamic>?
+    final Map<String, dynamic>? result = await _captureAndVerifyFace(context);
 
-    if (!mounted) return; // Cek jika widget masih ada
+    if (!mounted) return;
 
     setState(() {
       _isLoading = false;
     });
 
-    if (result == 'Batal') {
+    // Cek jika user membatalkan (result == null)
+    if (result == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pengambilan foto dibatalkan.')),
       );
       return;
     }
 
+    // Kirim 'result' (yang berisi Map) kembali
     if (Navigator.canPop(context)) {
       Navigator.pop(context, result);
     }
