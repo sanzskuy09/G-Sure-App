@@ -552,20 +552,13 @@ class FormProcessingServiceAPI {
 }
 
 class FormProcessingService {
-  /// Mengubah Map datar dari form menjadi Map bertingkat yang sesuai dengan
-  /// struktur model AplikasiSurvey.
   Map<String, dynamic> processFormToNestedMap(
       Map<String, dynamic> flatFormAnswers) {
-    // --- GANTI BLOK LOGIKA LAMA DENGAN YANG BARU INI ---
     final Map<String, dynamic> processedAnswers = {};
     flatFormAnswers.forEach((key, value) {
       if (value is PhotoData) {
-        // Kasus 1: Value adalah objek PhotoData (dari data lama/draft).
-        // Ubah menjadi Map JSON.
         processedAnswers[key] = value.toJson();
       } else if (value is Map && value['file'] is File) {
-        // Kasus 2: Value adalah Map dari file picker (dari data baru).
-        // Ekstrak datanya dan ubah File menjadi String path.
         final File file = value['file'];
         final DateTime? timestamp = value['timestamp'];
 
@@ -576,14 +569,10 @@ class FormProcessingService {
           'longitude': value['longitude'],
         };
       } else {
-        // Kasus 3: Value adalah tipe lain (String, int, dll).
-        // Gunakan value aslinya.
         processedAnswers[key] = value;
       }
     });
-    // --- SELESAI ---
 
-    // 1. Inisialisasi map untuk setiap bagian logis
     final Map<String, dynamic> dealerData = {};
     final Map<String, dynamic> kendaraanData = {};
     final Map<String, dynamic> alamatSurveyData = {};
@@ -656,6 +645,8 @@ class FormProcessingService {
     alamatSurveyData['provinsisurvey'] = processedAnswers['provinsisurvey'];
 
     // Mengisi data untuk bagian Pemohon (termasuk data pekerjaan)
+    pemohonData['scoreliveness'] = processedAnswers['scoreliveness'];
+    pemohonData['scoremanipulation'] = processedAnswers['scoremanipulation'];
     pemohonData['katpemohon'] = processedAnswers['katpemohon'];
     pemohonData['statuspernikahan'] = processedAnswers['statuspernikahan'];
     pemohonData['nama'] = processedAnswers['nama'];

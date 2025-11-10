@@ -192,9 +192,8 @@ class FieldBuilder extends StatelessWidget {
 
               // 2. Simpan skor dan pesan ke key BARU di formAnswers
               // Kita tambahkan prefix key agar unik
-              formAnswers?['${field.key}_liveness'] = result['liveness'];
-              formAnswers?['${field.key}_manipulation'] =
-                  result['manipulation'];
+              formAnswers?['scoreliveness'] = result['liveness'];
+              formAnswers?['scoremanipulation'] = result['manipulation'];
               formAnswers?['${field.key}_message'] = result['message'];
             });
           }
@@ -273,16 +272,19 @@ class FieldBuilder extends StatelessWidget {
       case 'button':
         Widget buttonChild;
 
+        // 1. Ambil semua nilai (ini tidak berubah)
         final dynamic storedValue = formAnswers?[field.key];
         final double? livenessScore =
-            (formAnswers?['${field.key}_liveness'] as num?)?.toDouble();
+            (formAnswers?['scoreliveness'] as num?)?.toDouble();
         final double? manipulationScore =
-            (formAnswers?['${field.key}_manipulation'] as num?)?.toDouble();
+            (formAnswers?['scoremanipulation'] as num?)?.toDouble();
         final dynamic errorMessage = formAnswers?['${field.key}_message'];
 
-        // ✅ 5. Tampilkan UI berdasarkan status
-        if (storedValue == 'Diterima') {
-          // --- TAMPILAN SUKSES BARU YANG LEBIH MENARIK ---
+        // 2. LOGIKA YANG DIURUTKAN ULANG:
+
+        // 🎯 CHECK 1: Apakah skor ada? (Ini akan menangkap draf)
+        if (livenessScore != null || manipulationScore != null) {
+          // --- TAMPILAN SUKSES (DENGAN SKOR) ---
           buttonChild = Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
@@ -294,7 +296,7 @@ class FieldBuilder extends StatelessWidget {
                     Icon(Icons.check_circle, color: Colors.green[700]),
                     const SizedBox(width: 8),
                     Text(
-                      'Verifikasi Diterima',
+                      'Verifikasi Diterima', // Atau 'Skor Tersimpan'
                       style: blackTextStyle.copyWith(
                         fontSize: 16,
                         fontWeight: semiBold,
@@ -309,7 +311,7 @@ class FieldBuilder extends StatelessWidget {
                     label: 'Liveness',
                     icon: Icons.tag_faces_rounded,
                     score: livenessScore,
-                    color: Colors.blue[600]!, // Warna biru untuk liveness
+                    color: Colors.blue[600]!,
                   ),
 
                 // --- Tampilkan Skor Manipulasi ---
@@ -318,13 +320,15 @@ class FieldBuilder extends StatelessWidget {
                     label: 'Image Manipulation',
                     icon: Icons.security_rounded,
                     score: manipulationScore,
-                    color: Colors.red[600]!, // Warna merah untuk manipulasi
+                    color: Colors.red[600]!,
                   ),
               ],
             ),
           );
-        } else if (storedValue == 'Ditolak') {
-          // --- TAMPILAN GAGAL (Tetap sama, sudah jelas) ---
+        }
+        // 🎯 CHECK 2: Jika tidak ada skor, apakah statusnya 'Ditolak'?
+        else if (storedValue == 'Ditolak') {
+          // --- TAMPILAN GAGAL ---
           buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -356,7 +360,9 @@ class FieldBuilder extends StatelessWidget {
               buildVerificationButton(context), // Tombol coba lagi
             ],
           );
-        } else {
+        }
+        // 🎯 CHECK 3: Jika tidak ada skor & tidak Ditolak (Tampilan Awal)
+        else {
           // --- TAMPILAN AWAL (Tombol Verifikasi) ---
           buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,

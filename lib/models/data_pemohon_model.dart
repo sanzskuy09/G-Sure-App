@@ -41,6 +41,10 @@ class DataPemohon extends HiveObject {
   String? lamatinggalpemohon;
   @HiveField(17)
   DataPekerjaan? dataPekerjaan;
+  @HiveField(18)
+  double? scoreliveness;
+  @HiveField(19)
+  double? scoremanipulation;
 
   DataPemohon({
     this.katpemohon,
@@ -61,6 +65,8 @@ class DataPemohon extends HiveObject {
     this.buktimilikrumahpemohon,
     this.lamatinggalpemohon,
     this.dataPekerjaan,
+    this.scoreliveness,
+    this.scoremanipulation,
   });
 
   // Method untuk API
@@ -83,6 +89,8 @@ class DataPemohon extends HiveObject {
       'katrumahpemohon': katrumahpemohon,
       'buktimilikrumahpemohon': buktimilikrumahpemohon,
       'lamatinggalpemohon': lamatinggalpemohon,
+      'scoreliveness': scoreliveness,
+      'scoremanipulation': scoremanipulation,
     };
 
     // Tambahkan properti dari dataPekerjaan secara langsung jika ada
@@ -111,6 +119,8 @@ class DataPemohon extends HiveObject {
         katrumahpemohon: json['katrumahpemohon'],
         buktimilikrumahpemohon: json['buktimilikrumahpemohon'],
         lamatinggalpemohon: json['lamatinggalpemohon'],
+        scoreliveness: json['scoreliveness'],
+        scoremanipulation: json['scoremanipulation'],
         dataPekerjaan: json['dataPekerjaan'] != null
             ? DataPekerjaan.fromJson(json['dataPekerjaan'])
             : null,

@@ -58,30 +58,30 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       if (tgllahir != null && tgllahir.isNotEmpty) {
         try {
           DateTime parsedDate = DateTime.parse(tgllahir);
-          formattedDob = DateFormat('yyy-MM-dd').format(parsedDate);
+          formattedDob = DateFormat('yyyy-MM-dd').format(parsedDate);
         } catch (e) {
           print('Error parsing tanggal: $e');
         }
       }
 
       final Map<String, dynamic> apiBody = {
-        // "govid": nik,
-        // "fullname": nama,
-        // "dob": formattedDob,
-        // "email": email,
-        // "mobile": nohp,
-        // "InquiryReason": "ProvidingFacilities",
-        // "ReferenceCode": "testAbits111",
-        // 'selfiePhoto': base64Image
-        // ====
-        "govid": "3511000101806300",
-        "fullname": "UserIAA",
-        "dob": "1992-05-13",
-        "email": "test@testing.com",
-        "mobile": "+62818000222",
+        "govid": nik,
+        "fullname": nama,
+        "dob": formattedDob,
+        "email": email,
+        "mobile": nohp,
         "InquiryReason": "ProvidingFacilities",
         "ReferenceCode": "testAbits111",
-        'selfiePhoto': base64Image,
+        'selfiePhoto': base64Image
+        // ====
+        // "govid": "3511000101806300",
+        // "fullname": "UserIAA",
+        // "dob": "1992-05-13",
+        // "email": "test@testing.com",
+        // "mobile": "+62818000222",
+        // "InquiryReason": "ProvidingFacilities",
+        // "ReferenceCode": "testAbits111",
+        // 'selfiePhoto': base64Image,
       };
 
       print('print apiBody $apiBody');
