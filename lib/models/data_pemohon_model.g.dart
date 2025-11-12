@@ -37,13 +37,14 @@ class DataPemohonAdapter extends TypeAdapter<DataPemohon> {
       dataPekerjaan: fields[17] as DataPekerjaan?,
       scoreliveness: fields[18] as double?,
       scoremanipulation: fields[19] as double?,
+      tgllahir: fields[20] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DataPemohon obj) {
     writer
-      ..writeByte(20)
+      ..writeByte(21)
       ..writeByte(0)
       ..write(obj.katpemohon)
       ..writeByte(1)
@@ -83,7 +84,9 @@ class DataPemohonAdapter extends TypeAdapter<DataPemohon> {
       ..writeByte(18)
       ..write(obj.scoreliveness)
       ..writeByte(19)
-      ..write(obj.scoremanipulation);
+      ..write(obj.scoremanipulation)
+      ..writeByte(20)
+      ..write(obj.tgllahir);
   }
 
   @override

@@ -164,9 +164,52 @@ class FieldBuilder extends StatelessWidget {
     }
 
     Widget buildVerificationButton(BuildContext context) {
+      final dynamic storedValue = formAnswers?[field.key];
+      final String? status = formAnswers?['status'];
+      final double? livenessScore =
+          (formAnswers?['scoreliveness'] as num?)?.toDouble();
+      final double? manipulationScore =
+          (formAnswers?['scoremanipulation'] as num?)?.toDouble();
+
+      // --- ✅ LOGIKA BARU UNTUK TEKS TOMBOL ---
+      String buttonText;
+
+      // Cek 1: Apakah ini DRAFT (skor ada TAPI status BUKAN 'DONE')?
+      if ((livenessScore != null || manipulationScore != null) &&
+          status != 'DONE') {
+        buttonText = 'Retake Verifikasi Wajah';
+      }
+      // Cek 2: Apakah status lokal 'Ditolak'?
+      else if (storedValue == 'Ditolak') {
+        buttonText = 'Coba Verifikasi Ulang';
+      }
+      // Cek 3: Lainnya (Tampilan awal)
+      else {
+        buttonText = 'Verifikasi Wajah';
+      }
+      // --- AKHIR LOGIKA BARU ---
+
       return ElevatedButton.icon(
         onPressed: () async {
-          // ✅ 1. Jadikan async
+          // --- ✅ BLOK VALIDASI BARU ---
+          // 1. Ambil nilai 'nohp' dari formAnswers
+          final String? nohp =
+              formAnswers?['nohp']; // Pastikan key 'nohp' sudah benar
+          // Pastikan key 'nohp' sudah benar (object)
+
+          // 2. Cek jika null atau kosong
+          if (nohp == null || nohp.isEmpty) {
+            // 3. Tampilkan SnackBar alert jika kosong
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: const Text('Nomor HP wajib diisi sebelum verifikasi!'),
+                backgroundColor:
+                    Colors.red[700], // Beri warna merah untuk error
+              ),
+            );
+            return; // <-- Hentikan eksekusi, jangan pindah halaman
+          }
+          // --- AKHIR BLOK VALIDASI ---
 
           // 2. Pindah halaman DAN TUNGGU HINGGA KEMBALI
           final result = await Navigator.push(
@@ -189,22 +232,21 @@ class FieldBuilder extends StatelessWidget {
             setState?.call(() {
               // 1. Simpan status utama ('Diterima' / 'Ditolak')
               formAnswers?[field.key!] = result['status'];
-
-              // 2. Simpan skor dan pesan ke key BARU di formAnswers
-              // Kita tambahkan prefix key agar unik
               formAnswers?['scoreliveness'] = result['liveness'];
               formAnswers?['scoremanipulation'] = result['manipulation'];
+              formAnswers?['dob'] = result['dob'];
               formAnswers?['${field.key}_message'] = result['message'];
             });
           }
         },
         icon: const Icon(Icons.face, size: 20),
-        label: Text(
-          // Beri label berbeda jika mengulang
-          storedValue == 'Ditolak'
-              ? 'Coba Verifikasi Ulang'
-              : 'Verifikasi Wajah',
-        ),
+        // label: Text(
+        //   // Beri label berbeda jika mengulang
+        //   storedValue == 'Ditolak'
+        //       ? 'Coba Verifikasi Ulang'
+        //       : 'Verifikasi Wajah',
+        // ),
+        label: Text(buttonText),
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
           textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
@@ -272,7 +314,8 @@ class FieldBuilder extends StatelessWidget {
       case 'button':
         Widget buttonChild;
 
-        // 1. Ambil semua nilai (ini tidak berubah)
+        // 1. Ambil semua nilai
+        final String? status = formAnswers?['status'];
         final dynamic storedValue = formAnswers?[field.key];
         final double? livenessScore =
             (formAnswers?['scoreliveness'] as num?)?.toDouble();
@@ -280,23 +323,20 @@ class FieldBuilder extends StatelessWidget {
             (formAnswers?['scoremanipulation'] as num?)?.toDouble();
         final dynamic errorMessage = formAnswers?['${field.key}_message'];
 
-        // 2. LOGIKA YANG DIURUTKAN ULANG:
-
-        // 🎯 CHECK 1: Apakah skor ada? (Ini akan menangkap draf)
-        if (livenessScore != null || manipulationScore != null) {
-          // --- TAMPILAN SUKSES (DENGAN SKOR) ---
-          buttonChild = Padding(
+        // --- Helper Widget untuk Tampilan Sukses (agar tidak duplikat) ---
+        // (Ini adalah UI "Success View" Anda dari CHECK 1 sebelumnya)
+        Widget buildSuccessView() {
+          return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Header Status
                 Row(
                   children: [
                     Icon(Icons.check_circle, color: Colors.green[700]),
                     const SizedBox(width: 8),
                     Text(
-                      'Verifikasi Diterima', // Atau 'Skor Tersimpan'
+                      'Verifikasi Diterima',
                       style: blackTextStyle.copyWith(
                         fontSize: 16,
                         fontWeight: semiBold,
@@ -304,8 +344,6 @@ class FieldBuilder extends StatelessWidget {
                     ),
                   ],
                 ),
-
-                // --- Tampilkan Skor Liveness ---
                 if (livenessScore != null)
                   _buildScoreIndicator(
                     label: 'Liveness',
@@ -313,8 +351,6 @@ class FieldBuilder extends StatelessWidget {
                     score: livenessScore,
                     color: Colors.blue[600]!,
                   ),
-
-                // --- Tampilkan Skor Manipulasi ---
                 if (manipulationScore != null)
                   _buildScoreIndicator(
                     label: 'Image Manipulation',
@@ -326,9 +362,17 @@ class FieldBuilder extends StatelessWidget {
             ),
           );
         }
-        // 🎯 CHECK 2: Jika tidak ada skor, apakah statusnya 'Ditolak'?
+
+        // --- 2. LOGIKA BARU DENGAN STATUS 'DONE' ---
+
+        // 🎯 CHECK 1: Apakah status survey 'DONE'?
+        if (status == 'DONE') {
+          // Tampilkan skor saja, TANPA button. Ini final.
+          buttonChild = buildSuccessView();
+        }
+        // 🎯 CHECK 2: Apakah status lokal 'Ditolak'?
         else if (storedValue == 'Ditolak') {
-          // --- TAMPILAN GAGAL ---
+          // Tampilkan Gagal + Tombol Coba Lagi
           buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -361,9 +405,21 @@ class FieldBuilder extends StatelessWidget {
             ],
           );
         }
-        // 🎯 CHECK 3: Jika tidak ada skor & tidak Ditolak (Tampilan Awal)
+        // 🎯 CHECK 3: Apakah skor ada (tapi status BELUM 'DONE')?
+        else if (livenessScore != null || manipulationScore != null) {
+          // Tampilkan Skor + Tombol Coba Lagi (untuk retake)
+          buttonChild = Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              buildSuccessView(), // Tampilkan skor yang tersimpan
+              const SizedBox(height: 12), // Jarak
+              buildVerificationButton(context) // Tombol untuk retake
+            ],
+          );
+        }
+        // 🎯 CHECK 4: Tampilan Awal (Belum ada skor, tidak ditolak)
         else {
-          // --- TAMPILAN AWAL (Tombol Verifikasi) ---
+          // Tampilkan tombol "Verifikasi Wajah"
           buttonChild = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [

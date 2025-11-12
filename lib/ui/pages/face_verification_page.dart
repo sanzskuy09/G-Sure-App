@@ -172,7 +172,8 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
             return {
               'status': 'Diterima',
               'liveness': livenessScore,
-              'manipulation': manipulationScore
+              'manipulation': manipulationScore,
+              'tgllahir': formattedDob
             };
           } else {
             return {

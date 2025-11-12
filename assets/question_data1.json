@@ -2,6 +2,7 @@
    {
     "title": "Pefindo",
     "fields": [
+      { "type": "number", "label": "No. Handphone (Wajib Isi)" , "key": "nohp"},
       { "type": "button", "key": "btnpefindo", "label": "Verifikasi Wajah" }
     ]
   },

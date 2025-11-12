@@ -89,6 +89,8 @@ class FormProcessingServiceAPI {
     pemohonData['lamatinggalpemohon'] = flatFormAnswers['lamatinggalpemohon'];
     pemohonData['jenispekerjaan'] = flatFormAnswers['jenispekerjaan'];
     pemohonData['analisacmo'] = flatFormAnswers['analisacmo'];
+    pemohonData['scoreliveness'] = flatFormAnswers['scoreliveness'];
+    pemohonData['scoremanipulation'] = flatFormAnswers['scoremanipulation'];
     pemohonData['status'] = 'CRA';
 
     // Data pekerjaan/usaha pemohon
@@ -647,6 +649,7 @@ class FormProcessingService {
     // Mengisi data untuk bagian Pemohon (termasuk data pekerjaan)
     pemohonData['scoreliveness'] = processedAnswers['scoreliveness'];
     pemohonData['scoremanipulation'] = processedAnswers['scoremanipulation'];
+    pemohonData['tgllahir'] = processedAnswers['tgllahir'];
     pemohonData['katpemohon'] = processedAnswers['katpemohon'];
     pemohonData['statuspernikahan'] = processedAnswers['statuspernikahan'];
     pemohonData['nama'] = processedAnswers['nama'];
