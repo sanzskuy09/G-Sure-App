@@ -1,10 +1,12 @@
 // Import package yang diperlukan
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart'; // Pastikan package 'intl' ada di pubspec.yaml
+import 'package:image/image.dart' as img;
 
 class FaceVerificationPage extends StatefulWidget {
   final Map<String, dynamic>? formAnswers;
@@ -28,32 +30,58 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
   // --- (FungSI LOGIKA ANDA TETAP SAMA) ---
   Future<Map<String, dynamic>?> _captureAndVerifyFace(
       BuildContext context) async {
-    // ... (SELURUH KODE _captureAndVerifyFace ANDA ADA DI SINI) ...
-    // ... (Tidak ada perubahan pada logika 'try' 'catch' Anda) ...
-    // ... (Pastikan kode Basic Auth dan format 'dob' Anda ada di sini) ...
-
-    // --- CONTOH SINGKAT LOGIKA (JANGAN DISALIN JIKA SUDAH ADA) ---
-
     try {
       final ImagePicker picker = ImagePicker();
       final XFile? imageFile = await picker.pickImage(
         source: ImageSource.camera,
         preferredCameraDevice: CameraDevice.front,
+        imageQuality: 90,
       );
       if (imageFile == null) {
         return null; // Menggantikan return 'Batal'
       }
 
+      final Uint8List originalImageBytes =
+          await File(imageFile.path).readAsBytes();
+
+      // 3. Decode gambar menggunakan package 'image'
+      img.Image? originalImage = img.decodeImage(originalImageBytes);
+
+      if (originalImage == null) {
+        return {'status': 'Ditolak', 'message': 'Format gambar tidak dikenal'};
+      }
+
+      // 4. Resize gambar ke UKURAN PASTI 720x1280
+      img.Image resizedImage = img.copyResize(
+        originalImage,
+        width: 720,
+        height: 1280,
+      );
+
+      // 5. Encode gambar yang sudah di-resize sebagai JPEG
+      // Kita coba mainkan 'quality' untuk dapat ukuran file ~85KB
+      // Ini mungkin perlu trial-error (coba 80, 85, 90)
+      final Uint8List jpegBytes = img.encodeJpg(resizedImage, quality: 85);
+
+      // 6. Convert bytes JPEG BARU ini ke Base64
+      final String base64Image = base64Encode(jpegBytes);
+
+      // (Opsional) Cek ukuran file hasil encode di konsol
+      print('Ukuran file JPEG baru: ${jpegBytes.lengthInBytes / 1024} KB');
+
+      // --- AKHIR BAGIAN BARU ---
+
       final List<int> imageBytes = await File(imageFile.path).readAsBytes();
-      final String base64Image = base64Encode(imageBytes);
+      // final String base64Image = base64Encode(imageBytes);
 
       // Ambil data
       final String? nik = widget.formAnswers?['nik'];
       final String? nama = widget.formAnswers?['nama'];
-      final String? email = widget.formAnswers?['email'];
-      final String? nohp = widget.formAnswers?['nohp'];
+      final String email = widget.formAnswers?['email'] ?? '-';
+      final String nohp = widget.formAnswers?['nohp'] ?? '+62';
       final String? tgllahir = widget.formAnswers?['tgllahir'];
       String? formattedDob;
+      String formattedNohp = nohp;
 
       if (tgllahir != null && tgllahir.isNotEmpty) {
         try {
@@ -64,24 +92,30 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
         }
       }
 
+      if (nohp.isNotEmpty && nohp.startsWith('0')) {
+        // Ambil semua string SETELAH karakter pertama (index 0)
+        // 'nohp.substring(1)' akan mengambil "89604409429"
+        formattedNohp = '+62${nohp.substring(1)}';
+      }
+
       final Map<String, dynamic> apiBody = {
         "govid": nik,
         "fullname": nama,
         "dob": formattedDob,
         "email": email,
-        "mobile": nohp,
+        "mobile": formattedNohp,
         "InquiryReason": "ProvidingFacilities",
         "ReferenceCode": "testAbits111",
-        'selfiePhoto': base64Image
+        "selfiePhoto": base64Image,
         // ====
-        // "govid": "3511000101806300",
+        // "govid": "6597846513425687",
         // "fullname": "UserIAA",
-        // "dob": "1992-05-13",
-        // "email": "test@testing.com",
+        // "dob": "2025-05-13",
+        // "email": "-",
         // "mobile": "+62818000222",
         // "InquiryReason": "ProvidingFacilities",
         // "ReferenceCode": "testAbits111",
-        // 'selfiePhoto': base64Image,
+        // "selfiePhoto": base64coba,
       };
 
       print('print apiBody $apiBody');
@@ -112,33 +146,40 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
         if (responseData['Success'] == true) {
           // 3. Ambil list 'fields'
           // Perhatikan, ada 'data' di dalam 'data'
-          final List<dynamic> fields = responseData['data']['data']['fields'];
+          if (responseData['data']['data'] != null) {
+            final List<dynamic> fields = responseData['data']['data']['fields'];
 
-          double livenessScore = 0.0;
-          double manipulationScore = 0.0;
+            double livenessScore = 0.0;
+            double manipulationScore = 0.0;
 
-          // 4. Cari skornya
-          try {
-            livenessScore = fields
-                .firstWhere((field) => field['field'] == 'liveness')['score'];
+            // 4. Cari skornya
+            try {
+              livenessScore = fields
+                  .firstWhere((field) => field['field'] == 'liveness')['score'];
 
-            manipulationScore = fields.firstWhere(
-                (field) => field['field'] == 'imgManipulationScore')['score'];
-          } catch (e) {
-            print('Gagal parsing score dari JSON: $e');
-            // Gagal parsing, anggap Ditolak
+              manipulationScore = fields.firstWhere(
+                  (field) => field['field'] == 'imgManipulationScore')['score'];
+            } catch (e) {
+              print('Gagal parsing score dari JSON: $e');
+              // Gagal parsing, anggap Ditolak
+              return {
+                'status': 'Ditolak',
+                'message': 'Format respon tidak dikenal'
+              };
+            }
+
+            // 5. Kembalikan MAP LENGKAP
+            return {
+              'status': 'Diterima',
+              'liveness': livenessScore,
+              'manipulation': manipulationScore
+            };
+          } else {
             return {
               'status': 'Ditolak',
-              'message': 'Format respon tidak dikenal'
+              'message': responseData['data']['error_fields'][0]['title']
             };
           }
-
-          // 5. Kembalikan MAP LENGKAP
-          return {
-            'status': 'Diterima',
-            'liveness': livenessScore,
-            'manipulation': manipulationScore
-          };
         } else {
           // Jika response.statusCode == 200, tapi 'Success': false
           return {
