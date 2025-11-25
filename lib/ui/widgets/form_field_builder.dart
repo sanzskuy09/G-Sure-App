@@ -766,18 +766,28 @@ class FieldBuilder extends StatelessWidget {
           value: field.value,
           onFilePicked: (val, ts, pos) {
             // 1. Update state lokal field (ini sudah benar)
-            field.value = val;
-            field.timestamp = ts;
-            field.latitude = pos?.latitude;
-            field.longitude = pos?.longitude;
+            if (val == null) {
+              field.value = null;
+              field.timestamp = null;
+              field.latitude = null;
+              field.longitude = null;
 
-            // 2. ✅ TAMBAHKAN INI: Simpan Map lengkap ke formAnswers
-            formAnswers?[field.key!] = {
-              'file': val,
-              'timestamp': ts,
-              'latitude': pos?.latitude,
-              'longitude': pos?.longitude,
-            };
+              // 2. Hapus key dari formAnswers
+              formAnswers?.remove(field.key);
+            } else {
+              field.value = val;
+              field.timestamp = ts;
+              field.latitude = pos?.latitude;
+              field.longitude = pos?.longitude;
+
+              // 2. ✅ TAMBAHKAN INI: Simpan Map lengkap ke formAnswers
+              formAnswers?[field.key!] = {
+                'file': val,
+                'timestamp': ts,
+                'latitude': pos?.latitude,
+                'longitude': pos?.longitude,
+              };
+            }
 
             // 3. Panggil onValueChanged agar parent tahu ada perubahan
             onValueChanged?.call(formAnswers?[field.key!]);

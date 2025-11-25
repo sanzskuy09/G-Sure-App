@@ -20,7 +20,7 @@ class CameraAndUploadTambahanFieldForm extends StatefulWidget {
   final String? fieldKey;
   final String label;
   final dynamic value; // Ini akan menerima Map dari formAnswers
-  final Function(dynamic, DateTime, Position?) onFilePicked;
+  final Function(dynamic, DateTime?, Position?) onFilePicked;
 
   const CameraAndUploadTambahanFieldForm({
     super.key,
@@ -53,6 +53,19 @@ class _CameraAndUploadTambahanFieldFormState
     return name.endsWith('.jpg') ||
         name.endsWith('.jpeg') ||
         name.endsWith('.png');
+  }
+
+  void _clearFile() {
+    setState(() {
+      _fileData = null;
+      _displayController.clear();
+      _dateTime = null;
+      _photoPosition = null;
+      _isFileFromPicker = false;
+    });
+
+    // ✅ Kirim nilai null ke parent untuk memicu penghapusan di formAnswers
+    widget.onFilePicked(null, null, null);
   }
 
   @override
@@ -626,55 +639,139 @@ class _CameraAndUploadTambahanFieldFormState
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // [MODIFIKASI] Tambahkan pengecekan isImage di sini
-            if (isImage)
-              // Jika file adalah gambar, tampilkan seperti biasa
-              GestureDetector(
-                onTap: () {
-                  if (_fileData != null) {
-                    _showImageDialog(context, _fileData);
-                  }
-                },
-                child: Hero(
-                  tag: 'imagePreview_${widget.fieldKey ?? widget.index}',
-                  child: kIsWeb
-                      ? Image.memory(
-                          _fileData as Uint8List,
-                          height: 160,
-                          fit: BoxFit.cover,
-                        )
-                      : Image.file(
-                          File(_fileData),
-                          height: 160,
-                          fit: BoxFit.cover,
+            Stack(
+              children: [
+                // --- KONTEN PREVIEW (GAMBAR / PDF) ---
+                if (isImage)
+                  GestureDetector(
+                    onTap: () {
+                      if (_fileData != null) {
+                        _showImageDialog(context, _fileData);
+                      }
+                    },
+                    child: Hero(
+                      tag: 'imagePreview_${widget.fieldKey ?? widget.index}',
+                      child: Container(
+                        // width: double.infinity, // Agar lebar penuh
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.grey.shade300),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                ),
-              )
-            else
-              // ✅ Jika file adalah PDF, tampilkan preview khusus PDF
-              Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[100],
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.grey.shade300),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.picture_as_pdf_rounded,
-                        color: Colors.red.shade700, size: 36),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        _displayController.text,
-                        style: const TextStyle(
-                            fontSize: 14, overflow: TextOverflow.ellipsis),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: kIsWeb
+                              ? Image.memory(
+                                  _fileData as Uint8List,
+                                  height: 160,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.file(
+                                  File(_fileData),
+                                  height: 160,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                       ),
                     ),
-                  ],
+                  )
+                else
+                  // Preview PDF
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(color: Colors.grey.shade300),
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(Icons.picture_as_pdf_rounded,
+                            color: Colors.red.shade700, size: 36),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            _displayController.text,
+                            style: const TextStyle(
+                                fontSize: 14, overflow: TextOverflow.ellipsis),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                // --- ✅ TOMBOL HAPUS (X) DI POJOK KANAN ATAS ---
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: GestureDetector(
+                    onTap: _clearFile, // Panggil fungsi hapus
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.6),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                    ),
+                  ),
                 ),
-              ),
+              ],
+            ),
+
+            // [MODIFIKASI] Tambahkan pengecekan isImage di sini
+            // if (isImage)
+            //   // Jika file adalah gambar, tampilkan seperti biasa
+            //   GestureDetector(
+            //     onTap: () {
+            //       if (_fileData != null) {
+            //         _showImageDialog(context, _fileData);
+            //       }
+            //     },
+            //     child: Hero(
+            //       tag: 'imagePreview_${widget.fieldKey ?? widget.index}',
+            //       child: kIsWeb
+            //           ? Image.memory(
+            //               _fileData as Uint8List,
+            //               height: 160,
+            //               fit: BoxFit.cover,
+            //             )
+            //           : Image.file(
+            //               File(_fileData),
+            //               height: 160,
+            //               fit: BoxFit.cover,
+            //             ),
+            //     ),
+            //   )
+            // else
+            //   // ✅ Jika file adalah PDF, tampilkan preview khusus PDF
+            //   Container(
+            //     padding:
+            //         const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+            //     decoration: BoxDecoration(
+            //       color: Colors.grey[100],
+            //       borderRadius: BorderRadius.circular(8),
+            //       border: Border.all(color: Colors.grey.shade300),
+            //     ),
+            //     child: Row(
+            //       children: [
+            //         Icon(Icons.picture_as_pdf_rounded,
+            //             color: Colors.red.shade700, size: 36),
+            //         const SizedBox(width: 12),
+            //         Expanded(
+            //           child: Text(
+            //             _displayController.text,
+            //             style: const TextStyle(
+            //                 fontSize: 14, overflow: TextOverflow.ellipsis),
+            //           ),
+            //         ),
+            //       ],
+            //     ),
+            //   ),
 
             // Tampilkan metadata hanya jika file berasal dari kamera (bukan dari picker)
             if (!_isFileFromPicker)

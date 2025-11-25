@@ -196,41 +196,91 @@ class _SectionFieldContentState extends State<SectionFieldContent> {
         if (widget.item.title == "Foto & Dokumen Pekerjaan / Usaha" ||
             widget.item.title == "Foto & Dokumen Simulasi Perhitungan" ||
             widget.item.title == "Foto & Dokumen Tambahan")
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              onPressed: () {
-                // Panggil setState agar UI langsung me-render field baru
-                setState(() {
-                  String keyPrefix;
-                  if (widget.item.title.contains("Pekerjaan")) {
-                    keyPrefix = 'dokpekerjaan';
-                  } else if (widget.item.title.contains("Simulasi")) {
-                    keyPrefix = 'doksimulasi';
-                  } else {
-                    keyPrefix = 'doktambahan';
-                  }
+          Builder(
+            builder: (context) {
+              // 1. Tentukan prefix berdasarkan judul (Logika dipindah ke sini agar bisa dicek sebelum render)
+              String keyPrefix = '';
+              if (widget.item.title.contains("Pekerjaan")) {
+                keyPrefix = 'dokpekerjaan';
+              } else if (widget.item.title.contains("Simulasi")) {
+                keyPrefix = 'doksimulasi';
+              } else if (widget.item.title.contains("Tambahan")) {
+                keyPrefix = 'doktambahan';
+              } else {
+                // Jika bukan section dinamis, jangan tampilkan tombol
+                return const SizedBox.shrink();
+              }
 
-                  // ✅ HITUNG FIELD YANG SUDAH ADA DENGAN PREFIX YANG SAMA
-                  final count = _fields
-                      .where((f) => f.key?.startsWith(keyPrefix) ?? false)
-                      .length;
+              // 2. Hitung jumlah dokumen yang sudah ada saat ini
+              final currentCount = _fields
+                  .where((f) => f.key?.startsWith(keyPrefix) ?? false)
+                  .length;
 
-                  // ✅ BUAT KEY DAN LABEL BARU SESUAI FORMAT
-                  final newKey = '$keyPrefix${count + 1}';
-                  final newLabel = 'Foto & Dokumen ${count + 1}';
+              // 3. CEK LIMIT: Jika sudah mencapai 10 (atau lebih), sembunyikan tombol
+              if (currentCount >= 25) {
+                return const SizedBox.shrink();
+                // Tips: Jika ingin tombol tetap ada tapi disable (abu-abu),
+                // ganti return di atas dengan merender tombol yang onPressed-nya: null
+              }
 
-                  _fields.add(FieldModel(
-                    key: newKey, // <-- Gunakan key baru
-                    type: "cameraAndUploadTambahan",
-                    label: newLabel, // <-- Gunakan label baru
-                  ));
-                });
-              },
-              icon: const Icon(Icons.add, size: 16),
-              label: const Text("Tambah Dokumen"),
-            ),
+              // 4. Jika belum limit, tampilkan tombol
+              return Align(
+                alignment: Alignment.centerRight,
+                child: TextButton.icon(
+                  onPressed: () {
+                    setState(() {
+                      // Tambahkan field baru
+                      final newKey = '$keyPrefix${currentCount + 1}';
+                      final newLabel = 'Foto & Dokumen ${currentCount + 1}';
+
+                      _fields.add(FieldModel(
+                        key: newKey,
+                        type: "cameraAndUploadTambahan",
+                        label: newLabel,
+                      ));
+                    });
+                  },
+                  icon: const Icon(Icons.add, size: 16),
+                  label: const Text("Tambah Dokumen"),
+                ),
+              );
+            },
           ),
+        // Align(
+        //   alignment: Alignment.centerRight,
+        //   child: TextButton.icon(
+        //     onPressed: () {
+        //       // Panggil setState agar UI langsung me-render field baru
+        //       setState(() {
+        //         String keyPrefix;
+        //         if (widget.item.title.contains("Pekerjaan")) {
+        //           keyPrefix = 'dokpekerjaan';
+        //         } else if (widget.item.title.contains("Simulasi")) {
+        //           keyPrefix = 'doksimulasi';
+        //         } else {
+        //           keyPrefix = 'doktambahan';
+        //         }
+
+        //         // ✅ HITUNG FIELD YANG SUDAH ADA DENGAN PREFIX YANG SAMA
+        //         final count = _fields
+        //             .where((f) => f.key?.startsWith(keyPrefix) ?? false)
+        //             .length;
+
+        //         // ✅ BUAT KEY DAN LABEL BARU SESUAI FORMAT
+        //         final newKey = '$keyPrefix${count + 1}';
+        //         final newLabel = 'Foto & Dokumen ${count + 1}';
+
+        //         _fields.add(FieldModel(
+        //           key: newKey, // <-- Gunakan key baru
+        //           type: "cameraAndUploadTambahan",
+        //           label: newLabel, // <-- Gunakan label baru
+        //         ));
+        //       });
+        //     },
+        //     icon: const Icon(Icons.add, size: 16),
+        //     label: const Text("Tambah Dokumen"),
+        //   ),
+        // ),
       ],
     );
   }

@@ -20,7 +20,7 @@ class CameraAndUploadFieldForm extends StatefulWidget {
   final String? fieldKey;
   final String label;
   final dynamic value; // Ini akan menerima Map dari formAnswers
-  final Function(dynamic, DateTime, Position?) onFilePicked;
+  final Function(dynamic, DateTime?, Position?) onFilePicked;
 
   const CameraAndUploadFieldForm({
     super.key,
@@ -111,64 +111,11 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
     return await sourceFile.copy(newPath);
   }
 
-  // Future<File?> _compressImage(File file, {int targetSizeInMB = 1}) async {
-  //   final int targetSizeInBytes = targetSizeInMB * 1024 * 1024;
-  //   final initialSize = await file.length();
-
-  //   // Jika ukuran file sudah di bawah target, langsung kembalikan file asli
-  //   if (initialSize <= targetSizeInBytes) {
-  //     print(
-  //         'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
-  //     return file;
-  //   }
-
-  //   // Siapkan path untuk file hasil kompresi
-  //   final tempDir = await getTemporaryDirectory();
-  //   final timestamp = DateTime.now().millisecondsSinceEpoch;
-  //   final targetPath = p.join(tempDir.path, '${timestamp}_compressed.jpg');
-
-  //   int quality = 85; // Mulai dengan kualitas 85%
-
-  //   // Kompres file
-  //   XFile? compressedXFile = await FlutterImageCompress.compressAndGetFile(
-  //     file.absolute.path,
-  //     targetPath,
-  //     quality: quality,
-  //   );
-
-  //   if (compressedXFile == null) {
-  //     print('Kompresi gagal.');
-  //     return null; // Gagal kompresi
-  //   }
-
-  //   // Cek ukuran hasil kompresi, jika masih terlalu besar, kurangi kualitas
-  //   // (Looping sederhana untuk menurunkan kualitas jika perlu)
-  //   int compressedSize = await compressedXFile.length();
-  //   while (compressedSize > targetSizeInBytes && quality > 10) {
-  //     quality -= 5; // Kurangi kualitas
-  //     compressedXFile = await FlutterImageCompress.compressAndGetFile(
-  //       file.absolute.path,
-  //       targetPath,
-  //       quality: quality,
-  //     );
-  //     if (compressedXFile == null) break;
-  //     compressedSize = await compressedXFile.length();
-  //   }
-
-  //   print(
-  //       'Kompresi selesai. Ukuran: ${(initialSize / 1024).toStringAsFixed(2)} KB -> ${(compressedSize / 1024).toStringAsFixed(2)} KB');
-
-  //   return File(compressedXFile!.path);
-  // }
-
   Future<File?> _compressImage(File file, {int targetSizeInKB = 500}) async {
     final int targetSizeInBytes = targetSizeInKB * 1024;
     final initialSize = await file.length();
 
-    // Jika ukuran file sudah di bawah target, langsung kembalikan file asli
     if (initialSize <= targetSizeInBytes) {
-      // print(
-      //     'Ukuran file asli (${(initialSize / 1024).toStringAsFixed(2)} KB) sudah di bawah target.');
       return file;
     }
 
@@ -278,15 +225,6 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       final initialData = widget.value as Map;
       final file = initialData['file'];
 
-      // if (file != null) {
-      //   if (file is File) {
-      //     _fileData = file.path;
-      //     _displayController.text = file.path.split('/').last;
-      //   } else if (file is String) {
-      //     _fileData = file;
-      //     _displayController.text = file.split('/').last;
-      //   }
-      // }
       if (file != null) {
         // Dapatkan path baik dari objek File maupun String
         final String path = (file is File) ? file.path : file.toString();
@@ -353,52 +291,6 @@ class _CameraAndUploadFieldFormState extends State<CameraAndUploadFieldForm> {
       _displayController.text = _fileData.toString().split('/').last;
     }
   }
-
-  // void _processInitialValue() {
-  //   // Jika value dari parent adalah Map (sesuai desain kita)
-  //   if (widget.value != null && widget.value is Map) {
-  //     final initialData = widget.value as Map;
-  //     final file = initialData['file'];
-
-  //     if (file != null) {
-  //       if (file is File) {
-  //         _fileData = file.path;
-  //         _displayController.text = file.path.split('/').last;
-  //       } else if (file is String) {
-  //         _fileData = file;
-  //         _displayController.text = file.split('/').last;
-  //       }
-  //     }
-
-  //     _dateTime = initialData['timestamp'];
-  //     final lat = initialData['latitude'] as double?;
-  //     final lon = initialData['longitude'] as double?;
-  //     if (lat != null && lon != null) {
-  //       _photoPosition = Position(
-  //           latitude: lat,
-  //           longitude: lon,
-  //           timestamp: DateTime.now(),
-  //           accuracy: 0,
-  //           altitude: 0,
-  //           altitudeAccuracy: 0,
-  //           heading: 0,
-  //           headingAccuracy: 0,
-  //           speed: 0,
-  //           speedAccuracy: 0);
-  //     }
-  //   }
-  //   // Fallback jika value hanya String
-  //   else if (widget.value != null) {
-  //     _fileData = widget.value;
-  //     _displayController.text = widget.value.toString().split('/').last;
-
-  //     print('_fileData');
-  //     print(_fileData);
-  //     print('===============================');
-  //     print('_displayController');
-  //     print(_displayController);
-  //   }
-  // }
 
   @override
   void dispose() {

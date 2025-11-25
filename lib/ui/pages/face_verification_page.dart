@@ -108,10 +108,10 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
         "ReferenceCode": "testAbits111",
         "selfiePhoto": base64Image,
         // ====
-        // "govid": "6597846513425687",
-        // "fullname": "UserIAA",
-        // "dob": "2025-05-13",
-        // "email": "-",
+        // "govid": "3511000101806300",
+        // "fullname": "UserGDAA",
+        // "dob": "1980-01-01",
+        // "email": "test@testing.com",
         // "mobile": "+62818000222",
         // "InquiryReason": "ProvidingFacilities",
         // "ReferenceCode": "testAbits111",
@@ -139,20 +139,20 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
       );
 
       if (response.statusCode == 200) {
-        // 1. Decode JSON string ke Map
         final Map<String, dynamic> responseData = jsonDecode(response.body);
 
-        // 2. Cek apakah API sukses (berdasarkan JSON Anda)
         if (responseData['Success'] == true) {
-          // 3. Ambil list 'fields'
-          // Perhatikan, ada 'data' di dalam 'data'
           if (responseData['data']['data'] != null) {
-            final List<dynamic> fields = responseData['data']['data']['fields'];
+            final dynamic innerData = responseData['data']['data'];
+
+            // 1. Ambil Nilai Certificate Issued
+            final int? certificateIssued = innerData['certificateIssued'];
+
+            final List<dynamic> fields = innerData['fields'];
 
             double livenessScore = 0.0;
             double manipulationScore = 0.0;
 
-            // 4. Cari skornya
             try {
               livenessScore = fields
                   .firstWhere((field) => field['field'] == 'liveness')['score'];
@@ -161,7 +161,6 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
                   (field) => field['field'] == 'imgManipulationScore')['score'];
             } catch (e) {
               print('Gagal parsing score dari JSON: $e');
-              // Gagal parsing, anggap Ditolak
               return {
                 'status': 'Ditolak',
                 'message': 'Format respon tidak dikenal'
@@ -169,13 +168,25 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
             }
 
             // 5. Kembalikan MAP LENGKAP
-            return {
-              'status': 'Diterima',
-              'liveness': livenessScore,
-              'manipulation': manipulationScore,
-              'tgllahir': formattedDob,
-              'base64Image': base64Image
-            };
+            if (certificateIssued == 200) {
+              return {
+                'status': 'Diterima',
+                'liveness': livenessScore,
+                'manipulation': manipulationScore,
+                'base64Image': base64Image, // Foto yang di-resize tadi
+                'message': 'Verifikasi Berhasil'
+              };
+            } else {
+              // Jika certificateIssued BUKAN 200 (misal: 404, 500, dll dari Dukcapil)
+              return {
+                'status': 'Ditolak',
+                'liveness': livenessScore, // Tetap kirim score agar user tau
+                'manipulation': manipulationScore,
+                'base64Image': base64Image, // Tetap kirim foto
+                'message':
+                    'Verifikasi Gagal. Wajah tidak sesuai dengan data yang terdaftar. Silahkan coba lagi.' // Pesan error
+              };
+            }
           } else {
             return {
               'status': 'Ditolak',
