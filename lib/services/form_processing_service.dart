@@ -649,6 +649,7 @@ class FormProcessingService {
     // Mengisi data untuk bagian Pemohon (termasuk data pekerjaan)
     pemohonData['scoreliveness'] = processedAnswers['scoreliveness'];
     pemohonData['scoremanipulation'] = processedAnswers['scoremanipulation'];
+    pemohonData['selfiePhoto_base64'] = processedAnswers['selfiePhoto_base64'];
     pemohonData['tgllahir'] = processedAnswers['tgllahir'];
     pemohonData['katpemohon'] = processedAnswers['katpemohon'];
     pemohonData['statuspernikahan'] = processedAnswers['statuspernikahan'];

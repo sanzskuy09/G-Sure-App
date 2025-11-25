@@ -173,7 +173,8 @@ class _FaceVerificationPageState extends State<FaceVerificationPage> {
               'status': 'Diterima',
               'liveness': livenessScore,
               'manipulation': manipulationScore,
-              'tgllahir': formattedDob
+              'tgllahir': formattedDob,
+              'base64Image': base64Image
             };
           } else {
             return {

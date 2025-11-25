@@ -38,13 +38,14 @@ class DataPemohonAdapter extends TypeAdapter<DataPemohon> {
       scoreliveness: fields[18] as double?,
       scoremanipulation: fields[19] as double?,
       tgllahir: fields[20] as String?,
+      selfiePhoto_base64: fields[21] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, DataPemohon obj) {
     writer
-      ..writeByte(21)
+      ..writeByte(22)
       ..writeByte(0)
       ..write(obj.katpemohon)
       ..writeByte(1)
@@ -86,7 +87,9 @@ class DataPemohonAdapter extends TypeAdapter<DataPemohon> {
       ..writeByte(19)
       ..write(obj.scoremanipulation)
       ..writeByte(20)
-      ..write(obj.tgllahir);
+      ..write(obj.tgllahir)
+      ..writeByte(21)
+      ..write(obj.selfiePhoto_base64);
   }
 
   @override

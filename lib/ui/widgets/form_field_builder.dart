@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -236,6 +237,7 @@ class FieldBuilder extends StatelessWidget {
               formAnswers?['scoremanipulation'] = result['manipulation'];
               formAnswers?['dob'] = result['dob'];
               formAnswers?['${field.key}_message'] = result['message'];
+              formAnswers?['selfiePhoto_base64'] = result['base64Image'];
             });
           }
         },
@@ -323,16 +325,42 @@ class FieldBuilder extends StatelessWidget {
             (formAnswers?['scoremanipulation'] as num?)?.toDouble();
         final dynamic errorMessage = formAnswers?['${field.key}_message'];
 
-        // --- Helper Widget untuk Tampilan Sukses (agar tidak duplikat) ---
-        // (Ini adalah UI "Success View" Anda dari CHECK 1 sebelumnya)
+        // ✅ Ambil string Base64 dari formAnswers
+        final String? selfieBase64 = formAnswers?['selfiePhoto_base64'];
+
         Widget buildSuccessView() {
           return Padding(
             padding: const EdgeInsets.only(top: 8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (selfieBase64 != null && selfieBase64.isNotEmpty) ...[
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(
+                        8.0), // Rounded corners untuk foto
+                    child: Image.memory(
+                      base64Decode(selfieBase64),
+                      width: 100,
+                      height: 125, // ✅ HAPUS BARIS INI!
+                      fit: BoxFit.fill, // Agar foto tidak pecah
+                    ),
+                  ),
+                  const SizedBox(height: 16), // Jarak antara foto dan skor
+                ],
                 Row(
                   children: [
+                    // if (selfieBase64 != null && selfieBase64.isNotEmpty)
+                    //   ClipRRect(
+                    //     borderRadius: BorderRadius.circular(
+                    //         8.0), // Rounded corners untuk foto
+                    //     child: Image.memory(
+                    //       base64Decode(selfieBase64),
+                    //       width: 60,
+                    //       height: 80, // ✅ HAPUS BARIS INI!
+                    //       fit: BoxFit.fill, // Agar foto tidak pecah
+                    //     ),
+                    //   ),
+                    // const SizedBox(width: 8),
                     Icon(Icons.check_circle, color: Colors.green[700]),
                     const SizedBox(width: 8),
                     Text(
